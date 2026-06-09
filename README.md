@@ -119,7 +119,7 @@ Tweaks to existing mechanics. Most are user-visible.
 - **Create: Big Cannons** compat — `custom_explosive_mix` and friends register as CBC munitions with custom propellant-blob effects.
 - **Create: Connected** compat — `FluidVessel*Mixin` makes Connected's fluid vessels mixture-aware so they cooperate with Destroy's pipe network for in-place mixture merging.
 - **Smog atmospheric tinting** — `FogHandler` + `SmogAffectedBlockColor` re-port from upstream; grass / leaves / water / sugarcane / pink petals visibly darken as the chunk's smog level rises.
-- **Five missing achievements wired** — `SHOOT_HEFTY_BEETROOT`, `CUT_ONIONS`, `FIREPROOF_FLINT_AND_STEEL`, `HABER_PROCESS`, `STEAM_REFORMATION`; `USE_KEYPUNCH` trigger id corrected (`keypunch_use` → `keypunch`).
+- **Five missing achievements wired** — Shoot Hefty Beetroot, Cut Onions, Fireproof Flint and Steel, Haber Process, Steam Reformation. The `use_keypunch` trigger id is also corrected to `keypunch`.
 - **`vat_interaction` Ponder scene fully ported** — including `en_us` / `zh_cn` translations (upstream shipped only `en_gb` / `pl_pl`).
 - **NeoForge tag namespace migration** — 21 datapack tag files moved from `forge:` to `neoforge:`.
 - **Spout filling non-fluid-handler items** path restored (Fire Retardant spray fires correctly).
