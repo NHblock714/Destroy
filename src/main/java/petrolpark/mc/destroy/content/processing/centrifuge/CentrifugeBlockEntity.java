@@ -358,19 +358,22 @@ public class CentrifugeBlockEntity extends KineticBlockEntity implements IHaveLa
                 phasedMoleculesRemainingMoles.put(phasedMolecule, moles);
             }
 
-            // Sort molecules by density (most dense first) — densest sink to the dense output tank.
+            // Sort molecules by phase density (heaviest sinks first to the dense output tank).
+            //
+            // The naive {@code mixture.getConcentrationOf(m) * m.getMass() / remainingVolume}
+            // key is wrong for molecules that exist in both phases: the conc factor is the
+            // mixture-wide value (large) while {@code remainingVolume} for the gas pair is
+            // the tiny separated gas volume → the ratio explodes and a trace gas fraction
+            // outranks every liquid as "densest", landing in the dense output tank. Fix by
+            // ranking by actual per-phase density:
+            //   - liquid: pure species density (= mass × pureConcentration), e.g. 1141 g/L for O₂
+            //   - gas:    post-separation gas-mixture density of that species (per-litre)
+            // For tester's 77 K O₂/N₂ mix, this puts liquid O₂ (1141) > liquid N₂ (808) >>
+            // gas N₂ (~7 g/L) — gas drops into the light tank where it belongs.
             List<Pair<LegacySpecies, Boolean>> orderedPhasedMolecules = new ArrayList<>(phasedMoleculesRemainingVolumes.keySet());
-            orderedPhasedMolecules.sort((p1, p2) -> {
-                LegacySpecies m1 = p1.getFirst();
-                LegacySpecies m2 = p2.getFirst();
-                float v1 = phasedMoleculesRemainingVolumes.get(p1);
-                float v2 = phasedMoleculesRemainingVolumes.get(p2);
-                if (v1 == 0f || v2 == 0f) return 0;
-                return Float.compare(
-                    mixture.getConcentrationOf(m2) * m2.getMass() / v2,
-                    mixture.getConcentrationOf(m1) * m1.getMass() / v1
-                );
-            });
+            final LegacyMixture gasMixtureForSort = gasMixture;
+            orderedPhasedMolecules.sort((p1, p2) -> Float.compare(
+                phaseDensity(p2, gasMixtureForSort), phaseDensity(p1, gasMixtureForSort)));
 
             float volumeOfDenseMixture = 0f;
 
@@ -522,6 +525,22 @@ public class CentrifugeBlockEntity extends KineticBlockEntity implements IHaveLa
             if (charge != 0 && (charge > 0) == cation && map.containsKey(pair) && map.get(pair) > 0f) return pair;
         }
         return Pair.of(null, null);
+    }
+
+    /** Phase-aware density (g/L) for the centrifuge sort key — see comment on the sort call. */
+    private static float phaseDensity(Pair<LegacySpecies, Boolean> phasedMolecule, LegacyMixture gasMixture) {
+        LegacySpecies m = phasedMolecule.getFirst();
+        boolean isGas = phasedMolecule.getSecond();
+        if (isGas) {
+            // Per-litre gas density after phase separation. gasMixture's concentrations
+            // have already been rescaled to the actual gas volume by the {@code gasMixture.scale}
+            // call up in process(), so this is the real cold-gas mass density.
+            return gasMixture.getConcentrationOf(m) * m.getMass();
+        }
+        // Pure-liquid density (mass × pureConcentration) — independent of how much of the
+        // species is present, which is what the original sort key would have collapsed to
+        // after the algebra for a single-phase liquid. Stable and physically meaningful.
+        return m.getDensity();
     }
 
     public void spawnParticles() {

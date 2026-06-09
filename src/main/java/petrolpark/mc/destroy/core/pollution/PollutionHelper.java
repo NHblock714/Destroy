@@ -25,7 +25,20 @@ import petrolpark.mc.destroy.config.DestroyConfigs;
 public class PollutionHelper {
 
     public static final boolean isPollutionEnabled() {
-        return DestroyConfigs.server().pollution.enablePollution.get();
+        // Server config may not be loaded yet when client-side cosmetic hooks fire
+        // (notably {@link petrolpark.mc.destroy.client.FogHandler#colorFog} on the
+        // title screen / menu render path, before any world is open). NeoForge's
+        // {@code ModConfigSpec$ConfigValue.get} hard-fails with
+        // {@code IllegalStateException: Cannot get config value before config is loaded}
+        // which would crash the client just from looking at the main menu. Treat
+        // "not loaded yet" as "not enabled" so callers gate themselves out cleanly;
+        // by the time a world is loaded the config is available and this returns the
+        // real configured value.
+        try {
+            return DestroyConfigs.server().pollution.enablePollution.get();
+        } catch (IllegalStateException e) {
+            return false;
+        }
     };
 
     /**

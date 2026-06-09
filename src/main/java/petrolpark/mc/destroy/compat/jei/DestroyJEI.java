@@ -307,10 +307,19 @@ public class DestroyJEI implements IModPlugin {
         // 385-387 of DestroyJEI: any block that can drive chemistry should reverse-link here.
         builder(ReactionRecipe.class)
             .addRecipes(() -> {
+                // Skip datapack-sourced reactions here. They take a separate path through
+                // {@link #refreshDatapackReactionsClientSide} which pushes them into JEI's
+                // runtime via {@code addRecipes} and tracks the resulting holders for hide-on-
+                // refresh. Registering them through this static supplier as well duplicates
+                // every datapack reaction: this supplier re-runs on any JEI reload
+                // ({@code /jei reload}, resource-pack switch, datapack hot reload), and by then
+                // {@link ReactionCategory#RECIPES} has been populated with datapack entries
+                // too — so each shows up once via static register + once via dynamic push.
                 java.util.List<net.minecraft.world.item.crafting.RecipeHolder<ReactionRecipe>> list =
                     new java.util.ArrayList<>();
                 int[] counter = { 0 };
                 ReactionCategory.RECIPES.values().forEach(r -> {
+                    if (r.getReaction() != null && r.getReaction().isDatapack()) return;
                     list.add(new net.minecraft.world.item.crafting.RecipeHolder<>(
                         petrolpark.mc.destroy.Destroy.asResource("reaction_" + counter[0]++),
                         r));
