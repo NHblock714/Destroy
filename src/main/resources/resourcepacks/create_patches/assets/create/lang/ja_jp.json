@@ -1,0 +1,8 @@
+{
+    "block.create.schematicannon.tooltip.summary": "ブロックを撃って、_概略図_をもとにワールドに設置します。隣接する収納ブロックからのアイテムを自動搬入し、_爆発物_を燃料とします。",
+
+    "create.gui.schematicannon.gunpowderLevel": "爆発物の残量: %1$s%%",
+    "create.gui.schematicannon.slot.gunpowder": "爆発物を燃料として概略図砲に入れてください。",
+
+    "create.schematicannon.status.noGunpowder": "爆発物不足"
+}
