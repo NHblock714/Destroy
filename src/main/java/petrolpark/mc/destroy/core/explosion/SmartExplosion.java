@@ -71,7 +71,7 @@ public class SmartExplosion extends Explosion {
 
     static {
         register(DEFAULT_SERIALIZER);
-        // S207 T2b 破冰: CustomExplosiveMixExplosion.SERIALIZER wired. Unblocks prior TODO(S40+ PrimedBomb 批).
+        // T2b: CustomExplosiveMixExplosion.SERIALIZER wired (supports the PrimedBomb family).
         register(petrolpark.mc.destroy.core.explosion.mixedexplosive.CustomExplosiveMixExplosion.SERIALIZER);
     }
 
@@ -117,9 +117,10 @@ public class SmartExplosion extends Explosion {
         this.position = position;
         this.irregularity = irregularity > 1f ? 1f : irregularity;
         this.stacksToCreate = new HashMap<>();
-        // 1.21 Explosion.damageSource 是 final→ post-super 安装
-        // 自定义 SmartExplosionDamageSource 让消费者（mob-drop XP handler / 以后的 obliteration hooks）
-        // 可以 instanceof 检测到爆炸来源。仅在调用方未显式传 damageSource 时覆盖；显式传入的优先。
+        // 1.21 Explosion.damageSource is final, so install the custom SmartExplosionDamageSource
+        // post-super. It lets consumers (mob-drop XP handler / future obliteration hooks) detect the
+        // explosion source via instanceof. Only override when the caller did not pass an explicit
+        // damageSource; an explicitly supplied one takes priority.
         if (damageSource == null) {
             this.damageSource = new SmartExplosionDamageSource(
                 level.registryAccess()
@@ -154,16 +155,16 @@ public class SmartExplosion extends Explosion {
         // net.neoforged.neoforge.common.extensions.IBlockExtension#onBlockExploded
         // IBlockExtension.onBlockExploded}).
         // Without this snapshot, TNT-style blocks that explicitly opt out of explosion-drops
-        // (vanilla {@code TntBlock.dropFromExplosion → false}, our
+        // (vanilla {@code TntBlock.dropFromExplosion → false}, and the
         // {@link petrolpark.mc.destroy.core.explosion.PrimeableBombBlock} family inherits this)
-        // would still drop their loot-table items because by the time we hit the drop-check the
+        // would still drop their loot-table items because by the time the drop-check runs the
         // block at {@code pos} is already {@code AIR}, and {@code Block.dropFromExplosion}
-        // defaults to {@code true}. Combined with our {@code PrimeableBombBlock.onBlockExploded}
+        // defaults to {@code true}. Combined with {@code PrimeableBombBlock.onBlockExploded}
         // also spawning a primed entity, this duplicated the explosive: chain-exploded
         // {@code custom_explosive_mix} blocks dropped both their item form (with NBT-preserved
-        // inventory) AND a primed entity → infinite explosive refill on chain reactions.
-        // User report : "destroy的混合炸药爆炸激活其他混合炸药 [...] 炸下来（掉落方块）
-        // [...] 也会生成被激活的混合炸药实体 [...] 炸药无限续杯".
+        // inventory) AND a primed entity → infinite explosive refill on chain reactions
+        // (a mixed-explosive detonation activating another both dropped the block item and
+        // spawned the primed entity, endlessly replenishing the explosive).
         java.util.Map<BlockPos, BlockState> preExplosionStates =
             new java.util.HashMap<>(getToBlow().size());
 

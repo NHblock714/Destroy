@@ -14,7 +14,7 @@ import petrolpark.mc.destroy.config.DestroyClientConfigs;
  * <p><b>Usage</b>: any custom Screen that wants to control where the Extended-Inventory hotbar /
  * inventory "windows" render relative to its own GUI implements this interface. The Screen returns
  * 4 {@link Rect2i} regions describing where each window should sit; the
- * {@code ExtendedInventoryClientHandler} (UI port pending — S367+) consumes those regions during
+ * {@code ExtendedInventoryClientHandler} consumes those regions during
  * {@code ScreenEvent.Render.Pre}. Returning {@code null} from any method skips that window.
  * Returning {@code true} from {@link #customExtendedInventoryRendering()} suppresses the default
  * background + slot rendering entirely (Screen renders everything itself).</p>

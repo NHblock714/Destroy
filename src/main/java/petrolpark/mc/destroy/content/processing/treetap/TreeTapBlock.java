@@ -70,12 +70,10 @@ public class TreeTapBlock extends DirectionalKineticBlock implements IBE<TreeTap
 
     /**
  *
- * <p><b>User report</b>: "如果在工作途中停止应力输入然后恢复，则会让取液器取液的去皮原木增加
- * 一个破坏进度（裂纹）" + "如果尝试反复更新工作方块下的那一个方块，实际工作方块的破坏进度
- * 会随着每次下方方块更新增加一段破坏进度，这是不正常的"。</p>
- *
  * <p>The original Create-style trigger fires {@code destroyNextTick()} on **every** neighbor
- * change. Two unwanted side-effects observed by the user:</p>
+ * change, which produced two unwanted side-effects (stopping then resuming stress added a
+ * spurious break-progress crack to the tapped log, and repeatedly updating the block below
+ * the tap accumulated break progress on the working block):</p>
  * <ol>
  * <li>Stress shaft cogwheel state changes (Speed BlockState property) trigger neighborChanged
  * on the TreeTap → destroyNextTick → spurious +1 progress on stop+resume cycles.</li>
@@ -97,8 +95,8 @@ public class TreeTapBlock extends DirectionalKineticBlock implements IBE<TreeTap
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         // constrain to horizontal even though the FACING property accepts up/down.
-        // Sable mixin reads BlockStateProperties.FACING and we need horizontal semantics for the
-        // tap to function (it taps the side of a tree).
+        // Sable mixin reads BlockStateProperties.FACING and horizontal semantics are required for
+        // the tap to function (it taps the side of a tree).
         return withWater(defaultBlockState().setValue(FACING, context.getHorizontalDirection()), context);
     }
 

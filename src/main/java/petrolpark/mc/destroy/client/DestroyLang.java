@@ -22,11 +22,8 @@ import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import petrolpark.mc.destroy.Destroy;
 
 /**
- * Destroy 的 {@code Component}/tooltip 辅助工具。1.21.1 移植阶段只搬与化学无关的部分（非 mixture/vat/reaction），
- * 保证 goggle tooltip 与数字/温度格式化可用。chemistry 相关方法（mixtureIngredientTooltip / vatMaterialTooltip /
- * preexponentialFactor / quantity）留待 Chemistry engine 批次引入。
- *
- * <p>1.21.1 要点：
+ * Destroy 的 {@code Component}/tooltip 辅助工具：提供 goggle tooltip、数字/温度格式化，以及化学相关的
+ * tooltip 方法（vatMaterialTooltip / preexponentialFactor / quantity 等）。
 */
 public class DestroyLang {
 
@@ -167,8 +164,8 @@ public class DestroyLang {
 
     /**
  * Render a labelled 5-segment progress bar for a {@link petrolpark.mc.destroy.core.chemistry.vat.material.VatMaterial}'s
- * max pressure. Used by both goggle-tooltip vatMaterialTooltip and the S295 JEI
- * VatMaterialCategory draw pipeline. 1:1
+ * max pressure. Used by both goggle-tooltip vatMaterialTooltip and the JEI
+ * VatMaterialCategory draw pipeline.
 */
     public static Component vatMaterialMaxPressure(petrolpark.mc.destroy.core.chemistry.vat.material.VatMaterial material, Palette palette) {
         float pressurePercent = net.minecraft.util.Mth.clamp((material.maxPressure() - pressureMin) / (pressureMax - pressureMin), 0f, 1f);

@@ -12,11 +12,9 @@ import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.common.Tags;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 
-/** Entries that depend on yet-to-be-ported
- * content classes (custom Item subclasses, block items tied to unported BlockEntityTypes, etc.) are held
- * back until their dependencies land;
- *
- * 1.21.1 notes:
+/**
+ * Destroy's item registry. Entries that depend on custom Item subclasses or block items tied to a
+ * BlockEntityType reference those classes directly; plain entries use {@code Item::new} with tags.
 */
 public class DestroyItems {
 
@@ -302,21 +300,22 @@ public class DestroyItems {
             .register();
 
     // CIRCUIT_BOARD.
-    // CircuitBoardItem extends CircuitPatternItem (S106) to carry a 4×4 binary circuit pattern
+    // CircuitBoardItem extends CircuitPatternItem to carry a 4×4 binary circuit pattern
     // for the trypolithography pipeline. Hover tooltip visualizes the pattern via
-    // CircuitPatternTooltipComponent (S107). Custom renderer deferred (CircuitPatternItemRenderer
+    // CircuitPatternTooltipComponent.
     public static final ItemEntry<petrolpark.mc.destroy.content.processing.trypolithography.CircuitBoardItem> CIRCUIT_BOARD =
         REGISTRATE.item("circuit_board",
             petrolpark.mc.destroy.content.processing.trypolithography.CircuitBoardItem::new)
             .register();
 
     // CIRCUIT_MASK.
-    // CircuitMaskItem extends CircuitPatternItem (S106) + tracks up to 3 keypunch UUIDs via PUNCHED_BY
+    // CircuitMaskItem extends CircuitPatternItem + tracks up to 3 keypunch UUIDs via PUNCHED_BY
     // DataComponent. When 3rd punch exceeded → replaced with RUINED_CIRCUIT_MASK
     // (already registered above as plain Item at ~line 562).
     public static final ItemEntry<petrolpark.mc.destroy.content.processing.trypolithography.CircuitMaskItem> CIRCUIT_MASK =
         REGISTRATE.item("circuit_mask",
             petrolpark.mc.destroy.content.processing.trypolithography.CircuitMaskItem::new)
+            .properties(p -> p.stacksTo(1)) // unique per-item punch state (pattern + PUNCHED_BY) — must not stack (matches upstream)
             .register();
 
     // SEISMOMETER + SEISMOGRAPH.
@@ -334,8 +333,8 @@ public class DestroyItems {
             .properties(p -> p.stacksTo(1))
             .register();
 
-    // IODINE — IodineItem ported Dropped iodine on fire → Ender-dragon-breath cloud.
-    // Tooltip (IDynamicItemDescription) held until tooltip batch; gameplay unaffected.
+    // IODINE — IodineItem: dropped iodine on fire → Ender-dragon-breath cloud.
+    // Tooltip (IDynamicItemDescription) not yet wired; gameplay unaffected.
 
     public static final ItemEntry<petrolpark.mc.destroy.content.product.IodineItem> IODINE =
         REGISTRATE.item("iodine", petrolpark.mc.destroy.content.product.IodineItem::new)
@@ -361,9 +360,9 @@ public class DestroyItems {
 
     // TEST_TUBE: 25 mB Mixture container. Right-click block to fill/empty via
     // FLUID_HANDLER capability. Used by JEI cheat mode + chemistry sampling gameplay.
-    // missing TEST_TUBE_RACK_STORABLE tag restored. Without it, the rack
+    // Requires the TEST_TUBE_RACK_STORABLE tag; without it, the rack
     // block's ItemStackHandler.isItemValid returns false for TEST_TUBE and insertion/swap fails
-    // silently → "test tube can't go into rack" user-facing bug.
+    // silently.
     public static final ItemEntry<petrolpark.mc.destroy.core.chemistry.storage.testtube.TestTubeItem> TEST_TUBE =
         REGISTRATE.item("test_tube", petrolpark.mc.destroy.core.chemistry.storage.testtube.TestTubeItem::new)
             .tag(DestroyTags.Items.TEST_TUBE_RACK_STORABLE.tag)
@@ -589,7 +588,7 @@ public class DestroyItems {
         .register();
 
     // DISC_STAMPER — reusable tool that stamps a specific music disc onto a
-    // BLANK_MUSIC_DISC via a Create Deployer (DiscStampingRecipe S133+). Each stamper carries one
+    // BLANK_MUSIC_DISC via a Create Deployer (DiscStampingRecipe). Each stamper carries one
     // music disc in its STAMPED_DISC DataComponent. Non-stacking.
     public static final ItemEntry<petrolpark.mc.destroy.content.processing.discstamping.DiscStamperItem> DISC_STAMPER =
         REGISTRATE.item("disc_stamper",
@@ -687,9 +686,9 @@ public class DestroyItems {
 
     // SEQUENCED ASSEMBLY INTERMEDIATES
     // 1.21.1 Registrate's tab(...) no longer
-    // accepts null. We intentionally omit any .tab(...) call — these items won't be added to the
-    // Destroy creative tab (to be built in DestroyCreativeModeTabs) in its builder filter. They
-    // still appear in SEARCH unless removed there; remove later when DestroyCreativeModeTabs lands.
+    // accepts null. No .tab(...) call is made — these items are excluded from the
+    // Destroy creative tab via its builder filter in DestroyCreativeModeTabs. They
+    // still appear in SEARCH unless removed there.
 
     public static final ItemEntry<com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem>
 
@@ -715,14 +714,14 @@ public class DestroyItems {
     // 1.21.1 notes:
     // • CuriosSetup → PetrolparkCuriosSetup (library rename; transforms goggles()/renderOnHead()
     // unchanged in shape).
-    // • S329 port — CreateRegistrate.itemModel(() -> XxxModel::new) wired for each PPE to swap
+    // • CreateRegistrate.itemModel(() -> XxxModel::new) is wired for each PPE to swap
     // the default 2D generated item sprite for a 3D BakedModel when rendered on the head slot.
     // XxxModel classes are BakedModelWrapper that override applyTransform(HEAD, ...) to return
     // DestroyPartials.XXX's preloaded block model. CreateRegistrate's
-    // static itemModel helper preserved in Create 6.0 unchanged.
-    // 1.21.1 schema is
-    // {order,icon,validators} — but because we're using the default `head` slot we don't need to
-    // ship a slot JSON. Items opt in via the `curios:tag` validator — see
+    // static itemModel helper is preserved in Create 6.0 unchanged.
+    // The 1.21.1 schema is
+    // {order,icon,validators} — but since the default `head` slot is used, no slot JSON is
+    // needed. Items opt in via the `curios:tag` validator — see
     // data/curios/tags/item/head.json.
 
     public static final ItemEntry<petrolpark.mc.destroy.core.chemistry.hazard.protection.ChemistryProtectionHeadwearItem>

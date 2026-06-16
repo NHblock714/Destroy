@@ -55,7 +55,7 @@ public class CircuitDeployerApplicationRecipe extends DeployerApplicationRecipe
     }
 
     /**
- * S362 v2 enhancement — JEI preview: inject {@link CircuitSequencedAssemblyRecipe#EXAMPLE_PATTERN}
+ * JEI preview: inject {@link CircuitSequencedAssemblyRecipe#EXAMPLE_PATTERN}
  * into any {@link CircuitPatternItem} output stack so the displayed result shows a
  * representative punched pattern (not a blank board).
 */
@@ -71,18 +71,36 @@ public class CircuitDeployerApplicationRecipe extends DeployerApplicationRecipe
     }
 
     /**
- * S362 v2 enhancement — Runtime per-input specialization. When the deployer fires this
- * recipe with a specific punched mask, set a one-shot enforced result that carries the
- * mask's pattern bit. 1.21
- * simplified to in-place {@link ProcessingRecipe#enforceNextResult} since Create's deployer
- * is single-threaded per BE (no concurrent recipe firing on the same instance, so the
- * one-shot supplier is safe to overwrite each event tick).
+ * Runtime per-input specialization. When the deployer fires this recipe with a specific
+ * punched mask, arm a one-shot enforced result that carries the mask's pattern bit.
+ *
+ * <p><b>Composition, not replacement:</b> when this recipe was resolved through a sequenced
+ * assembly ({@code SequencedAssemblyRecipe.getRecipes}), Create has ALREADY armed
+ * {@code forcedResult} with the {@code advance()} supplier that performs the assembly
+ * bookkeeping — writing the step counter + progress data component onto the output. An
+ * earlier revision overwrote that supplier wholesale, which output a pattern-stamped stack
+ * with <i>no</i> step counter: the next machine in the line (Spout for the etching step)
+ * could no longer match the stack to the assembly chain and the board was stranded after
+ * the deploying step. Now the prior supplier runs first (falling back to the declared
+ * results for standalone CIRCUIT_DEPLOYING recipes outside an assembly) and the mask's
+ * pattern is stamped on top of whatever it produced.</p>
 */
     public RecipeHolder<DeployerApplicationRecipe> specify(ResourceLocation id, RecipeWrapper inv) {
         int pattern = CircuitPatternItem.getPattern(inv.getItem(1));
+        java.util.function.Supplier<ItemStack> prior =
+            ((petrolpark.mc.destroy.mixin.accessor.ProcessingRecipeAccessor) this).destroy$getForcedResult();
         // enforceNextResult is consumed on the next rollResults call — set it on `this` so the
         // next deployer cycle picks up the pattern-bearing stack.
-        this.enforceNextResult(() -> transformWithPattern(super.getRollableResults(), pattern));
+        this.enforceNextResult(() -> {
+            ItemStack result = prior != null
+                ? prior.get()
+                : transformWithPattern(super.getRollableResults(), pattern);
+            if (result.getItem() instanceof CircuitPatternItem
+                || result.getItem() instanceof SequencedAssemblyItem) {
+                CircuitPatternItem.putPattern(result, pattern);
+            }
+            return result;
+        });
         return new RecipeHolder<>(id, this);
     }
 
@@ -136,12 +154,12 @@ public class CircuitDeployerApplicationRecipe extends DeployerApplicationRecipe
     }
 
     /**
- * Codec-level validator — was a sanity check on the recipe ingredient slots;
+ * Codec-level validator — formerly a sanity check on the recipe ingredient slots.
  *
- * <p>Going with option 2 (return success unconditionally) because the slot semantics are
+ * <p>Returns success unconditionally because the slot semantics are
  * already enforced by the runtime {@code matches()} check + the codec deserialization itself,
- * and there's no clear-cut "wrong recipe" case the validator was actually catching. If a future
- * regression motivates resurrecting the check, option 1 is the right form.</p>
+ * and there's no clear-cut "wrong recipe" case the validator was actually catching. A future
+ * regression could motivate reinstating a real check here.</p>
 */
     private static DataResult<CircuitDeployerApplicationRecipe> validateCircuitDeployer(CircuitDeployerApplicationRecipe recipe) {
         return DataResult.success(recipe);

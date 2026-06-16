@@ -20,11 +20,11 @@ import petrolpark.mc.destroy.DestroyRecipeTypes;
  * one mix-container item + at least one explosive ingredient. Leftover inventory space is allowed
  * (fewer than max explosives is fine).
  *
- * <p><b>Dependencies — all ready</b>:</p>
+ * <p><b>Dependencies</b>:</p>
  * <ul>
- * <li>{@link IMixedExplosiveItem} (S208) — dual API surface with HolderLookup.Provider signature.</li>
- * <li>{@link MixedExplosiveInventory} (S204) — {@link MixedExplosiveInventory#canBeAdded} filter.</li>
- * <li>{@link ExplosiveProperties#ITEM_EXPLOSIVE_PROPERTIES} (S203) — validates ingredient items.</li>
+ * <li>{@link IMixedExplosiveItem} — dual API surface with HolderLookup.Provider signature.</li>
+ * <li>{@link MixedExplosiveInventory} — {@link MixedExplosiveInventory#canBeAdded} filter.</li>
+ * <li>{@link ExplosiveProperties#ITEM_EXPLOSIVE_PROPERTIES} — validates ingredient items.</li>
  * </ul>
 */
 public class FillMixedExplosiveItemRecipe extends CustomRecipe {
@@ -56,7 +56,7 @@ public class FillMixedExplosiveItemRecipe extends CustomRecipe {
             for (int slot = 0; slot < input.size(); slot++) {
                 ItemStack stack = input.getItem(slot);
                 if (stack.getItem() instanceof IMixedExplosiveItem customMixItem) {
-                    if (findMixItem) { // If we're looking for a mix container and we've found one
+                    if (findMixItem) { // A mix container was found during the mix-container pass
                         if (inv != null) return ItemStack.EMPTY; // Only one mix container allowed
                         else {
                             mixItem = stack;

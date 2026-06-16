@@ -24,15 +24,15 @@ public class DestroyCommonEvents {
  * Register Destroy's {@link net.minecraft.server.packs.resources.PreparableReloadListener}s
  * on datapack reload. Currently:
  * <ul>
- * <li>{@code CircuitPatternHandler.RELOAD_LISTENER} (S112) — scans
+ * <li>{@code CircuitPatternHandler.RELOAD_LISTENER} — scans
  * {@code data/<ns>/destroy_compat/circuit_patterns/*.json}.</li>
- * <li>S174: {@code PeriodicTableBlock.Listener} — scans
+ * <li>{@code PeriodicTableBlock.Listener} — scans
  * {@code data/<ns>/destroy_compat/periodic_table_blocks.json} to populate
  * {@code PeriodicTableBlock.ELEMENTS} for grid-completion advancement checks.</li>
- * <li>S203: {@code ExplosiveProperties.Listener} — scans
+ * <li>{@code ExplosiveProperties.Listener} — scans
  * {@code data/<ns>/destroy_compat/explosive_items/*.json} to populate
  * {@code ITEM_EXPLOSIVE_PROPERTIES} map driving mixed-explosive property tables
- * (T2b mixedexplosive subsystem破冰).</li>
+ * (T2b mixedexplosive subsystem).</li>
  * </ul>
 */
     @SubscribeEvent
@@ -90,7 +90,7 @@ public class DestroyCommonEvents {
  *
  * <p>Why ServerAboutToStartEvent (not RegisterEvent / ModLoading): structure pools are runtime
  * world data — they don't exist at mod-init time. They're loaded from datapack JSONs at world
- * load, after which we mutate the loaded {@code StructureTemplatePool.templates} list
+ * load, after which the loaded {@code StructureTemplatePool.templates} list is mutated
  * in-place. {@code ServerAboutToStartEvent} fires AFTER datapack load but BEFORE the world
  * starts generating chunks, so the inn pieces are part of the pool by the time the first
  * village structure is placed.</p>
@@ -115,9 +115,9 @@ public class DestroyCommonEvents {
     /**
  * World-load bookkeeping for Destroy's per-level handlers. Both
  * {@link petrolpark.mc.destroy.content.processing.trypolithography.CircuitPuncherHandler#onLoadWorld}
- * (S108, registers puncher map for the level) and
+ * (registers puncher map for the level) and
  * {@link petrolpark.mc.destroy.content.processing.trypolithography.CircuitPatternHandler#onLevelLoaded}
- * (S112, attaches SavedData via {@code SavedData.Factory}) are called here.
+ * (attaches SavedData via {@code SavedData.Factory}) are called here.
 */
     @SubscribeEvent
     public static final void onLoadWorld(LevelEvent.Load event) {
@@ -135,11 +135,10 @@ public class DestroyCommonEvents {
         Destroy.CIRCUIT_PATTERN_HANDLER.onLevelUnloaded(event.getLevel());
     }
 
-    /** the 1.21 port left this branch out (the only ported
- * handler is {@link petrolpark.mc.destroy.core.pollution.PollutionEvents#onEntityJoinLevel}
- * for lightning-regenerates-ozone). Without this, baby villagers never gain the AI to
+    /** Adds the baby-villager sand-search behaviour (the related
+ * {@link petrolpark.mc.destroy.core.pollution.PollutionEvents#onEntityJoinLevel}
+ * handles lightning-regenerates-ozone). Without this, baby villagers never gain the AI to
  * search for sand → no sand castle building, even with bucket-and-spade in inventory.
- * User report: "小村民没有尝试找沙地".
 */
     @SubscribeEvent
     public static final void onEntityJoinLevel(net.neoforged.neoforge.event.entity.EntityJoinLevelEvent event) {
@@ -173,12 +172,11 @@ public class DestroyCommonEvents {
         net.minecraft.world.level.block.state.BlockState state = world.getBlockState(pos);
 
         // Measuring Cylinder special path: open the transfer screen instead of
-        // fill-everything (defaultAttack semantics).
-        // handler; the 1.21 port forgot to include the cylinder-specific dispatch and only wired
-        // the generic IMixtureStorageItem.defaultAttack below. Result: left-clicking a tank with
-        // a measuring cylinder filled all-or-nothing instead of opening the slider GUI for
-        // metered withdrawal — user reported "定量取出不会打开转移界面". Must run BEFORE the
-        // generic IMixtureStorageItem branch so we win the cancel-event race.
+        // fill-everything (defaultAttack semantics). This cylinder-specific dispatch sits in front
+        // of the generic IMixtureStorageItem.defaultAttack below. Without it, left-clicking a tank
+        // with a measuring cylinder filled all-or-nothing instead of opening the slider GUI for
+        // metered withdrawal. Must run BEFORE the generic IMixtureStorageItem branch to win the
+        // cancel-event race.
         if (stack.getItem() instanceof petrolpark.mc.destroy.core.chemistry.storage.measuringcylinder.MeasuringCylinderBlockItem) {
             net.minecraft.world.ItemInteractionResult cylResult =
                 petrolpark.mc.destroy.core.chemistry.storage.measuringcylinder.MeasuringCylinderBlockItem
@@ -192,10 +190,9 @@ public class DestroyCommonEvents {
             // tanks / no-cap targets can still be handled (they'll just no-op).
         }
 
-        // IMixtureStorageItem fill-from-block on LEFT-click (test tube, beaker, etc.)
-        // the 1.21 port skeleton
-        // commented it out as deferred ("IMixtureStorageItem attack — deferred"). User reported
-        // "试管无法对着任何容器拿出流体" — restoring this branch fixes left-click extraction.
+        // IMixtureStorageItem fill-from-block on LEFT-click (test tube, beaker, etc.).
+        // This branch enables left-click fluid extraction; without it, items like the test tube
+        // can't draw fluid out of any container.
         if (stack.getItem() instanceof petrolpark.mc.destroy.core.chemistry.storage.IMixtureStorageItem mixtureItem) {
             net.minecraft.world.InteractionResult result =
                 petrolpark.mc.destroy.core.chemistry.storage.IMixtureStorageItem.defaultAttack(
@@ -206,22 +203,21 @@ public class DestroyCommonEvents {
             }
         }
 
-        // IPickUpPutDownBlock fast-pickup. Was marked "deferred" in
-        // the 1.21 port skeleton and forgotten. Without this branch, left-clicking a placed
+        // IPickUpPutDownBlock fast-pickup. Without this branch, left-clicking a placed
         // beaker / round-bottomed flask / measuring cylinder etc. goes through vanilla normal
         // break flow:
         // - Survival: loot table fires, drops empty (fresh-NBT) item — content + capacity lost.
         // - Creative: vanilla skips drops entirely → block disappears + nothing in hand.
-        // entity's fluid contents into the dropped item NBT, then {@code destroyBlock(pos, false)}
-        // (false = don't drop natively) + {@code placeItemBackInInventory}.
-        // User report: "原版 destroy 创造模式下打掉其放置方块后也应该给玩家一个对应方块 nbt 的物品,
-        // 现在创造模式会直接破坏掉方块不返还。而且这仨东西现在生存模式完全无法采集".
+        // This branch instead clones the block entity's fluid contents into the dropped item NBT,
+        // then {@code destroyBlock(pos, false)} (false = don't drop natively) +
+        // {@code placeItemBackInInventory}, so both creative and survival return the NBT-preserving
+        // item.
         // Must run AFTER IMixtureStorageItem.defaultAttack so that "left-click empty beaker with
         // test tube" does fluid extraction; only when the player's hand
         // can't extract does the fast-pickup fire.
         if (state.getBlock() instanceof petrolpark.mc.destroy.core.block.IPickUpPutDownBlock) {
-            // removed FakePlayer guard. User wants Create
-            // mechanical arm / deployer to be able to physically transport filled glassware
+            // No FakePlayer guard here, so Create
+            // mechanical arm / deployer can physically transport filled glassware
             // (left-click pickup → arm holds NBT-preserving stack → put down elsewhere).
             net.minecraft.world.item.ItemStack cloneItemStack = state.getCloneItemStack(
                 new net.minecraft.world.phys.BlockHitResult(
@@ -247,8 +243,8 @@ public class DestroyCommonEvents {
             // Left-click fluid extraction: matches Destroy's UX convention where every other
             // fluid-storage item (test tube / beaker / measuring cylinder, all via
             // IMixtureStorageItem.defaultAttack above) extracts on LEFT-click. Upstream's
-            // BlowpipeItem only drained via useOn (right-click), which inconsistency users
-            // hit immediately ("吹管左键流体容器不能取出熔融硼硅酸玻璃"). Only fire when:
+            // BlowpipeItem only drained via useOn (right-click), an inconsistency since the
+            // blowpipe couldn't extract molten borosilicate glass on left-click. Only fire when:
             //   1. The blowpipe has a recipe (REQUIRED_FLUID ingredient is set), and
             //   2. The TANK is currently empty (mid-blow or post-blow must not refill).
             net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient ingredient =
@@ -268,8 +264,8 @@ public class DestroyCommonEvents {
     }
 
     /** Without this handler the programmer item simply tries to place the block
- * (vanilla BlockItem fallback) → no frequency added → user-visible bug "右键无线红石终端无法
- * 添加其频道到编程器".</p>
+ * (vanilla BlockItem fallback) → no frequency added → right-clicking a wireless redstone
+ * terminal can't add its channel to the programmer.
 */
     @SubscribeEvent
     public static final void onPlayerRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
@@ -393,13 +389,12 @@ public class DestroyCommonEvents {
         int ticksUrinating = state[0];
 
         if (ticksUrinating > 0) {
-            // The earlier port comment
-            // "skips the FluidFX client-only fluid-particle helper" was wrong — FluidFX.getFluidParticle
-            // returns a {@link net.minecraft.core.particles.ParticleOptions} that's perfectly safe
-            // to construct server-side; only the actual rendering happens on client. We use
-            // {@code ServerLevel.sendParticles} which builds a ClientboundLevelParticlesPacket and
-            // {@code level.addParticle(...)} that only ran for the local client (LAN / multiplayer
-            // observers wouldn't see the urine stream from another player otherwise).
+            // FluidFX.getFluidParticle
+            // returns a {@link net.minecraft.core.particles.ParticleOptions} that is safe
+            // to construct server-side; only the actual rendering happens on client. This uses
+            // {@code ServerLevel.sendParticles} which builds a ClientboundLevelParticlesPacket
+            // rather than {@code level.addParticle(...)} that only ran for the local client (LAN /
+            // multiplayer observers wouldn't see the urine stream from another player otherwise).
             // Particle spec: 1 particle/tick at player.position()+0.5y, falling straight down at
             // 0.07 blocks/tick. sendParticles
             // signature is (particle, x, y, z, count, xOffset, yOffset, zOffset, speed); to get the
@@ -409,8 +404,8 @@ public class DestroyCommonEvents {
                 // signature is (particle, x, y, z, count, xDist, yDist, zDist, speed). When
                 // count > 0, the (xDist, yDist, zDist) triple is treated as RANDOM POSITION
                 // OFFSET RANGE and `speed` becomes a multiplier on a randomly-directed velocity
-                // — that's why count=1 produced the splash-shaped scatter the user reported
-                // ("四散爆开" not "向下线性移动").
+                // — that's why count=1 produced a splash-shaped scatter instead of a particle
+                // moving straight down.
                 // When count == 0, vanilla switches semantics: (xDist, yDist, zDist) becomes the
                 // VELOCITY VECTOR for a single emitted particle, and `speed` is a multiplier on
                 // that vector.
@@ -420,7 +415,7 @@ public class DestroyCommonEvents {
                 // which references {@code Minecraft.getInstance().level} (ClientLevel) at FluidFX.java:101.
                 // Loading FluidFX on dedicated server triggers RuntimeDistCleaner rejection of
                 // ClientLevel during class verification of an unrelated method — kicks the player on
-                // 撒尿入炼药锅 path because onPlayerTick is called every tick. FluidFX.getFluidParticle's
+                // the urinate-into-cauldron path because onPlayerTick is called every tick. FluidFX.getFluidParticle's
                 // body is literally `new FluidParticleData(AllParticleTypes.FLUID_PARTICLE.get(), fluid)`
                 // (Create FluidFX.java:46-48); replicate inline to avoid loading the FluidFX class.
                 // FluidParticleData itself is server-safe: only its @OnlyIn(CLIENT) getFactory() method
@@ -448,7 +443,7 @@ public class DestroyCommonEvents {
                 petrolpark.mc.destroy.DestroyAdvancementTrigger.URINATE.award(serverLevel, player);
                 serverLevel.setBlockAndUpdate(posOn,
                     petrolpark.mc.destroy.DestroyBlocks.URINE_CAULDRON.getDefaultState());
-                state[0] = 0; // reset so we don't keep retriggering
+                state[0] = 0; // reset to avoid retriggering
             }
         }
     }

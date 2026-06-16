@@ -45,7 +45,7 @@ import petrolpark.mc.destroy.core.pollution.PollutionHelper;
  * {@link petrolpark.mc.destroy.chemistry.legacy.LegacyMixture Mixture} through its chemistry
  * reactions and recording the resulting FluidStacks + ItemStacks as the recipe's outputs. This
  * lets Destroy's chemistry engine hook into Create's vanilla Basin-processing pipeline: the Basin
- * BE queries for a matching recipe; we dynamically construct one from the current basin contents.
+ * BE queries for a matching recipe; one is dynamically constructed from the current basin contents.
  *
  * </p>
 */
@@ -138,10 +138,10 @@ public class ReactionInBasinRecipe extends BasinRecipe {
             // {@code equilibrium=false} → {@code reactForTick} fires → returns {@code ticks > 0}
             // even though no real chemistry occurred → recipe is generated → mixer consumes
             // 1mB per cycle (drift from {@code recalculateVolume} {@code (int)} truncation +
-            // recipe re-creation each tick). User report : "不纯硫酸会反复触发搅拌机搅拌
-            // 配方并每次完成后减少1mb"; reported again with bigger-step examples
-            // 483→383→358→358→357→356→… showing the 1e-4 tolerance was too tight (forward+reverse
-            // reaction floating-point asymmetry drifts ~1e-3 mol/L per cycle in near-equilibrium).
+            // recipe re-creation each tick). (symptom: impure sulfuric acid repeatedly triggered
+            // the mixer and lost 1mB after each cycle, with concentrations stepping down like
+            // 483→383→358→358→357→356→… — the 1e-4 tolerance was too tight, since forward+reverse
+            // reaction floating-point asymmetry drifts ~1e-3 mol/L per cycle near equilibrium).
             java.util.Map<petrolpark.mc.destroy.chemistry.legacy.LegacySpecies, Float> contentsBefore =
                 new HashMap<>();
             for (petrolpark.mc.destroy.chemistry.legacy.LegacySpecies species : mixture.getContents(false)) {

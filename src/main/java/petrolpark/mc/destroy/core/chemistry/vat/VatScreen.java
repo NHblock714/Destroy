@@ -356,8 +356,8 @@ public class VatScreen extends AbstractSimiScreen {
         if (selectedMolecule != null) {
             graphics.drawString(font, selectedMolecule.getName(iupac), 0, 0, 0xFFFFFF);
             textWidth = font.width(selectedMolecule.getName(iupac));
-            // promoted from S233 stub — MoleculeDisplayItem.getLore now ported, driving
-            // the boiling point / density / mass / tags text lines.
+            // MoleculeDisplayItem.getLore drives the boiling point / density / mass / tags
+            // text lines.
             for (net.minecraft.network.chat.Component line :
                     petrolpark.mc.destroy.core.chemistry.MoleculeDisplayItem.getLore(selectedMolecule)) {
                 textHeight += font.lineHeight;

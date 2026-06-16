@@ -13,10 +13,10 @@ import petrolpark.mc.destroy.DestroyRegistries;
 import petrolpark.mc.destroy.core.pollution.PollutionType;
 
 /**
- * <b>S302 (1.4.31 upgrade)</b>: 1.4.31 made {@code PetrolparkRegistrate} no-args (hardcoded to
- * the "petrolpark" modid), so we now extend {@link AbstractPetrolparkRegistrate} directly to keep
- * the {@code (String)} ctor path. Create-Library's own {@code Mods.DESTROY.registrate()} returns
- * a different type {@code OtherModRegistrate} that we don't need (Destroy has its own registrate
+ * 1.4.31 made {@code PetrolparkRegistrate} no-args (hardcoded to the "petrolpark" modid), so this
+ * extends {@link AbstractPetrolparkRegistrate} directly to keep the {@code (String)} ctor path.
+ * Create-Library's own {@code Mods.DESTROY.registrate()} returns a different type
+ * {@code OtherModRegistrate} that isn't needed here (Destroy has its own registrate
  * extensions below for pollution types).
 */
 public class DestroyRegistrate extends AbstractPetrolparkRegistrate<DestroyRegistrate> {

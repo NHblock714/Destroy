@@ -180,7 +180,7 @@ public class DestroyMiscPonderScenes {
     }
 
     /**
- * Reactions intro scene — 1:1
+ * Reactions intro scene.
  * Shows a basin-and-burner setup with three text overlays explaining reaction fundamentals.
  * Self-contained (no custom block dependencies beyond vanilla Ponder schematic for
  * mechanical_mixer). Wired on {@code AllBlocks.MECHANICAL_MIXER} with
@@ -225,12 +225,11 @@ public class DestroyMiscPonderScenes {
     }
 
     /**
- * UV / Blacklight scene — 1:1 Shows a
+ * UV / Blacklight scene. Shows a
  * vat top (glass panel) + side blacklight, two text overlays pointing at relevant
- * schematic positions. Useful as dev-time
- * reference and preserves future revival path.
+ * schematic positions. Kept for completeness even though not registered.
  *
- * <p>Deps: BlacklightBlock (S186 ported) — but scene uses only generic Ponder
+ * <p>Deps: BlacklightBlock — but scene uses only generic Ponder
  * showSection/showOutline/showText; the block is referenced only by schematic-side,
  * not by Java code in the storyboard.</p>
 */
@@ -266,16 +265,16 @@ public class DestroyMiscPonderScenes {
     }
 
     /**
- * Redstone Programmer scene — 1:1 Demonstrates redstone-link receiver setup (3 blocks wrench-toggled),
+ * Redstone Programmer scene. Demonstrates redstone-link receiver setup (3 blocks wrench-toggled),
  * right-click placement of REDSTONE_PROGRAMMER on middle link, stand-alone sneak-placement,
- * and oscillating redstone power demo (5×3 toggles). All dependencies 100% ready:
+ * and oscillating redstone power demo (5×3 toggles). Dependencies:
  *
  * <ul>
- * <li>{@link DestroyBlocks#REDSTONE_PROGRAMMER} — S117 ported (registered with PROGRAMMER_UUID
+ * <li>{@link DestroyBlocks#REDSTONE_PROGRAMMER} (registered with PROGRAMMER_UUID
  * + PROGRAMMER_PROGRAM DataComponents).</li>
- * <li>{@code RedstoneLinkBlock.RECEIVER} — Create path preserved
+ * <li>{@code RedstoneLinkBlock.RECEIVER}
  * ({@code com.simibubi.create.content.redstone.link}).</li>
- * <li>{@link AllItems#WRENCH} — Create vanilla preserved.</li>
+ * <li>{@link AllItems#WRENCH} (Create).</li>
  * </ul>
  *
  * <p>Wired on {@code DestroyBlocks.REDSTONE_PROGRAMMER} in

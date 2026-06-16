@@ -83,22 +83,79 @@ public class CustomExplosiveMixShellBlock extends FuzedProjectileBlock<CustomExp
         return InteractionResult.sidedSuccess(level.isClientSide());
     }
 
+    /**
+     * Drop a single shell item carrying the installed fuze as the {@code CBCDataComponents.FUZE}
+     * component — matching CBC's own shells, where breaking a fuzed shell returns a fuzed shell
+     * item rather than spilling the fuze separately. (Upstream 1.20.1 dropped the fuze as a
+     * second item; deliberate behaviour change.) On placement, vanilla
+     * {@code BlockItem → BlockEntity.applyComponentsFromItemStack} copies the component back
+     * into the block entity, so the fuze survives the full break → place round trip.
+     */
     @Override
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
         BlockEntity be = params.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         if (!(be instanceof CustomExplosiveMixShellBlockEntity ebe)) return Collections.emptyList();
         HolderLookup.Provider provider = params.getLevel().registryAccess();
-        List<ItemStack> drops = new ArrayList<>();
-        drops.add(ebe.getFilledItemStack(CreateBigCannonsBlocks.CUSTOM_EXPLOSIVE_MIX_SHELL.asStack(), provider));
-        if (!ebe.getFuze().isEmpty()) drops.add(ebe.getFuze().copy());
-        return drops;
+        return List.of(withFuze(
+            ebe.getFilledItemStack(CreateBigCannonsBlocks.CUSTOM_EXPLOSIVE_MIX_SHELL.asStack(), provider),
+            ebe.getFuze()));
     }
 
     @Override
     public ItemStack getCloneItemStack(net.minecraft.world.level.LevelReader level, BlockPos pos, BlockState state) {
         if (!(level.getBlockEntity(pos) instanceof CustomExplosiveMixShellBlockEntity be)) return ItemStack.EMPTY;
         HolderLookup.Provider provider = (level instanceof Level lv) ? lv.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY;
-        return be.getFilledItemStack(CreateBigCannonsBlocks.CUSTOM_EXPLOSIVE_MIX_SHELL.asStack(), provider);
+        return withFuze(
+            be.getFilledItemStack(CreateBigCannonsBlocks.CUSTOM_EXPLOSIVE_MIX_SHELL.asStack(), provider),
+            be.getFuze());
+    }
+
+    /** Attach a fuze to a shell stack using CBC's component encoding (single-slot
+     *  {@link net.minecraft.world.item.component.ItemContainerContents}, mirroring
+     *  {@code FuzedBlockEntity.setFuze}). */
+    private static ItemStack withFuze(ItemStack shell, ItemStack fuze) {
+        if (!fuze.isEmpty()) {
+            shell.set(rbasamoyai.createbigcannons.index.CBCDataComponents.FUZE,
+                net.minecraft.world.item.component.ItemContainerContents.fromItems(List.of(fuze.copy())));
+        }
+        return shell;
+    }
+
+    /** Read the installed fuze item out of CBC's FUZE component (inverse of {@link #withFuze}). */
+    private static ItemStack readFuze(ItemStack shell) {
+        net.minecraft.world.item.component.ItemContainerContents contents =
+            shell.get(rbasamoyai.createbigcannons.index.CBCDataComponents.FUZE);
+        return contents == null ? ItemStack.EMPTY : contents.copyOne();
+    }
+
+    /**
+     * CBC hand-loading (ramrod) integration. CBC's default {@code getHandloadingInfo} bakes the
+     * item's <em>DataComponents</em> into the bore-block structure tag, but the BE and
+     * {@link #getProjectile} read a raw BE-save tag ("id"/"ExplosiveMix"/"Color" + fuze). The two
+     * formats don't interoperate, so a hand-loaded shell arrived with an empty payload (and never
+     * detonated). Rebuild the structure tag through the BE's own serialization so the loaded shell
+     * keeps its explosive mix, dye, name, and installed fuze. (Upstream 1.20.1 overrode this too,
+     * via {@code item.toStructureInfo}; CBC 1.21 dropped that item-side converter.)
+     */
+    @Override
+    public StructureBlockInfo getHandloadingInfo(ItemStack stack, BlockPos localPos, Direction cannonOrientation, HolderLookup.Provider provider) {
+        StructureBlockInfo base = super.getHandloadingInfo(stack, localPos, cannonOrientation, provider);
+        CustomExplosiveMixShellBlockEntity be = new CustomExplosiveMixShellBlockEntity(getBlockEntityType(), base.pos(), base.state());
+        be.onPlace(stack, provider); // explosive mix + dye color + custom name
+        ItemStack fuze = readFuze(stack);
+        if (!fuze.isEmpty()) be.setFuze(fuze);
+        return new StructureBlockInfo(base.pos(), base.state(), be.saveWithId(provider));
+    }
+
+    /** Inverse of hand-loading — extract the bore block back to a filled, fuzed shell item. */
+    @Override
+    public ItemStack getExtractedItem(StructureBlockInfo info, HolderLookup.Provider provider) {
+        ItemStack stack = CreateBigCannonsBlocks.CUSTOM_EXPLOSIVE_MIX_SHELL.asStack();
+        if (info.nbt() == null) return stack;
+        if (BlockEntity.loadStatic(info.pos(), info.state(), info.nbt(), provider) instanceof CustomExplosiveMixShellBlockEntity ebe) {
+            stack = withFuze(ebe.getFilledItemStack(stack, provider), ebe.getFuze());
+        }
+        return stack;
     }
 
     @Override

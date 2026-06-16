@@ -215,7 +215,7 @@ public class ExtendedInventory extends Inventory {
     public static void refreshPlayerInventoryMenu(Player player, int columns, int invX, int invY,
                                                   int leftHotbarSlots, int leftHotbarX, int leftHotbarY,
                                                   int rightHotbarX, int rightHotbarY) {
-        // Direct field assignment — works because S370 AT strips `final` from inventoryMenu.
+        // Direct field assignment — works because the AT strips `final` from inventoryMenu.
         player.inventoryMenu = new net.minecraft.world.inventory.InventoryMenu(player.getInventory(),
             !player.level().isClientSide(), player);
         get(player).addExtraInventorySlotsToMenu(player.inventoryMenu, columns, invX, invY,

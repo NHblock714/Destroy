@@ -132,8 +132,8 @@ public class DestroyCreativeModeTabs {
             // is registered with id "cordite_rods" (line 239 of DestroyItems.java). The tab
             // lookup was using the Java field name not the actual registry id → {@code
             // resolve(destroy:cordite)} returned null → silently skipped (the d() helper's
-            // null-skip semantics meant no error, just missing item). User report:
-            // "无烟火药棒 destroy:cordite_rods 应该在创造模式物品栏爆炸物那一项，但现在不显示".
+            // null-skip semantics meant no error, just missing item), so cordite rods were
+            // absent from the explosives creative tab.
             add(entries, ITabEntry.LINE_BREAK,
                 d("anfo"), d("cordite_rods"), d("dynamite"), d("nitrocellulose"),
                 d("picric_acid_tablet"), d("tnt_tablet"));

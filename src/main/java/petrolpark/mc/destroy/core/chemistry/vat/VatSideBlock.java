@@ -113,14 +113,15 @@ public class VatSideBlock extends CopycatBlock implements SpecialBlockItemRequir
  * 1.21 right-click handler — with item. Wrench / test-tube cases delegate to the item's own
  * {@code Item.useOn} via {@link ItemInteractionResult#SKIP_DEFAULT_BLOCK_INTERACTION}.
  *
- * <p>用户报告: 第一次扳手右键 NORMAL→THERMOMETER 工作,第二次右键 THERMOMETER→BAROMETER
- * **不工作,反而打开了 GUI**。原因: 我之前对 wrench/storage 用
- * {@link ItemInteractionResult#PASS_TO_DEFAULT_BLOCK_INTERACTION} —— 这表示 "继续执行
- * useWithoutItem"。当 state=THERMOMETER 时 quantityObserved.isPresent()=true,
- * useWithoutItem 立刻打开 GUI,wrench 的 Item.useOn 永远没机会跑。</p>
+ * <p>Symptom: the first wrench right-click (NORMAL→THERMOMETER) worked, but the second
+ * (THERMOMETER→BAROMETER) did not — it opened the GUI instead. Cause: returning
+ * {@link ItemInteractionResult#PASS_TO_DEFAULT_BLOCK_INTERACTION} for the wrench/storage case
+ * means "fall through to useWithoutItem". Once state=THERMOMETER, quantityObserved.isPresent()
+ * is true, so useWithoutItem opens the GUI immediately and the wrench's Item.useOn never runs.</p>
  *
- * <p>正确写法是 {@link ItemInteractionResult#SKIP_DEFAULT_BLOCK_INTERACTION} —— 跳过
- * useWithoutItem,让 chain 流到 Item.useOn,wrench 在那里调 onWrenched 切换显示模式。</p>
+ * <p>The correct return is {@link ItemInteractionResult#SKIP_DEFAULT_BLOCK_INTERACTION} — skip
+ * useWithoutItem so the chain flows to Item.useOn, where the wrench calls onWrenched to switch
+ * display mode.</p>
 */
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level,
@@ -202,10 +203,11 @@ public class VatSideBlock extends CopycatBlock implements SpecialBlockItemRequir
         return true;
     }
 
-    /** Only logs when {@code -Ddestroy.vatDebug=true}. We log EVERY
- * call here so we can correlate "wire queries signal" against "redstoneMonitor.tick computes
- * strength". If getSignal/getDirectSignal are never called, vanilla never queries us — likely
- * means {@link #isSignalSource} isn't being honored or the wire is too far / wrong neighbor.
+    /** Only logs when {@code -Ddestroy.vatDebug=true}. Every
+ * call is logged so "wire queries signal" can be correlated against "redstoneMonitor.tick
+ * computes strength". If getSignal/getDirectSignal are never called, vanilla never queries the
+ * block — likely {@link #isSignalSource} isn't being honored or the wire is too far / wrong
+ * neighbor.
 */
     private static final boolean DEBUG_LOG_ENABLED =
         Boolean.parseBoolean(System.getProperty("destroy.vatDebug", "false"));
@@ -411,7 +413,7 @@ public class VatSideBlock extends CopycatBlock implements SpecialBlockItemRequir
     public <T extends BlockEntity> net.minecraft.world.level.block.entity.BlockEntityTicker<T>
         getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         // Use Create's standard SmartBlockEntityTicker directly (IBE.getTicker default does the
-        // same thing internally). CopycatBlock's null-returning override is the bug we're fixing.
+        // same thing internally). CopycatBlock's null-returning override is the bug being fixed.
         return new com.simibubi.create.foundation.blockEntity.SmartBlockEntityTicker<>();
     }
 
@@ -435,7 +437,7 @@ public class VatSideBlock extends CopycatBlock implements SpecialBlockItemRequir
                 // - FILL must go through {@code vatController.addFluid} so VatFluidHandler.fill
                 // does proper liquid/gas phase separation. Without this, gas-phase contents
                 // of a test tube (e.g. methane) get dumped into the LIQUID tank as-is, never
-                // reaching the gas mixture. User report: "气体不会混合到气体混合物中".
+                // reaching the gas mixture (symptom: the gas does not mix into the gas mixture).
                 // - DRAIN routes to the liquid tank.
                 // apply MixtureConversionRecipe for non-Mixture inputs (mirrors
                 // VatTankWrapper.fill / VatSideFluidCapability used by the BLOCK FluidHandler

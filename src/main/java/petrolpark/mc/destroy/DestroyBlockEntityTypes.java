@@ -86,7 +86,7 @@ public class DestroyBlockEntityTypes {
 
     // KEYPUNCH — HorizontalKineticBlock + ICogWheel hosting
     // CircuitPunchingBehaviour + DestroyAdvancementBehaviour + NamingBehaviour. BER renders piston
-    // + SHAFTLESS cog; Visual (S123) provides Flywheel-accelerated instance rendering.
+    // + SHAFTLESS cog; Visual provides Flywheel-accelerated instance rendering.
     public static final BlockEntityEntry<KeypunchBlockEntity> KEYPUNCH =
         REGISTRATE.blockEntity("keypunch", KeypunchBlockEntity::new)
             .validBlocks(DestroyBlocks.KEYPUNCH)
@@ -94,16 +94,14 @@ public class DestroyBlockEntityTypes {
             .register();
 
     // CENTRIFUGE — KineticBlock + ICogWheel; Y-axis cog spinning in a 4-voxel slab
-    // that separates mixture fluids into dense/light outputs. BE is a stub S124 (no recipe
-    // processing yet) — full 575-LoC BE port deferred to S125 (fluid tanks + recipe matching +
-    // mixture chemistry integration). Cog renders via BER + Flywheel Visual.
+    // that separates mixture fluids into dense/light outputs. Cog renders via BER + Flywheel Visual.
     public static final BlockEntityEntry<CentrifugeBlockEntity> CENTRIFUGE =
         REGISTRATE.blockEntity("centrifuge", CentrifugeBlockEntity::new)
             .validBlocks(DestroyBlocks.CENTRIFUGE)
             .renderer(() -> CentrifugeRenderer::new)
             .register();
 
-    // PUMPJACK (S129 Block+stub BE / S130 full BE / S131 Renderer+Visual) — multi-block oil
+    // PUMPJACK — multi-block oil
     // drilling controller. Fluid tank + ChunkCrudeOil AttachmentType drilling + cam rotation
     // driven by Create shaft + animated beam rocking rendered via PumpjackRenderer + Flywheel
     // PumpjackVisual (instanced path preferred).
@@ -113,14 +111,13 @@ public class DestroyBlockEntityTypes {
             .renderer(() -> PumpjackRenderer::new)
             .register();
 
-    // PUMPJACK_CAM — kinetic counter-weight cell. Stub BE S129; full cam
-    // rotation→drill timer sync deferred to S130+.
+    // PUMPJACK_CAM — kinetic counter-weight cell driving the cam rotation→drill timer sync.
     public static final BlockEntityEntry<PumpjackCamBlockEntity> PUMPJACK_CAM =
         REGISTRATE.blockEntity("pumpjack_cam", PumpjackCamBlockEntity::new)
             .validBlocks(DestroyBlocks.PUMPJACK_CAM)
             .register();
 
-    // BUBBLE_CAP (S126 Block+stub BE / S127 full BE+DistillationTower / S128 Renderer) —
+    // BUBBLE_CAP —
     // vertically stackable Distillation Tower segment. Full JSON distillation gameplay:
     // BubbleCapBE auto-joins DistillationTower singleton on placement, controller (bottom) ticks
     // recipe matching + process(), BubbleCapRenderer shows fluid fill as 3-section (bottom/center/top).
@@ -130,10 +127,9 @@ public class DestroyBlockEntityTypes {
             .renderer(() -> BubbleCapRenderer::new)
             .register();
 
-    // BLOWPIPE — glassblowing pipe BE
-    // with BER wired as of S145. BlowpipeItemRenderer + BlowpipeItemRenderLayer (for handheld /
-    // first-person display) still deferred to S146+ (depend on BlowpipeItem + DataComponent
-    // stack NBT migration).
+    // BLOWPIPE — glassblowing pipe BE with BER wired. BlowpipeItemRenderer +
+    // BlowpipeItemRenderLayer (for handheld / first-person display) depend on BlowpipeItem +
+    // DataComponent stack NBT migration.
     public static final BlockEntityEntry<BlowpipeBlockEntity> BLOWPIPE =
         REGISTRATE.blockEntity("blowpipe", BlowpipeBlockEntity::new)
             .validBlocks(DestroyBlocks.BLOWPIPE)
@@ -199,8 +195,8 @@ public class DestroyBlockEntityTypes {
             .renderer(() -> MechanicalSieveRenderer::new)
             .register();
 
-    // REDSTONE_PROGRAMMER BE. Hosts RedstoneProgrammerBehaviour (S116), which
-    // contains the RedstoneProgram (S115) channel sequencer. S118 adds BER renderer wire.
+    // REDSTONE_PROGRAMMER BE. Hosts RedstoneProgrammerBehaviour, which
+    // contains the RedstoneProgram channel sequencer. BER renderer wired.
     public static final BlockEntityEntry<petrolpark.mc.destroy.content.redstone.programmer.RedstoneProgrammerBlockEntity> REDSTONE_PROGRAMMER =
         REGISTRATE.blockEntity("redstone_programmer",
             petrolpark.mc.destroy.content.redstone.programmer.RedstoneProgrammerBlockEntity::new)
@@ -227,10 +223,9 @@ public class DestroyBlockEntityTypes {
             .renderer(() -> petrolpark.mc.destroy.core.pollution.pollutometer.PollutometerRenderer::new)
             .register();
 
-    // VAT_CONTROLLER — Vat multi-block controller. S176 ships stub BE (S51/S57
-    // skeleton) + stub VatControllerBlock wired here; full Vat subsystem (VatSideBlockEntity /
-    // VatFluidTankBehaviour / VatScreen / VatRenderer / observation screens / UV lamp blocks) still
-    // pending. Registration enables VatMaterial.registerDestroyVatMaterials() to actually reference
+    // VAT_CONTROLLER — Vat multi-block controller. Full Vat subsystem: VatSideBlockEntity /
+    // VatFluidTankBehaviour / VatScreen / VatRenderer / observation screens / UV lamp blocks.
+    // Registration enables VatMaterial.registerDestroyVatMaterials() to actually reference
     // the block + Vat.tryConstruct() to compile.
     public static final BlockEntityEntry<petrolpark.mc.destroy.core.chemistry.vat.VatControllerBlockEntity> VAT_CONTROLLER =
         REGISTRATE.blockEntity("vat_controller",
@@ -258,8 +253,8 @@ public class DestroyBlockEntityTypes {
             .validBlocks(DestroyBlocks.COLORIMETER)
             .register();
 
-    // CUSTOM_EXPLOSIVE_MIX — pairs with S209 stub BE + S212 MixedExplosiveBlock
-    // registration. Enables in-world placement + entity spawn pipeline via S207 / S210.
+    // CUSTOM_EXPLOSIVE_MIX — pairs with the MixedExplosiveBlock
+    // registration. Enables in-world placement + entity spawn pipeline.
     // BER wire renders the 4-direction custom-name label when block has setCustomName.
     public static final BlockEntityEntry<petrolpark.mc.destroy.core.explosion.mixedexplosive.MixedExplosiveBlockEntity> CUSTOM_EXPLOSIVE_MIX =
         REGISTRATE.blockEntity("custom_explosive_mix",

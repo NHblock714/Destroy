@@ -25,7 +25,7 @@ import petrolpark.mc.destroy.DestroyBlocks;
  * dynamoElectrolysis) illustrating Dynamo mechanics. Each method takes
  * {@link SceneBuilder}+{@link SceneBuildingUtil} and renders an animated, narrated tutorial.
  *
- * <p>Registered via {@link petrolpark.mc.destroy.client.DestroyPonderScenes} (S158 infra).
+ * <p>Registered via {@link petrolpark.mc.destroy.client.DestroyPonderScenes}.
  * Each scene text key resolves to a JSON language file (keys like {@code "This text is defined
  * in a language file."} are placeholder fallbacks when the key is missing).</p>
 */

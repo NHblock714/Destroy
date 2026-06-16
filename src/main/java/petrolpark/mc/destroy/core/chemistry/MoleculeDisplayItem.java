@@ -72,7 +72,7 @@ public class MoleculeDisplayItem extends Item {
     /**
  * Build the lore lines for a given molecule — used by JEI and by {@link
  * petrolpark.mc.destroy.core.chemistry.vat.VatScreen VatScreen} when the player hovers
- * a species entry in the mixture list (S233 stub closer).
+ * a species entry in the mixture list.
 */
     public static List<Component> getLore(LegacySpecies molecule) {
         List<Component> tooltip = new ArrayList<>();

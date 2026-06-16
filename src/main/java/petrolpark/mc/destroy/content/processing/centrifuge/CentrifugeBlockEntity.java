@@ -95,8 +95,8 @@ public class CentrifugeBlockEntity extends KineticBlockEntity implements IHaveLa
      * {@code SmartFluidTankBehaviour.OUTPUT} would silently overwrite each other on
      * {@code attachBehaviourLate} → {@code put()}, removing the dense tank from the
      * lifecycle (no NBT write, no client sync, no tick). Symptom: the dense-output tank
-     * physically held fluid on the server but the goggle tooltip rendered just
-     * "容量: 1,000mB" because client-side {@code getDenseOutputTank().getFluid()} returned
+     * physically held fluid on the server but the goggle tooltip showed only the empty
+     * capacity line because client-side {@code getDenseOutputTank().getFluid()} returned
      * empty.
      *
      * <p>The light-output tank is kept on the stock {@code SmartFluidTankBehaviour.OUTPUT}
@@ -224,8 +224,7 @@ public class CentrifugeBlockEntity extends KineticBlockEntity implements IHaveLa
                     })
                     .collect(Collectors.toList());
 
-            // Potion separation path restored (was the TODO since S126).
-            // migrations:
+            // Potion separation path. 1.21 migrations:
             // • inputFluidStack.getOrCreateTag().getString("Potion") + ForgeRegistries.POTIONS.getValue
             // → fluidStack.get(DataComponents.POTION_CONTENTS).potion() returns Holder<Potion> directly
             // (no registry lookup needed; Create's PotionFluid.of() puts the Holder right in the
@@ -368,7 +367,7 @@ public class CentrifugeBlockEntity extends KineticBlockEntity implements IHaveLa
             // ranking by actual per-phase density:
             //   - liquid: pure species density (= mass × pureConcentration), e.g. 1141 g/L for O₂
             //   - gas:    post-separation gas-mixture density of that species (per-litre)
-            // For tester's 77 K O₂/N₂ mix, this puts liquid O₂ (1141) > liquid N₂ (808) >>
+            // For a 77 K O₂/N₂ mix, this puts liquid O₂ (1141) > liquid N₂ (808) >>
             // gas N₂ (~7 g/L) — gas drops into the light tank where it belongs.
             List<Pair<LegacySpecies, Boolean>> orderedPhasedMolecules = new ArrayList<>(phasedMoleculesRemainingVolumes.keySet());
             final LegacyMixture gasMixtureForSort = gasMixture;
@@ -569,7 +568,7 @@ public class CentrifugeBlockEntity extends KineticBlockEntity implements IHaveLa
     }
 
     /**
- * Let this Centrifuge know we're in a Ponder. This makes it so the dense Fluid can be pulled
+ * Marks this Centrifuge as being in a Ponder scene. This makes it so the dense Fluid can be pulled
  * from any side (otherwise Ponder scenes would need to match the DENSE_OUTPUT_FACE blockstate
  * exactly — impractical for pre-recorded scenes).
 */

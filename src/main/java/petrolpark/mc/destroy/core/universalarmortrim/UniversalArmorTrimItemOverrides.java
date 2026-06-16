@@ -37,8 +37,8 @@ import petrolpark.mc.destroy.client.DummyBaker;
 /**
  * ItemOverrides chain that, on resolve, splices a trim overlay model atop the base armor model
  * for any trim material listed in {@link DestroySpriteSource#UNIVERSAL_ARMOR_TRIMS}. This is what
- * lets non-vanilla trim materials (chromium / fluorite / etc., per the 15 trim_material datapacks
- * shipped in S347) actually appear when the player wears trimmed armor.
+ * lets non-vanilla trim materials (chromium / fluorite / etc., per the 15 trim_material datapacks)
+ * actually appear when the player wears trimmed armor.
 */
 public class UniversalArmorTrimItemOverrides extends ItemOverrides {
 
@@ -62,7 +62,7 @@ public class UniversalArmorTrimItemOverrides extends ItemOverrides {
         if (trim == null) return defaultModel;
         if (!(stack.getItem() instanceof ArmorItem armorItem)) return defaultModel;
         return getModel(
-            // Calling ItemRenderer#getModel would recurse; we know this isn't a Trident or
+            // Calling ItemRenderer#getModel would recurse; this isn't a Trident or
             // Spyglass, so the direct ItemModelShaper path is fine.
             Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(stack),
             armorItem.getMaterial().value(),

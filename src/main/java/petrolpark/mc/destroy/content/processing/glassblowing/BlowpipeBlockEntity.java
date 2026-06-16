@@ -106,7 +106,7 @@ public class BlowpipeBlockEntity extends SmartBlockEntity {
 
     /**
  * Read the "blowing state" (tank + recipeId + progress) sub-tree from NBT. Broken out so
- * the Blowpipe Item's {@code readFromNBT}-equivalent can share this logic (S144+).
+ * the Blowpipe Item's {@code readFromNBT}-equivalent can share this logic.
 */
     public void readBlowing(CompoundTag tag, HolderLookup.Provider registries) {
         tank.readFromNBT(registries, tag.getCompound("Tank"));
@@ -220,8 +220,7 @@ public class BlowpipeBlockEntity extends SmartBlockEntity {
             progress = progressLastTick = 0;
             advancementBehaviour.awardDestroyAdvancement(DestroyAdvancementTrigger.BLOWPIPE);
             send = true;
-            // BlowpipeBlock not yet ported; use vanilla BlockStateProperties.FACING
-            // .
+            // Uses the vanilla BlockStateProperties.FACING property.
             Direction facing = getBlockState().getValue(BlockStateProperties.FACING);
             Vec3 itemPos = Vec3.atCenterOf(getBlockPos().relative(facing)).subtract(Vec3.atLowerCornerOf(facing.getNormal()).scale(0.5f));
             getLevel().addFreshEntity(new ItemEntity(getLevel(), itemPos.x(), itemPos.y(), itemPos.z(), getRecipe().getRollableResultsAsItemStacks().get(0)));
@@ -232,8 +231,7 @@ public class BlowpipeBlockEntity extends SmartBlockEntity {
 
     @Override
     protected AABB createRenderBoundingBox() {
-        // Same S143 temp-substitution as tick() — BlockStateProperties.FACING replaces the
-        // not-yet-ported BlowpipeBlock.FACING.
+        // Same substitution as tick() — uses the vanilla BlockStateProperties.FACING property.
         return new AABB(worldPosition).expandTowards(Vec3.atLowerCornerOf(getBlockState().getValue(BlockStateProperties.FACING).getNormal()));
     }
 

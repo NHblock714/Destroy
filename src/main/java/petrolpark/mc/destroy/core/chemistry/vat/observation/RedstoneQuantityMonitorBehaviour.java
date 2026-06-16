@@ -21,13 +21,13 @@ import net.minecraft.util.Mth;
  * 0-15 redstone signal strength based on configurable lower/upper thresholds. Used by Vat-side
  * BEs (thermometer / barometer) + Colorimeter BE for redstone monitor outputs.
  *
- * <p><b>Unblocks</b> (future T2a work):</p>
+ * <p><b>Consumers</b> (future T2a work):</p>
  * <ul>
- * <li>{@code RedstoneQuantityMonitorThresholdChangeC2SPacket} (S227 candidate) — looks up this
+ * <li>{@code RedstoneQuantityMonitorThresholdChangeC2SPacket} — looks up this
  * behaviour on the server via {@code BlockEntityBehaviour.get}.</li>
  * <li>{@code VatSideBlockEntity.addBehaviours} (future) — attaches this to THERMOMETER /
  * BAROMETER side-cells with VatControllerBE.getTemperature / getPressure suppliers.</li>
- * <li>{@code ColorimeterBlockEntity.addBehaviours} (S188 stub) — attach with molecule-concentration
+ * <li>{@code ColorimeterBlockEntity.addBehaviours} — attach with molecule-concentration
  * supplier.</li>
  * </ul>
 */

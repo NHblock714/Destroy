@@ -38,8 +38,8 @@ import petrolpark.mc.destroy.DestroyVoxelShapes;
  * (sent out the opposite face). Flat 4-voxel-tall slab ({@link DestroyVoxelShapes#CENTRIFUGE}).
  *
  * <p>Blockstate: {@link #DENSE_OUTPUT_FACE} {@link DirectionProperty} (HORIZONTAL_FACING shared).
- * Default WEST. Auto-rotation via {@link CentrifugeBlockEntity#attemptRotation(boolean)} —
- * currently a no-op stub (S124); full auto-orientation logic lives in S125 BE port.</p>
+ * Default WEST. Auto-rotation via {@link CentrifugeBlockEntity#attemptRotation(boolean)};
+ * the auto-orientation logic lives in the block entity.</p>
 */
 public class CentrifugeBlock extends KineticBlock implements IBE<CentrifugeBlockEntity>, ICogWheel {
 

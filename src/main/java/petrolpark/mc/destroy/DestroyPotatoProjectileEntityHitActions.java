@@ -17,8 +17,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
- * 1.21 registry-frozen crash fix (same pattern as S315 DestroyItemAttributeTypes +
- * S317 DestroyPotatoProjectileBlockHitActions).
+ * 1.21 registry-frozen crash fix (same pattern as DestroyItemAttributeTypes +
+ * DestroyPotatoProjectileBlockHitActions).
 */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class DestroyPotatoProjectileEntityHitActions {

@@ -18,7 +18,7 @@ import petrolpark.mc.destroy.client.DestroyParticleTypes;
 /**
  * {@link ParticleOptions} for boiling-fluid bubble particle (rises from hot fluid surfaces).
  *
- * <p>Registration: {@code DestroyParticleTypes.BOILING_FLUID_BUBBLE} (S140 new entry).</p>
+ * <p>Registration: {@code DestroyParticleTypes.BOILING_FLUID_BUBBLE}.</p>
 */
 public class BoilingFluidBubbleParticleData implements ParticleOptions, ICustomParticleDataWithSprite<BoilingFluidBubbleParticleData> {
 

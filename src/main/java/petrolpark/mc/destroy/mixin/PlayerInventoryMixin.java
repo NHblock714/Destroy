@@ -35,13 +35,13 @@ import petrolpark.mc.destroy.core.extendedinventory.ExtendedInventory;
  * <li>{@code setItemSlot} → HEAD (cancellable): vanilla's setItemSlot for MAINHAND writes
  * directly to {@code inventory.items.set(selected, stack)}, bypassing
  * {@link ExtendedInventory#setItem} which is needed for the extra-slot redirection logic.
- * We intercept, route through {@code ExtendedInventory.setItem}, fire the equipment-change
- * hook ({@code onEquipItem}) ourselves, and cancel the vanilla path. NON-MAINHAND slots
+ * This intercepts, routes through {@code ExtendedInventory.setItem}, fires the equipment-change
+ * hook ({@code onEquipItem}), and cancels the vanilla path. NON-MAINHAND slots
  * (offhand, armor) are left to vanilla — those paths don't touch the inventory items list.
  * </li>
  * </ol>
  *
- * <p>Registered via {@code destroy.mixins.json} {@code "mixins"} array (S365 addition).</p>
+ * <p>Registered via {@code destroy.mixins.json} {@code "mixins"} array.</p>
 */
 @Mixin(Player.class)
 public abstract class PlayerInventoryMixin extends LivingEntity {
@@ -65,8 +65,6 @@ public abstract class PlayerInventoryMixin extends LivingEntity {
         // orphan inventory while player.getInventory() returns ExtendedInventory →
         // server-broadcast slot updates desync from actual player state → rubber-band on
         // every block place/break and missing model swaps for held items.
-        // S365 dropped it because refreshPlayerInventoryMenu
-        // wasn't ported yet. S370 added the static method; this fix wires it back.
         // Default zero-coords overload — server doesn't render; client refreshes with proper
         // coords later via ExtendedInventoryClientHandler when a screen opens.
         ExtendedInventory.refreshPlayerInventoryMenu((Player) (Object) this);

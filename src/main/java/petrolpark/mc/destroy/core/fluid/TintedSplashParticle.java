@@ -15,7 +15,7 @@ import petrolpark.mc.destroy.client.DestroyParticleTypes;
  * (r, g, b) color tinting. Used as the common base for colored rain-drop animations (e.g.
  * acid-rain green-tinted drops) in Ponder scenes.
  *
- * <p>Registered via {@link DestroyParticleTypes#TINTED_SPLASH} (S166 new enum entry).</p>
+ * <p>Registered via {@link DestroyParticleTypes#TINTED_SPLASH}.</p>
 */
 public class TintedSplashParticle extends WaterDropParticle {
 

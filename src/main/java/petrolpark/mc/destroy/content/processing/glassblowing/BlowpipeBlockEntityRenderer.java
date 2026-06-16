@@ -61,7 +61,7 @@ public class BlowpipeBlockEntityRenderer extends SafeBlockEntityRenderer<Blowpip
         if (fluid.isEmpty()) return;
         Minecraft mc = Minecraft.getInstance();
         int shapes = recipe.blowingShapes.size();
-        if (shapes == 0) return; // GlassblowingRecipe S91 ports blowingShapes as transient empty list
+        if (shapes == 0) return; // GlassblowingRecipe may carry blowingShapes as an empty list
         float startingShapeLength = INITIAL_BLOB_LENGTH / shapes;
 
         float spline;

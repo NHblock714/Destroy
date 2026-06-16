@@ -151,10 +151,10 @@ public class PeriodicTableBlock extends HorizontalDirectionalBlock {
             });
         }
 
-        /** Client-side handler is **S196 no-op degraded**
+        /** Client-side handler is currently a degraded no-op
  * (see {@link petrolpark.mc.destroy.client.DestroyPonderScenes#refreshPeriodicTableBlockScenes}
- * for architectural rationale — 1.21 Ponder SceneRegistryAccess 不 expose mutable
- * registry). Packet dispatch preserved for future Mixin-based unblock path.
+ * for architectural rationale — 1.21 Ponder SceneRegistryAccess does not expose a mutable
+ * registry). Packet dispatch preserved for a future Mixin-based unblock path.
 */
         @Override
         public void afterReload() {

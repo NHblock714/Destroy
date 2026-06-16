@@ -15,9 +15,8 @@ import petrolpark.mc.destroy.DestroyItems;
  * the {@link petrolpark.mc.destroy.content.sandcastle.BuildSandCastleGoal} AI goal can find one
  * in their inventory and build a sand castle.
  *
- * <p>User report: "桶和小铲丢给小村民捡不起来" — without this mixin, baby villagers ignore the
- * dropped item, the AI goal's {@code mustHaveBucketAndSpade} check fails, and no sand castle
- * builds.</p>
+ * <p>Without this mixin, baby villagers ignore the dropped item, the AI goal's
+ * {@code mustHaveBucketAndSpade} check fails, and no sand castle builds.</p>
 */
 @Mixin(Villager.class)
 public abstract class VillagerMixin {

@@ -103,11 +103,11 @@ public class GeniusFluidTankBehaviour extends SmartFluidTankBehaviour {
                     existingMixture, (double) existingAmount / 1000d,
                     addedMixture, (double) amountOfMixtureAdded / 1000d), false);
 
-                // {@code setFluid(MixtureFluid.of(...))} pattern**. rationale (avoid
-                // FluidStack instance churn so pipe state machines see "stable" fluid identity)
-                // turned out to break pump→pipe transfer entirely (user report: "如果用流体管和
-                // 泵配合连接泵无法向流体管内输入").
-                // this issue.
+                // Use {@code setFluid(MixtureFluid.of(...))} (instance replacement) rather than
+                // mutating the existing FluidStack in place. Mutating in place to avoid FluidStack
+                // instance churn (so pipe state machines see "stable" fluid identity) breaks
+                // pump→pipe transfer entirely (symptom: a pump connected to a fluid pipe fails to
+                // push fluid into the pipe).
                 // <p>Why setFluid is correct: vanilla Create FluidStacks are ephemeral value-type
                 // wrappers — pipe state machines snapshot fluid identity via {@code drain(1, SIMULATE)}
                 // (which always returns a new instance), so they don't actually rely on instance
@@ -117,9 +117,9 @@ public class GeniusFluidTankBehaviour extends SmartFluidTankBehaviour {
                 // not a deep clone) — downstream pipe state machines holding old drained stacks
                 // can see their "snapshot" components mutate retroactively, producing
                 // hard-to-diagnose flow-identity mismatches that propagate through pipe segments.
-                // <p>The original "A→B→C stall" that fixed is now handled by the broader
-                // FluidTransportBehaviourMixin) which relaxes {@code FluidStack.isSameFluidSameComponents}
-                // for mixture pairs across all three pipe-network call sites. With in
+                // <p>The original "A→B→C stall" is now handled by the broader
+                // FluidTransportBehaviourMixin, which relaxes {@code FluidStack.isSameFluidSameComponents}
+                // for mixture pairs across all three pipe-network call sites. With that in
                 // place, instance-replacement no longer triggers the stall.
                 setFluid(MixtureFluid.of(existingAmount + amountOfMixtureAdded, newMixture));
                 return amountOfMixtureAdded;
@@ -130,7 +130,7 @@ public class GeniusFluidTankBehaviour extends SmartFluidTankBehaviour {
         @Override
         public FluidStack drain(int maxDrain, FluidAction action) {
             FluidStack stack = super.drain(maxDrain, action);
-            // If we drained the last contents but the tank still "holds" a non-EMPTY Fluid type
+            // If the last contents were drained but the tank still "holds" a non-EMPTY Fluid type
             // (amount=0 but mixture/NBT lingering), reset to EMPTY so pooled containers of the same
             // underlying fluid type can stack again. 1.21 API change: getRawFluid() → getFluid().
             if (fluid.isEmpty() && fluid.getFluid() != Fluids.EMPTY)

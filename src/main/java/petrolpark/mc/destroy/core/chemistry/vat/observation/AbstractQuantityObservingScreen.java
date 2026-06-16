@@ -64,9 +64,9 @@ public abstract class AbstractQuantityObservingScreen extends AbstractSimiScreen
         // {focused, editable} — `active` didn't gate typing. 1.21 vanilla canConsumeInput TIGHTENED
         // to `isActive() && isFocused() && isEditable()` (bytecode-verified on
         // client-1.21.1-srg.jar EditBox.canConsumeInput) — so active=false now BLOCKS keyboard input
-        // entirely. Result of the 1:1 port: GUI shows the boxes, mouseClicked focuses them, but
-        // typing does nothing → user reports "值还是改不了". Leave active=true (default) and rely on
-        // setFocused(false) + the screen's custom mouseClicked to control focus.
+        // entirely. With active=false the GUI shows the boxes and mouseClicked focuses them, but
+        // typing does nothing (the threshold value can't be edited). Leave active=true (default) and
+        // rely on setFocused(false) + the screen's custom mouseClicked to control focus.
         lowerBound = new EditBox(minecraft.font, guiLeft + 15, guiTop + getEditBoxY(), 70, 10, Component.literal("" + quantityBehaviour.upperThreshold));
         lowerBound.setBordered(false);
         lowerBound.setMaxLength(35);

@@ -13,11 +13,11 @@ import petrolpark.mc.destroy.core.explosion.SmartExplosion;
  * detonated. Invoked <b>after</b> block-removal (client side) so effects can reference the final
  * destroyed-block list.
  *
- * <p>Consumers (S204 immediate + S207 wiring):</p>
+ * <p>Consumers:</p>
  * <ul>
- * <li>{@link MixedExplosiveInventory#getSpecialItems} (S204) — filters inventory for stacks
+ * <li>{@link MixedExplosiveInventory#getSpecialItems} — filters inventory for stacks
  * whose item is either vanilla {@code FireworkStarItem} or this interface.</li>
- * <li>{@link CustomExplosiveMixExplosion#effects} (S207) — dispatches to {@link #explode}
+ * <li>{@link CustomExplosiveMixExplosion#effects} — dispatches to {@link #explode}
  * on each special item stack after block removal (clientSide only).</li>
  * </ul>
 */

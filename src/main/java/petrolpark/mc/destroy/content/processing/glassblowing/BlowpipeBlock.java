@@ -43,8 +43,7 @@ import petrolpark.mc.destroy.core.block.IPickUpPutDownBlock;
 /**
  * The vertical glass-blowing pipe block — a single-voxel block rendered as a thin vertical shaft
  * which holds molten glass and can be "blown" by an encased fan pointed at its top face. Also
- * placeable and retrievable as a {@link BlowpipeItem} carrying its blowing-state NBT with it
- * (item port deferred to S145+).
+ * placeable and retrievable as a {@link BlowpipeItem} carrying its blowing-state NBT with it.
 */
 public class BlowpipeBlock extends DirectionalBlock implements IBE<BlowpipeBlockEntity>, IPickUpPutDownBlock {
 

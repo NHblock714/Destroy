@@ -21,8 +21,8 @@ import petrolpark.mc.destroy.config.DestroyAllConfigs;
  *
  * <ul>
  * <li><b>{@link AttributeModifier} 构造签名改</b>：{@code (UUID, String, double, Operation)} →
- * {@code (ResourceLocation, double, Operation)}。name 字段并入 ResourceLocation。我们把两个
- * modifier 的 UUID 替换成 {@code destroy:extra_inventory_size_modifier} /
+ * {@code (ResourceLocation, double, Operation)}。name 字段并入 ResourceLocation。两个
+ * modifier 的 UUID 改为 {@code destroy:extra_inventory_size_modifier} /
  * {@code destroy:extra_hotbar_slots_modifier}——人读、稳定、与 modifier 所修改的 attribute 一致命名。</li>
  * <li><b>{@code Operation.ADDITION} → {@code Operation.ADD_VALUE}</b>（枚举名 rename）。</li>
  * <li><b>{@link AttributeInstance#removeModifier removeModifier(UUID)} → {@code removeModifier(ResourceLocation)}</b>：
@@ -81,7 +81,7 @@ public class CreatineItem extends Item {
                 // ExtendedInventory subclass, so extraItems list still has the OLD size. Without
                 // this updateSize call, the player's inventory data structure stays at 0 extras
                 // even though the attribute now reads e.g. 9. updateSize(true) re-reads the
-                // attribute, resizes extraItems, rebuilds inventoryMenu via S370 path, and
+                // attribute, resizes extraItems, rebuilds inventoryMenu, and
                 // broadcasts the size-change packet to the client.
                 petrolpark.mc.destroy.core.extendedinventory.ExtendedInventory.get(serverPlayer)
                     .updateSize(true);

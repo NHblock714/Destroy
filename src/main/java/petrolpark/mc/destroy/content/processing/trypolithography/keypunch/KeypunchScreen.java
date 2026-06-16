@@ -23,8 +23,8 @@ import petrolpark.mc.destroy.util.GuiHelper;
  * for naming the Keypunch + close button. Extends catnip's {@link AbstractSimiScreen} (not
  * {@code AbstractSimiContainerScreen} — no Menu-backed slot UI here; state lives on the BE).
  *
- * <p>Wiring：{@link KeypunchBlock#displayScreen} 调 {@code ScreenOpener.open(new KeypunchScreen(be))}
- * 打开 UI（S121 TODO 在本 session 兑现）。</p>
+ * <p>Wiring: {@link KeypunchBlock#displayScreen} calls {@code ScreenOpener.open(new KeypunchScreen(be))}
+ * to open the UI.</p>
 */
 public class KeypunchScreen extends AbstractSimiScreen {
 

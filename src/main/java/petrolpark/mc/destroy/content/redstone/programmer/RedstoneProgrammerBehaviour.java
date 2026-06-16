@@ -153,10 +153,9 @@ public class RedstoneProgrammerBehaviour extends BlockEntityBehaviour implements
 
     @Override
     public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
-        // wire createMenu to the now-ported RedstoneProgrammerMenu.create factory.
-        // Earlier S116 docstring said "Menu still deferred" but RedstoneProgrammerMenu has been
-        // ported since (line 81: `public static RedstoneProgrammerMenu create(int id, Inventory
-        // inv, RedstoneProgram program)`). The TODO stub return null was preventing menu open.
+        // Wire createMenu to the RedstoneProgrammerMenu.create factory
+        // (`public static RedstoneProgrammerMenu create(int id, Inventory inv, RedstoneProgram
+        // program)`). Returning null here would prevent the menu from opening.
         return RedstoneProgrammerMenu.create(containerId, playerInventory, program);
     }
 

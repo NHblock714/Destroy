@@ -7,7 +7,7 @@ import petrolpark.mc.destroy.core.gas.IGasVessel;
 import petrolpark.mc.destroy.core.gas.valve.IGasValve;
 
 /**
- * Pipe-network state for a graph of {@link IGasVessel}s connected via {@link IGasValve}s. Ported verbatim for parity so
+ * Pipe-network state for a graph of {@link IGasVessel}s connected via {@link IGasValve}s. Kept so
  * Atmosphere/IGasVessel/IGasValve/AndValve/OrValve form a complete (if partially stubbed)
  * package shape that downstream code can extend without re-creating these primitives.
 */
@@ -41,8 +41,8 @@ public class GasNetwork {
 
         /**
  * Attempt to connect another {@link IGasVessel} to this Section of the {@link GasNetwork}.
- * @return {@code true} only if the new Vessel was added (for the first time) and we
- * haven't already hit {@link #getMaxConnectedVessels}.
+ * @return {@code true} only if the new Vessel was added (for the first time) and the
+ * {@link #getMaxConnectedVessels} limit has not already been reached.
 */
         public boolean connect(IGasVessel vessel) {
             if (connectedVessels.size() >= getMaxConnectedVessels()) return false;

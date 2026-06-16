@@ -44,10 +44,10 @@ import petrolpark.mc.destroy.core.explosion.SmartExplosion;
  * primed-entity spawn via {@link MixedExplosiveEntity}. Inherits fuse/ignition/dispense pipeline
  * from {@link PrimeableBombBlock} (which extends {@code TntBlock}).
  *
- * <p><b>S212 scope (minimal)</b> — inherits TntBlock defaults where safe:</p>
+ * <p>Inherits TntBlock defaults where safe:</p>
  * <ul>
  * <li>{@code use} inherits TntBlock flint-and-steel ignite → calls {@link #onCaughtFire}
- * (overridden here) → dispatches to our {@link CustomExplosiveMixEntityFactory} → spawns
+ * (overridden here) → dispatches to the {@link CustomExplosiveMixEntityFactory} → spawns
  * {@link MixedExplosiveEntity}. End-to-end placement + ignite pipeline functional.</li>
  * <li>{@link #explodeInstantly} — reads BE inventory, checks NO_FUSE property, triggers
  * {@link CustomExplosiveMixExplosion#create} instantly if set. Only activates on
@@ -59,8 +59,6 @@ import petrolpark.mc.destroy.core.explosion.SmartExplosion;
  * <li>{@link #propagatesSkylightDown} — returns true so block-side text renders correctly.</li>
  * <li>IBE binding via {@link #getBlockEntityClass} + {@link #getBlockEntityType}.</li>
  * </ul>
- *
- * <p><b>Deferred to future T2b closer</b>:</p>
 */
 public class MixedExplosiveBlock extends PrimeableBombBlock<MixedExplosiveEntity> implements IBE<MixedExplosiveBlockEntity> {
 
@@ -137,13 +135,13 @@ public class MixedExplosiveBlock extends PrimeableBombBlock<MixedExplosiveEntity
     }
 
     // ============================================================
-    // Interactive gameplay activation (uses S221 BE interface defaults + S218 Menu)
+    // Interactive gameplay activation (uses BE interface defaults + Menu)
     // ============================================================
 
     /**
  * Empty-hand right-click → open {@link MixedExplosiveMenu} via
  * {@link ServerPlayer#openMenu(net.minecraft.world.MenuProvider, java.util.function.Consumer)}
- *. The BE's {@link IMixedExplosiveBlockEntity#writeToBuffer} (S217) serializes
+ *. The BE's {@link IMixedExplosiveBlockEntity#writeToBuffer} serializes
  * inventory + color + conditions into the spawn packet.
 */
     @Override
@@ -164,7 +162,7 @@ public class MixedExplosiveBlock extends PrimeableBombBlock<MixedExplosiveEntity
  * <ul>
  * <li>Flint-and-steel / fire-charge + CAN_EXPLODE property → PASS_TO_DEFAULT_BLOCK_INTERACTION
  * so TntBlock's default ignite path runs.</li>
- * <li>DyeItem → delegate to {@link IDyeableMixedExplosiveBlockEntity#tryDye} (S219 default impl
+ * <li>DyeItem → delegate to {@link IDyeableMixedExplosiveBlockEntity#tryDye} (default impl
  * with DyedItemColor.applyDyes).</li>
  * <li>Else → PASS.</li>
  * </ul>
@@ -188,7 +186,7 @@ public class MixedExplosiveBlock extends PrimeableBombBlock<MixedExplosiveEntity
 
     /**
  * Block-placement hook — transfers the placing stack's EXPLOSIVE_MIX + DYED_COLOR into
- * the newly-placed BE via S221 IDyeableMixedExplosiveBlockEntity.onPlace default method
+ * the newly-placed BE via IDyeableMixedExplosiveBlockEntity.onPlace default method
  *.
 */
     @Override
@@ -198,7 +196,7 @@ public class MixedExplosiveBlock extends PrimeableBombBlock<MixedExplosiveEntity
     }
 
     /**
- * Block drops — reads the BE's inventory+color via S221 IDyeableMixedExplosiveBlockEntity.getFilledItemStack
+ * Block drops — reads the BE's inventory+color via IDyeableMixedExplosiveBlockEntity.getFilledItemStack
  * default method so drop stack preserves custom mix + dye color.
 */
     @Override
@@ -209,7 +207,7 @@ public class MixedExplosiveBlock extends PrimeableBombBlock<MixedExplosiveEntity
     }
 
     /**
- * Pick-block — returns a stack that carries this BE's inventory+color via S221 interface
+ * Pick-block — returns a stack that carries this BE's inventory+color via the interface's
  * getFilledItemStack default. 1.21 Block.getCloneItemStack signature uses {@link
  * net.minecraft.world.level.LevelReader}.
 */

@@ -43,7 +43,7 @@ import petrolpark.mc.destroy.core.extendedinventory.ExtendedInventory;
  * through its quick-move logic, which doesn't know about extended-inventory slot indexes.</li>
  * <li><b>{@code inSelectTab} (`@Inject` at FIELD destroyItemSlot)</b>: when the survival tab
  * activates, walks the player's {@code inventoryMenu.slots} to find the extra-slot
- * {@link Slot} objects (which were added via S370's
+ * {@link Slot} objects (which were added via
  * {@link ExtendedInventory#refreshPlayerInventoryMenu refreshPlayerInventoryMenu}), then
  * wraps each in a {@code CreativeModeInventoryScreen.SlotWrapper} (Creative menu's
  * interaction-bridging shim) and adds them to the Creative menu via
@@ -53,9 +53,9 @@ import petrolpark.mc.destroy.core.extendedinventory.ExtendedInventory;
  * {@code gameMode.handleCreativeModeItemAdd(EMPTY, slotIndex)}.</li>
  * </ol>
  *
- * <p>Registered via {@code destroy.mixins.json} {@code "mixins"} array (S371 addition,
- * client-side only via {@code "client"} sub-array if needed; for now in main mixins array since
- * the class is {@code @OnlyIn(Dist.CLIENT)}-implicit by mixing into a client-only target).</p>
+ * <p>Registered via {@code destroy.mixins.json} {@code "mixins"} array (client-side only via
+ * {@code "client"} sub-array if needed; for now in main mixins array since the class is
+ * {@code @OnlyIn(Dist.CLIENT)}-implicit by mixing into a client-only target).</p>
 */
 @Mixin(CreativeModeInventoryScreen.class)
 public abstract class CreativeModeInventoryScreenMixin extends EffectRenderingInventoryScreen<ItemPickerMenu> {
@@ -85,7 +85,7 @@ public abstract class CreativeModeInventoryScreenMixin extends EffectRenderingIn
     }
 
     /** When the survival tab activates: pull extra-slot Slot objects from the player's
- * inventoryMenu (added via S370's refreshPlayerInventoryMenu), wrap each in a
+ * inventoryMenu (added via refreshPlayerInventoryMenu), wrap each in a
  * CreativeModeInventoryScreen.SlotWrapper, and register them with the Creative menu so
  * they receive click events through the same path as vanilla survival slots.*/
     @Inject(
@@ -106,7 +106,7 @@ public abstract class CreativeModeInventoryScreenMixin extends EffectRenderingIn
             inv = ExtendedInventory.get(player);
         } catch (ClassCastException ex) { return; }
         // Collect the extra-slot Slot objects from the player's vanilla inventoryMenu (where they
-        // live thanks to S370 refreshPlayerInventoryMenu). Index by container slot index since
+        // live thanks to refreshPlayerInventoryMenu). Index by container slot index since
         // the menu-slot index won't match the Inventory's container index in general.
         Int2ObjectMap<Slot> extendedInventorySlots = new Int2ObjectArrayMap<>();
         for (Slot slot : player.inventoryMenu.slots) {

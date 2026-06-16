@@ -19,7 +19,7 @@ import petrolpark.mc.destroy.core.data.advancement.SimpleAdvancementTrigger;
 
 /**
  * Destroy's custom advancement trigger registry. Each {@link Stub} handle pairs a registered
- * {@link SimpleAdvancementTrigger} (S195 port) with an {@code award(level, player)} method that
+ * {@link SimpleAdvancementTrigger} with an {@code award(level, player)} method that
  * actually fires the trigger on server-side {@link ServerPlayer}s.
  *
  * <p>Each {@link Stub} now holds a {@link RegistryEntry} pointing to its registered
@@ -97,10 +97,10 @@ public class DestroyAdvancementTrigger {
     // + onPlayerRightClickBlock.
     public static final Stub COLLECT_TEARS      = new Stub("collect_tears");
 
-    // Chemistry-batch trigger handles (Sessions 56 + 57) — referenced by generic reactions + the
+    // Chemistry-batch trigger handles — referenced by generic reactions + the
     // DestroyReactions data file.
-    // Stubs added v0.3.1 to plug the trigger ↔ advancement registry gap inherited from the
-    // initial port. Each Stub is wired below: SHOOT_HEFTY_BEETROOT + FIREPROOF_FLINT_AND_STEEL
+    // Stubs added v0.3.1 to plug the trigger ↔ advancement registry gap. Each Stub is
+    // wired below: SHOOT_HEFTY_BEETROOT + FIREPROOF_FLINT_AND_STEEL
     // in DestroyCommonEvents, CUT_ONIONS in the FD CuttingBoardMixin, HABER_PROCESS +
     // STEAM_REFORMATION in DestroyReactions reaction definitions.
     public static final Stub SHOOT_HEFTY_BEETROOT     = new Stub("beetroot_potato_cannon");

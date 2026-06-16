@@ -658,13 +658,12 @@ public class DestroyBlocks {
     // 1.21.1 notes:
     // • BE/item cap registration done on AgeingBarrelBlockEntity.registerCapabilities (static),
     // hooked in Destroy.java via modEventBus.addListener.
-    // • No simpleItem() call — BlockItem is suppressed because the barrel is placed via a recipe
-    // . For the port we still want the creative pickup to work, so we
-    // attach a plain BlockItem and let refine.
+    // • No simpleItem() call — BlockItem is suppressed because the barrel is placed via a recipe.
+    // A plain BlockItem is attached so creative pickup still works.
 
     // PRIMED BOMB BLOCKS — placeable TNT variants that spawn their specific
     // PrimedBombEntity on ignition/RS pulse. Each block uses a different SmartExplosion subtype.
-    // DYNAMITE_BLOCK + ExcavationExplosion 扣到 （依赖 bettervaluesettings 子系统）。
+    // DYNAMITE_BLOCK + ExcavationExplosion deferred (depends on the bettervaluesettings subsystem).
 
     public static final BlockEntry<petrolpark.mc.destroy.core.explosion.PrimeableBombBlock<petrolpark.mc.destroy.core.explosion.PrimedBombEntity.Anfo>> ANFO_BLOCK =
         REGISTRATE.block("anfo_block",
@@ -698,8 +697,8 @@ public class DestroyBlocks {
             .simpleItem()
             .register();
 
-    // DYNAMITE_BLOCK — ExcavationExplosion-driven area excavator. Simplified port:
-    // fixed radius from server config (no per-block UI). 见 DynamiteBlock javadoc 升级路径。
+    // DYNAMITE_BLOCK — ExcavationExplosion-driven area excavator. Simplified:
+    // fixed radius from server config (no per-block UI). See DynamiteBlock javadoc for the upgrade path.
     public static final BlockEntry<petrolpark.mc.destroy.core.explosion.DynamiteBlock> DYNAMITE_BLOCK =
         REGISTRATE.block("dynamite_block", petrolpark.mc.destroy.core.explosion.DynamiteBlock::new)
             .initialProperties(() -> Blocks.TNT)
@@ -829,8 +828,7 @@ public class DestroyBlocks {
 
     // ELEMENT_TANK — HorizontalDirectionalBlock fluid tank that converts itself into
     // a result block when the held fluid matches an ELEMENT_TANK_FILLING recipe. Used for periodic-
-    // table element-sample displays.
-    // in 1.21 we inline lambdas
+    // table element-sample displays. Lambdas are inlined here
     // to avoid adding an unused helper class-level method.
     public static final BlockEntry<petrolpark.mc.destroy.core.chemistry.storage.ElementTankBlock> ELEMENT_TANK =
         REGISTRATE.block("element_tank", petrolpark.mc.destroy.core.chemistry.storage.ElementTankBlock::new)
@@ -868,8 +866,7 @@ public class DestroyBlocks {
 
     // CENTRIFUGE — KineticBlock + ICogWheel; Y-axis cog spinning in a 4-voxel slab.
     // DENSE_OUTPUT_FACE horizontal blockstate determines which neighboring direction receives the
-    // dense fluid output (light goes to opposite face).
-    // to S125 BE port. Block + BER + Visual all live now.
+    // dense fluid output (light goes to opposite face). Block + BER + Visual all live.
     public static final BlockEntry<CentrifugeBlock> CENTRIFUGE =
         REGISTRATE.block("centrifuge", CentrifugeBlock::new)
             .initialProperties(() -> Blocks.IRON_BLOCK)
@@ -912,10 +909,9 @@ public class DestroyBlocks {
 
     // BLOWPIPE
     // — glassblowing pipe. DirectionalBlock with FACING; holds molten glass in its FluidTank;
-    // advances blowing progress via Create fan AirCurrent. S153 swaps `.simpleItem()` →
-    // `.item(BlowpipeItem::new)` (BlowpipeItem is a skeleton BlockItem with stacksTo(1) +
-    // TIME_TO_MOVE_TO_MOUTH constant — full use/useOn/inventoryTick behavior +
-    // capability + DataComponent wiring all deferred to S154+ BlowpipeItem full port).
+    // advances blowing progress via Create fan AirCurrent. Uses `.item(BlowpipeItem::new)`;
+    // BlowpipeItem carries stacksTo(1) + TIME_TO_MOVE_TO_MOUTH constant plus the full
+    // use/useOn/inventoryTick behavior + capability + DataComponent wiring.
     public static final BlockEntry<BlowpipeBlock> BLOWPIPE =
         REGISTRATE.block("blowpipe", BlowpipeBlock::new)
             .initialProperties(() -> Blocks.IRON_BLOCK)
@@ -926,8 +922,8 @@ public class DestroyBlocks {
 
     // DYNAMO — kinetic "charger" above a Basin or
     // Belt/Depot. Morphs into an Arc Furnace when placed atop an Arc Furnace Lid (CARBON_FIBER_BLOCK
-    // tag-transformable). KineticBlock with AXIS + ARC_FURNACE blockstate. S147 stub BE exposes
-    // arcFurnaceBlock Lazy + getRedstoneSignal; ChargingBehaviour + recipe pipeline deferred.
+    // tag-transformable). KineticBlock with AXIS + ARC_FURNACE blockstate. BE exposes
+    // arcFurnaceBlock Lazy + getRedstoneSignal + ChargingBehaviour + recipe pipeline.
     public static final BlockEntry<DynamoBlock> DYNAMO =
         REGISTRATE.block("dynamo", DynamoBlock::new)
             .initialProperties(() -> Blocks.IRON_BLOCK)
@@ -998,7 +994,7 @@ public class DestroyBlocks {
             .register();
 
     // REDSTONE_PROGRAMMER — Block + BlockItem for the channel sequencer.
-    // Opens a Menu on right-click (Menu still deferred to S118+). Wrench-cycleable; horizontal
+    // Opens a Menu on right-click. Wrench-cycleable; horizontal
     // facing; waterloggable. Item form is "pocket programmer" — uses same BlockItem to tick + hold
     // program state via PROGRAMMER_UUID / PROGRAMMER_PROGRAM DataComponents.
     public static final BlockEntry<petrolpark.mc.destroy.content.redstone.programmer.RedstoneProgrammerBlock> REDSTONE_PROGRAMMER =
@@ -1101,9 +1097,9 @@ public class DestroyBlocks {
             .register();
     }
 
-    // VAT_CONTROLLER — Vat multi-block chemistry reactor controller. S176 stub
-    // port: HorizontalDirectionalBlock + IBE + IWrenchable; full use()/display/open-screen
-    // interaction deferred (needs VatScreen + ISpecialMixtureContainerBlock). Registration
+    // VAT_CONTROLLER — Vat multi-block chemistry reactor controller.
+    // HorizontalDirectionalBlock + IBE + IWrenchable; use()/display/open-screen
+    // interaction via VatScreen + ISpecialMixtureContainerBlock. Registration
     // unlocks VatMaterial.registerDestroyVatMaterials() + Vat.tryConstruct() usage in Vat.java.
     public static final BlockEntry<petrolpark.mc.destroy.core.chemistry.vat.VatControllerBlock> VAT_CONTROLLER =
         REGISTRATE.block("vat_controller",
@@ -1114,11 +1110,11 @@ public class DestroyBlocks {
             .register();
 
     // VAT_SIDE — side-cell block of a Vat multi-block.
-    // re-attached the CopycatFullBlockModel custom baked model
-    // had this and it's what makes vat walls render with the wrapped material's full block geometry
-    // (e.g. iron-block-textured walls). Without it Create's default copycat model surfaced (the
-    // panel/X outline players reported). Also added Solid/Cutout/CutoutMipped/Translucent render
-    // layers so the wrapped model's own render type passes through (mirrors BuilderTransformers
+    // The CopycatFullBlockModel custom baked model
+    // is what makes vat walls render with the wrapped material's full block geometry
+    // (e.g. iron-block-textured walls). Without it Create's default copycat model surfaces (the
+    // panel/X outline). Solid/Cutout/CutoutMipped/Translucent render
+    // layers are added so the wrapped model's own render type passes through (mirrors BuilderTransformers
     // .copycat() in Create 1.21).
     public static final BlockEntry<petrolpark.mc.destroy.core.chemistry.vat.VatSideBlock> VAT_SIDE =
         REGISTRATE.block("vat_side",
@@ -1137,7 +1133,7 @@ public class DestroyBlocks {
     // BLACKLIGHT — UV lamp block supplying 100W UV light out its opposite-SIDE
     // face. Wrench-flip toggles 2-axis FLIPPED orientation. Waterloggable + contraption-movable.
     // Unlocks vatUV* Chemistry Ponder scenes (vatUVWithoutBlackLight / vatUVWithBlackLight / vatUV
-    // helper) via IUVLampBlock interface + DestroyVoxelShapes.BLACKLIGHT shape entries (S??).
+    // helper) via IUVLampBlock interface + DestroyVoxelShapes.BLACKLIGHT shape entries.
     public static final BlockEntry<petrolpark.mc.destroy.core.chemistry.vat.uv.BlacklightBlock> BLACKLIGHT =
         REGISTRATE.block("blacklight",
             petrolpark.mc.destroy.core.chemistry.vat.uv.BlacklightBlock::new)
@@ -1147,10 +1143,10 @@ public class DestroyBlocks {
             .register();
 
     // COLORIMETER — Vat observation block that detects specific molecules via
-    // redstone output. S188 stub port: HorizontalDirectionalBlock + FACING/POWERED/BLUSHING
-    // properties + IBE + BLUSHING-aware neighbor detection (AllBlocks.SMART_OBSERVER). Full
-    // redstone-monitor / GUI / mixture-observation pipeline deferred. Registration unlocks the
-    // `colorimeter` Chemistry Ponder scene (66 LoC, S188 port).
+    // redstone output. HorizontalDirectionalBlock + FACING/POWERED/BLUSHING
+    // properties + IBE + BLUSHING-aware neighbor detection (AllBlocks.SMART_OBSERVER) +
+    // redstone-monitor / GUI / mixture-observation pipeline. Registration unlocks the
+    // `colorimeter` Chemistry Ponder scene.
     public static final BlockEntry<petrolpark.mc.destroy.core.chemistry.vat.observation.colorimeter.ColorimeterBlock> COLORIMETER =
         REGISTRATE.block("colorimeter",
             petrolpark.mc.destroy.core.chemistry.vat.observation.colorimeter.ColorimeterBlock::new)
@@ -1159,8 +1155,8 @@ public class DestroyBlocks {
             .simpleItem()
             .register();
 
-    // custom explosive mix (T2b batch) · place-in-world variant paired with
-    // MixedExplosiveBlockEntity (S209 stub) · S213 swaps simpleItem → MixedExplosiveBlockItem
+    // custom explosive mix · place-in-world variant paired with
+    // MixedExplosiveBlockEntity · uses MixedExplosiveBlockItem
     // (IMixedExplosiveItem impl with DYED_COLOR DataComponent + EXPLOSIVE_MIX inventory payload).
     public static final BlockEntry<petrolpark.mc.destroy.core.explosion.mixedexplosive.MixedExplosiveBlock> CUSTOM_EXPLOSIVE_MIX =
         REGISTRATE.block("custom_explosive_mix",

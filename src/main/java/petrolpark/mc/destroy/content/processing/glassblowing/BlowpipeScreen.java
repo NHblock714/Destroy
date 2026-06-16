@@ -29,8 +29,7 @@ import petrolpark.mc.destroy.client.DestroyLang;
  * Blowpipe recipe-selector GUI — scrollable 3-row list of {@link GlassblowingRecipe}s showing
  * each recipe's input fluid + output item. Clicking a row fires a
  * {@link SelectGlassblowingRecipeC2SPacket} then closes the screen. Opened via
- * {@link BlowpipeItem#openScreen(InteractionHand)} (S156+ TODO — BlowpipeItem full port wires
- * the open call).
+ * {@link BlowpipeItem#openScreen(InteractionHand)}.
 */
 public class BlowpipeScreen extends AbstractSimiScreen {
 

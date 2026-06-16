@@ -67,7 +67,7 @@ public enum DestroyPackets implements BasePacketPayload.PacketTypeProvider {
     REDSTONE_PROGRAM_SYNC(RedstoneProgramSyncC2SPacket.class, RedstoneProgramSyncC2SPacket.STREAM_CODEC),
     CHANGE_KEYPUNCH_POSITION(ChangeKeypunchPositionC2SPacket.class, ChangeKeypunchPositionC2SPacket.STREAM_CODEC),
     NAME_KEYPUNCH(NameKeypunchC2SPacket.class, NameKeypunchC2SPacket.STREAM_CODEC),
-    // BlowpipeScreen recipe-selection packet; uses S153 Blowpipe DataComponents.
+    // BlowpipeScreen recipe-selection packet; uses Blowpipe DataComponents.
     SELECT_GLASSBLOWING_RECIPE(SelectGlassblowingRecipeC2SPacket.class, SelectGlassblowingRecipeC2SPacket.STREAM_CODEC),
     // Vat-side redstone monitor threshold change (T2a observation batch).
     REDSTONE_QUANTITY_MONITOR_THRESHOLD_CHANGE(

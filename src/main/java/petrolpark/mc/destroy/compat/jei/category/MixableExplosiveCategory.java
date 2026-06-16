@@ -34,9 +34,9 @@ import petrolpark.mc.destroy.core.explosion.mixedexplosive.ExplosivePropertiesTo
 
 /**
  * JEI category for mixable-explosive items (T3b). Displays each item with registered
- * {@link ExplosiveProperties} as a JEI entry showing its property chart via S205
+ * {@link ExplosiveProperties} as a JEI entry showing its property chart via
  * {@link ExplosivePropertiesTooltip}. Used by the MixedExplosiveScreen's "view JEI" button
- * (S220) to open this category directly filtered by a clicked mix item.
+ * to open this category directly filtered by a clicked mix item.
 */
 public class MixableExplosiveCategory extends PetrolparkRecipeCategory<MixableExplosiveCategory.MixableExplosiveRecipe> {
 

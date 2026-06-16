@@ -38,8 +38,8 @@ import petrolpark.mc.destroy.core.explosion.mixedexplosive.MixedExplosiveBlockEn
 
 /**
  * Ponder storyboards for the Custom Explosive Mix system: filling, exploding, dyeing, naming.
- * Used by the main destroy ponder and by CBC compat ponder (S342 deferred until this lands —
- * compat/createbigcannons/ponder/CreateBigCannonsPonderScenes references {@link #filling} +
+ * Used by the main destroy ponder and by CBC compat ponder
+ * (compat/createbigcannons/ponder/CreateBigCannonsPonderScenes references {@link #filling} +
  * {@link #dyeing} for the CBC charge/shell variants).
 */
 public class ExplosivesPonderScenes {

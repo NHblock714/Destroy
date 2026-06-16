@@ -54,7 +54,7 @@ public abstract class FluidVesselBlockEntityMixin {
  *
  * <p>See {@link
  * petrolpark.mc.destroy.mixin.compat.create.FluidTankBlockEntityMixin}'s class javadoc for
- * the user report and full root-cause analysis. FluidVessel's
+ * the full root-cause analysis. FluidVessel's
  * {@code notifyMultiUpdated} signature is identical to Create's
  * (javap-verified against {@code create_connected-1.1.14-mc1.21.1}).</p>
 */

@@ -13,10 +13,10 @@ import petrolpark.mc.destroy.DestroyFluids;
 
 /**
  *
- * <p><b>User report</b>: 3-tank pump chain A→B→C carrying mixtures of differing composition
+ * <p><b>Symptom</b>: a 3-tank pump chain A→B→C carrying mixtures of differing composition
  * stalls B→C transfer whenever A→B is actively pumping. Pattern: B accumulates a few hundred
  * mB instantly, then pauses several seconds, repeats. B→C only resumes once A→B halts (source
- * empty). Symptom went away when A and B happened to hold identical mixtures.</p>
+ * empty). The stall disappears when A and B hold identical mixtures.</p>
  *
  * <p><b>Root cause</b> (Create source · {@code FluidNetwork.java} L97 / L201 / L210):</p>
  *
@@ -46,7 +46,7 @@ import petrolpark.mc.destroy.DestroyFluids;
  *
  * <h3>The relaxation</h3>
  *
- * For two {@code destroy:mixture} stacks (or {@code destroy:gas}) we return {@code true}
+ * For two {@code destroy:mixture} stacks (or {@code destroy:gas}) this returns {@code true}
  * regardless of MIXTURE component differences. This makes Create's pipe network treat all
  * mixtures as one network-fluid — appropriate because the underlying Fluid type IS the same
  * ({@code destroy:mixture}); they just carry different chemistry payloads. The receiving

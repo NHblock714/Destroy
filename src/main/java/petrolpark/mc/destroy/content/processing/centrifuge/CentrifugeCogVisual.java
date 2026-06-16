@@ -13,8 +13,9 @@ import petrolpark.mc.destroy.client.DestroyPartials;
  * kinetic speed). When Flywheel visualization is enabled, this replaces the cog render path of
  * {@link CentrifugeRenderer}'s {@code getRotatedModel} override.
  *
- * <p>Note: 本 S124 只是 cog Visual。Centrifuge BE 本体完整渲染（fluid 管口指示 / spinning particles /
- * chemistry mixture 视觉）在 S125 随 BE port 一起出。</p>
+ * <p>Note: this class only handles the cog Visual. The full Centrifuge BE rendering (fluid
+ * output-face indicators / spinning particles / chemistry mixture visuals) lives with the
+ * block entity.</p>
 */
 public class CentrifugeCogVisual extends SingleAxisRotatingVisual<CentrifugeBlockEntity> {
 

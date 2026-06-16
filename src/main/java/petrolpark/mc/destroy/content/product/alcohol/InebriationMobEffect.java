@@ -67,12 +67,12 @@ public class InebriationMobEffect extends UncurableMobEffect {
             if (!player.isSleeping()) continue;
             MobEffectInstance effect = player.getEffect(DestroyMobEffects.INEBRIATION.getDelegate());
             if (effect != null) {
-                // MobEffect.getCurativeItems() with EffectCure tokens on MobEffectInstance. Default
-                // MobEffectInstance uses EffectCures.DEFAULT_CURES (includes MILK) — which would
-                // let milk bucket cure HANGOVER.
-                // only by AspirinSyringe". S197 removes MILK from cures post-creation via mutable
-                // MilkCartonItem's EffectCures.MILK contains check), AspirinSyringe.onInject still
-                // works via direct removeEffect call.
+                // MobEffect.getCurativeItems() with EffectCure tokens on MobEffectInstance. The
+                // default MobEffectInstance uses EffectCures.DEFAULT_CURES (includes MILK), which
+                // would let a milk bucket cure HANGOVER. HANGOVER should be curable only by the
+                // AspirinSyringe, so MILK is removed from the cures post-creation via the mutable
+                // cures set below; AspirinSyringe.onInject still works via its direct
+                // removeEffect call.
                 MobEffectInstance hangover = new MobEffectInstance(DestroyMobEffects.HANGOVER.getDelegate(),
                     DestroyConfigs.server().substances.hangoverDuration.get() * (effect.getAmplifier() + 1));
                 hangover.getCures().remove(EffectCures.MILK);

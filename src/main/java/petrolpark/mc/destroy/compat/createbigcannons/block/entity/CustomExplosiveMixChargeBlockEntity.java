@@ -14,8 +14,8 @@ import petrolpark.mc.destroy.core.explosion.mixedexplosive.MixedExplosiveBlockEn
 import petrolpark.mc.destroy.core.explosion.mixedexplosive.ExplosiveProperties.ExplosivePropertyCondition;
 
 /**
- * BE for {@code custom_explosive_mix_charge}. Extends the ported
- * {@link MixedExplosiveBlockEntity} stub (S209) to inherit dye color + name + mixed-explosive inv +
+ * BE for {@code custom_explosive_mix_charge}. Extends
+ * {@link MixedExplosiveBlockEntity} to inherit dye color + name + mixed-explosive inv +
  * MenuProvider + IDyeableMixedExplosiveBlockEntity surface. The charge's inventory uses a custom
  * size (config-driven) and a narrowed condition set — only {@code CAN_EXPLODE} applies because a
  * charge is propellant, not a detonator.

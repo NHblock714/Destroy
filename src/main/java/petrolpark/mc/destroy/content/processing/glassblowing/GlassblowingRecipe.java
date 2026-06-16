@@ -24,8 +24,8 @@ import petrolpark.mc.destroy.DestroyRecipeTypes;
 public class GlassblowingRecipe extends AdvancedProcessingRecipe<RecipeInput> {
 
     /**
- * List of blowing shapes per-recipe. S313: fully serialized via {@link GlassblowingRecipeParams}
- * custom codec (was empty-transient in S91). If the incoming params is a
+ * List of blowing shapes per-recipe. Fully serialized via {@link GlassblowingRecipeParams}
+ * custom codec. If the incoming params is a
  * {@link GlassblowingRecipeParams} instance (from the custom serializer), copy its shape list;
  * otherwise default to empty (e.g., if a plain AdvancedProcessingRecipeParams slipped through).
 */

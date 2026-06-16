@@ -39,7 +39,7 @@ import petrolpark.mc.destroy.core.chemistry.MoleculeDisplayItem.MoleculeTooltip;
 import petrolpark.mc.destroy.core.chemistry.MoleculeRenderer;
 
 /**
- * JEI custom ingredient type for {@link LegacySpecies} — used by ReactionCategory (S291 next)
+ * JEI custom ingredient type for {@link LegacySpecies} — used by ReactionCategory
  * to add molecule ingredients to recipe slots via
  * {@code builder.addIngredient(MoleculeJEIIngredient.TYPE, species)}.
 */
@@ -116,18 +116,17 @@ public class MoleculeJEIIngredient {
 
         @Override
         public ItemStack getCheatItemStack(LegacySpecies ingredient) {
-            // S309 restored: TEST_TUBE ported. Hypothetical/PROTON species still return illegalFish
+            // Hypothetical/PROTON species return illegalFish
             // (they can't be physically contained). All other species return a TEST_TUBE pre-filled
             // with a phase-appropriate mixture of that species.
-            // The S309 port collapsed
-            // both branches into {@code LegacyMixture.pure(ingredient)} which uses
-            // {@link LegacySpecies#getPureConcentration()} = density / mass. For molecules with
-            // density set as their LIQUID density (most molecules), this yields ~28.8 mol/L for
-            // N2 — but N2 at room temp/pressure is a GAS at ~0.042 mol/L. User report:
-            // "从jei作弊模式拿出来的装有对应物质的试管气体和液体物质密度（摩尔）应该有区别".
+            // Collapsing both branches into {@code LegacyMixture.pure(ingredient)} (which uses
+            // {@link LegacySpecies#getPureConcentration()} = density / mass) is wrong: for molecules
+            // with density set as their LIQUID density (most molecules), this yields ~28.8 mol/L for
+            // N2 — but N2 at room temp/pressure is a GAS at ~0.042 mol/L (symptom: a cheat-mode test
+            // tube of a gas had the same molar density as a liquid one). So the branch is kept:
             // - boiling > 273K (liquid at RTP) → pure() with liquid density
             // - boiling ≤ 273K (gas at RTP) → AIR_MOLAR_DENSITY constant (~0.042 mol/L)
-            // 1.21 port restores this branch using {@link DestroyFluids#AIR_MOLAR_DENSITY}.
+            // using {@link DestroyFluids#AIR_MOLAR_DENSITY}.
             if (ingredient.isHypothetical() || ingredient == DestroyMolecules.PROTON) return illegalFish;
             petrolpark.mc.destroy.chemistry.legacy.LegacyMixture mixture;
             if (ingredient.getBoilingPoint() > 273f) {
@@ -202,8 +201,8 @@ public class MoleculeJEIIngredient {
          * Mirror the modern {@link #getTooltip(ITooltipBuilder, LegacySpecies, TooltipFlag)}
          * output as a plain Component list. Some JEI search-index paths (and any older addon
          * that still calls the deprecated form) read tooltip lines from here for keyword
-         * matching — returning empty would hide tag tooltip lines like "致癌物" from
-         * plain-text search even though they render fine on hover.
+         * matching — returning empty would hide tag tooltip lines (e.g. the "carcinogen" tag)
+         * from plain-text search even though they render fine on hover.
          */
         @Override
         @Deprecated

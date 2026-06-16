@@ -18,7 +18,7 @@ import rbasamoyai.createbigcannons.munitions.config.BlockPropertiesTypeHandler;
 import petrolpark.mc.destroy.core.explosion.mixedexplosive.ExplosiveProperties.ExplosiveProperty;
 
 /**
- * S338 port — JSON/network-serializable propellant properties for {@code custom_explosive_mix_charge}.
+ * JSON/network-serializable propellant properties for {@code custom_explosive_mix_charge}.
  *
  * <p>Each explosive property (IGNITES, EXPLODES_UNDERWATER, etc.) contributes a linear additive
  * modifier to the base propellant's strength / stress / recoil / spread. The final propellant

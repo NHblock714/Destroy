@@ -8,8 +8,8 @@ import petrolpark.mc.destroy.DestroyItems;
 
 /**
  * Registrar for Destroy's Ponder tags. Ponder "tags" are category groupings visible in the
- * Ponder UI tag index (e.g. the "Chemistry" tab shows all Chemistry-tagged blocks). 1.21 skeleton ports only the 3 top-level tag
- * registrations; block-to-tag additions defer to scene-batch sessions (S159+) since they
+ * Ponder UI tag index (e.g. the "Chemistry" tab shows all Chemistry-tagged blocks). Currently
+ * registers only the 3 top-level tags; block-to-tag additions are deferred since they
  * reference blocks/items spread across several subdirs.
 */
 public class DestroyPonderTags {
@@ -21,11 +21,11 @@ public class DestroyPonderTags {
 
     public static void register(PonderTagRegistrationHelper<ResourceLocation> helper) {
         // Top-level tag registrations — 3 tabs in the Ponder index. TEST_TUBE + VAT_CONTROLLER
-        // items not yet ported; S158 falls back to LOGO as the icon for all 3 until upstream
-        // lands (cosmetic-only, shown in Ponder tag index).
+        // items not yet available; LOGO is used as the icon for all 3 in the meantime
+        // (cosmetic-only, shown in Ponder tag index).
         helper.registerTag(CHEMISTRY)
             .addToIndex()
-            .item(DestroyItems.LOGO)  // TODO(S159+): TEST_TUBE when ported
+            .item(DestroyItems.LOGO)  // TODO: TEST_TUBE when available
             .register();
 
         helper.registerTag(DESTROY)
@@ -35,10 +35,10 @@ public class DestroyPonderTags {
 
         helper.registerTag(VAT_SIDE_BLOCKS)
             .addToIndex()
-            .item(DestroyItems.LOGO)  // TODO(S159+): VAT_CONTROLLER (block) when Vat subdir 后续 port
+            .item(DestroyItems.LOGO)  // TODO: VAT_CONTROLLER (block) when the Vat subdir is available
             .register();
 
-        // S159+ 起: HELPER.addToTag(CHEMISTRY).add(AllBlocks.BASIN).add(BUBBLE_CAP).etc
-        // 依赖 block/item registration 到位之后逐个追加.
+        // Later: HELPER.addToTag(CHEMISTRY).add(AllBlocks.BASIN).add(BUBBLE_CAP).etc
+        // Added one by one once the relevant block/item registrations are in place.
     }
 }

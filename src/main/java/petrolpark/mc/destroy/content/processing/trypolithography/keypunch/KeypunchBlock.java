@@ -90,7 +90,7 @@ public class KeypunchBlock extends HorizontalKineticBlock implements IBE<Keypunc
     }
 
     /**
- * Client-only screen opener — wired S122 to open {@link KeypunchScreen}. The guard against
+ * Client-only screen opener — opens {@link KeypunchScreen}. The guard against
  * a null blockState is kept to avoid edge-case crashes if a block entity
  * is unloaded between the right-click and the class-load.
 */

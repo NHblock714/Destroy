@@ -26,7 +26,7 @@ import petrolpark.mc.destroy.content.oil.seismology.SeismographItem.Seismograph;
 /**
  * Custom Ponder instruction that draws an animated Seismograph overlay (the nonogram-style
  * 8×8 grid + row/column totals) inside an animated speech box at a given scene-space coordinate.
- * Used by {@link petrolpark.mc.destroy.content.oil.OilPonderScenes} (S163+ pending) to show the
+ * Used by {@link petrolpark.mc.destroy.content.oil.OilPonderScenes} to show the
  * seismograph pattern state at key moments in the oil-drilling tutorials, with
  * {@link SeismographElement#highlightRow highlightRow / highlightColumn / highlightPlus /
  * highlightCell} methods callable from the scene builder to draw transient colored highlight

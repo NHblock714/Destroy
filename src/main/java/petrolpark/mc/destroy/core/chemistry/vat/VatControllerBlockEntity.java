@@ -64,20 +64,20 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
     };
 
     /**
- * Pressure animation value (S179 stub addition). {@link LerpedFloat} initialized to 1.0f
+ * Pressure animation value. {@link LerpedFloat} initialized to 1.0f
  * (sea-level-ish default). Used by
  * {@link petrolpark.mc.destroy.core.chemistry.vat.ponder.SetVatPressurePonderInstruction
  * SetVatPressurePonderInstruction} via {@code vc.pressure.chase(target, speed, EXP)} in Ponder
- * scenes. Full port will drive this field from real Vat thermodynamic simulation.
+ * scenes.
 */
     public final LerpedFloat pressure = LerpedFloat.linear().startWithValue(1f);
 
-    /** Initialized to 298K (room temp). Full
- * impl drives from server-side cachedMixture.getTemperature() via sendData sync.
+    /** Initialized to 298K (room temp). Driven from server-side
+ * cachedMixture.getTemperature() via sendData sync.
 */
     public final LerpedFloat temperature = LerpedFloat.linear().startWithValue(298f);
 
-    /** Negative for coolers. Full impl driven by VatSideBE.setPowerFromAdjacentBlock
+    /** Negative for coolers. Driven by VatSideBE.setPowerFromAdjacentBlock
  * on neighbor change.
 */
     protected float heatingPower = 0f;
@@ -89,46 +89,43 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
 */
     public static final float AIR_PRESSURE = 101000f;
 
-    /** Full impl driven
- * by VatSideBE.setPowerFromAdjacentBlock.
+    /** Driven by VatSideBE.setPowerFromAdjacentBlock.
 */
     protected float UVPower = 0f;
 
     /** Populated by
- * {@link #tryMakeVat} (S243) on assembly + by {@link #read} on NBT load. Cleared
+ * {@link #tryMakeVat} on assembly + by {@link #read} on NBT load. Cleared
  * by {@link #deleteVat}.
 */
     protected java.util.Optional<Vat> vat = java.util.Optional.empty();
 
-    
+
     protected boolean underDeconstruction = false;
 
-    
+
     @javax.annotation.Nullable
     protected net.minecraft.core.BlockPos openVentPos;
 
-    /** Drives
- * VatSideRenderer particle spawns in full impl.*/
+    /** Drives VatSideRenderer particle spawns.*/
     protected boolean cachedMixtureReacting = false;
 
     /** Drives bubble-particle
- * spawns in {@link #addParticles}. Server sets via chunk 8 tick (deferred); client reads
- * via AnythingBoiling tag in {@link #read}.*/
+ * spawns in {@link #addParticles}. Client reads it via the AnythingBoiling tag in
+ * {@link #read}.*/
     protected boolean cachedMixtureBoiling = false;
 
     /** Initialized
  * with a default capacity (4000 mB); gets reassigned via {@link VatFluidTankBehaviour#setCapacity}
- * when a Vat multi-block is successfully constructed (future tryMakeVat port). Null-safety:
+ * when a Vat multi-block is successfully constructed. Null-safety:
  * getters check for null so partial-state BEs don't NPE.
 */
     protected VatFluidTankBehaviour fluidBehaviour;
 
-    /** Default Vat capacity when no multi-block has been assembled. Full port uses
+    /** Default Vat capacity when no multi-block has been assembled; otherwise
  * {@link Vat#getCapacity} from the constructed Vat.*/
     protected static final int DEFAULT_CAPACITY = 4000;
 
-    /** Full tick pipeline uses this for {@code heat / react / disturbEquilibrium}.
- * Stub callers ({@link #updateCachedMixture}) rebuild but don't drive chemistry yet.
+    /** The tick pipeline uses this for {@code heat / react / disturbEquilibrium}.
 */
     protected petrolpark.mc.destroy.chemistry.legacy.LegacyMixture cachedMixture =
         new petrolpark.mc.destroy.chemistry.legacy.LegacyMixture();
@@ -172,10 +169,10 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
             // reactants doesn't re-fire reactForTick → "chemistry only runs once after load".
             if (cachedMixture != null) cachedMixture.disturbEquilibrium();
             updateGasVolume();
-            sendData();   // reverted #2 throttling
-            // diagnostic: log every addFluid that actually executes so we can correlate
-            // user "I added water + SO3" actions with the subsequent tick log to verify
-            // cachedMixture sees the new reactants.
+            sendData();
+            // diagnostic: log every addFluid that actually executes so a fluid-insertion
+            // action can be correlated with the subsequent tick log to verify cachedMixture
+            // sees the new reactants.
             if (DEBUG_LOG_ENABLED) {
                 String contents = (cachedMixture == null) ? "null" :
                     cachedMixture.getContents(false).stream()
@@ -244,26 +241,20 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
     }
 
 
-    /** Client branch keeps S241 animation
- * chaser + S245 addParticles call.
-*/
     /** Logs vat state every {@code DEBUG_LOG_INTERVAL} ticks
- * (default 20 = once per second). User-toggleable via the {@code -Ddestroy.vatDebug=true}
- * JVM arg or by editing {@link #DEBUG_LOG_ENABLED} flag below.*/
+ * (default 20 = once per second). Toggle via the {@code -Ddestroy.vatDebug=true}
+ * JVM arg or by editing the {@link #DEBUG_LOG_ENABLED} flag below.*/
     private long debugTickCounter = 0;
     private static final boolean DEBUG_LOG_ENABLED =
         Boolean.parseBoolean(System.getProperty("destroy.vatDebug", "false"));
     private static final int DEBUG_LOG_INTERVAL = 20;
 
-    /** User opted to
- * revert and rely on:
- * - addFluid path for external fluid insertions
- * - reactForTick's own equilibrium tracking for in-vat-produced substances
- * - cachedMixture in-memory mutation for chained reactions
-*/
-    // reverted #2 sendData throttling (per user request to isolate new bug).
-    // Restored direct {@code sendData()} calls in {@link #addFluid}, {@link #updateFluidMixture},
-    // end of {@link #tick}.
+    // Equilibrium handling relies on:
+    // - the addFluid path for external fluid insertions
+    // - reactForTick's own equilibrium tracking for in-vat-produced substances
+    // - cachedMixture in-memory mutation for chained reactions
+    // sendData() is called directly in {@link #addFluid}, {@link #updateFluidMixture}, and at
+    // the end of {@link #tick} (no throttling).
 
     @Override
     @SuppressWarnings("null")
@@ -288,12 +279,12 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
 
         int cyclesPerTick = getSimulationLevel();
 
-        // Rely on addFluid path +
-        // cachedMixture in-memory mutation for chained reactions. See field-level javadoc above
-        // for rollback steps if "化学反应只会重进存档后发生一次" reappears.
+        // Relies on the addFluid path + cachedMixture in-memory mutation for chained reactions.
+        // See the field-level notes above; the failure mode to watch for is chemistry only
+        // running once after a world reload.
 
-        // diagnostic logger. Logs every 20 ticks at INFO level so user can grep
-        // "[VAT-DBG]" in latest.log to trace what's happening with the vat tick / chemistry.
+        // diagnostic logger. Logs every 20 ticks at INFO level so "[VAT-DBG]" can be grepped
+        // in latest.log to trace the vat tick / chemistry.
         boolean shouldLog = DEBUG_LOG_ENABLED && (debugTickCounter++ % DEBUG_LOG_INTERVAL == 0);
         if (shouldLog) {
             String contents = cachedMixture.getContents(false).stream()
@@ -353,9 +344,8 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
                 heatCyclesRun, cyclesPerTick, heatDisturbedAtLeastOnce);
         }
 
-        // reverted #1 gated disturb (per user request to isolate new bug).
-        // The perf cost
-        // is always-disturb with empty mixture which is a HashMap comparison (cheap but
+        // Unconditional disturb (not gated). The perf cost
+        // is always-disturb with an empty mixture, which is a HashMap comparison (cheap but
         // multiplied by tick count).
         boolean wasAtEquilibriumBeforeUnconditionalDisturb = cachedMixture != null && cachedMixture.isAtEquilibrium();
         if (cachedMixture != null) cachedMixture.disturbEquilibrium();
@@ -388,7 +378,7 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
                 for (int slot = 0; slot < ish.getSlots(); slot++) ish.setStackInSlot(slot, net.minecraft.world.item.ItemStack.EMPTY);
             }
 
-            // snapshot cachedMixture's contents BEFORE reactForTick so we can detect
+            // snapshot cachedMixture's contents BEFORE reactForTick to detect
             // whether reactions actually happened. With always-disturb, reactForTick
             // fires every tick — but if no real reactions happened, shouldUpdateFluidMixture must
             // STAY FALSE, otherwise updateFluidMixture refills tanks to vatCapacity → infinite
@@ -455,13 +445,14 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
             }
 
             // re-insert ONLY inside the reaction branch (only path that cleared inventory).
-            // Originally this re-insert was OUTSIDE the if-branch which caused **item duplication**:
+            // When this re-insert was OUTSIDE the if-branch it caused item duplication:
             // when isAtEquilibrium=true, availableItemStacks was a copy of inventory,
             // inventory wasn't cleared, but the copies still got re-inserted →
             // every tick: original (1) + copy (1) = 2 → 4 → 8 → ... → 64 (capped at stack max).
-            // User report: "往反应釜里加了一个镍粉，然后镍粉不断产生至64".
-            // because heating loop disturbs equilibrium nearly every tick → reaction branch
-            // always taken → clear always happens. In 1.21 with empty/cold mixture the heating
+            // (symptom: a single nickel powder dropped into the vat duplicated up to a full
+            // stack of 64.)
+            // The disturb-equilibrium-every-tick behaviour normally keeps the reaction branch
+            // active so the clear always happens; with an empty/cold mixture the heating
             // loop's threshold check breaks → equilibrium stays → dup chain.
             for (net.minecraft.world.item.ItemStack itemStack : availableItemStacks) {
                 net.neoforged.neoforge.items.ItemHandlerHelper.insertItemStacked(inventory, itemStack, false);
@@ -548,9 +539,8 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
 
     /**
  * Bubble particles spawn at random positions inside the Vat volume when {@link
- * #cachedMixtureBoiling} (synced via AnythingBoiling tag) is true. Splash branch still
- * deferred (cachedMixtureReacting splash particle type not ported yet · full chemistry
- * tick chunk 8 will drive it).
+ * #cachedMixtureBoiling} (synced via AnythingBoiling tag) is true. The splash branch uses
+ * the same bubble particle for now; a dedicated splash particle type is not yet defined.
 */
     @SuppressWarnings("null")
     public void addParticles() {
@@ -598,8 +588,8 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
     // ============================================================
 
     /** On success, converts surrounding 6 faces of the detected volume into
- * {@link VatSideBlockEntity}s (backed by S242 Copycat stub material storage) + wires each
- * side cell's direction + controllerPosition + refresh capabilities (stub no-ops).
+ * {@link VatSideBlockEntity}s (backed by Copycat material storage) + wires each
+ * side cell's direction + controllerPosition + refreshes capabilities.
  *
  * @return {@code true} if Vat was successfully constructed
 */
@@ -655,7 +645,7 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
         // doesn't see the new capability surface (capacity changed, side cells gained/lost
         // FluidHandler.BLOCK exposure) and gets stuck holding stale endpoint references.
         // Companion to FluidTankBlockEntityMixin.destroy$resetAdjacentPumpNetworks for Create
-        // tanks. See that mixin's class javadoc for the user report and root-cause analysis.
+        // tanks. See that mixin's class javadoc for the symptom and root-cause analysis.
         notifyAdjacentFluidNetworks();
     }
 
@@ -752,7 +742,7 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
         heatingPower = 0f;
         UVPower = 0f;
         cachedMixture = new petrolpark.mc.destroy.chemistry.legacy.LegacyMixture();
-        // capture side positions BEFORE clearing vat field, so we can iterate them
+        // capture side positions BEFORE clearing the vat field, so they can be iterated
         // for pump-network propagation below.
         java.util.List<BlockPos> sidesSnapshot = vat.isPresent()
             ? new java.util.ArrayList<>(vat.get().getSideBlockPositions())
@@ -802,8 +792,8 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
     }
 
     /**
- * Future chunk 8 tick uses this for {@link petrolpark.mc.destroy.core.pollution.PollutionHelper}
- * emission site + gas venting drain.
+ * Used by the tick path as the {@link petrolpark.mc.destroy.core.pollution.PollutionHelper}
+ * emission site + gas-venting drain.
 */
     @javax.annotation.Nullable
     @SuppressWarnings("null")
@@ -834,8 +824,8 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
         if (tag.contains("Inventory") && inventory instanceof net.neoforged.neoforge.items.ItemStackHandler ish) {
             ish.deserializeNBT(registries, tag.getCompound("Inventory"));
         }
-        // promoted from S240 stub: Vat.read round-trip restored. Without this, the vat
-        // multi-block dimensions / weakest block / conductance were lost on every world load,
+        // Vat.read round-trip: without this, the vat
+        // multi-block dimensions / weakest block / conductance are lost on every world load,
         // forcing players to re-assemble. finalizeVatConstruction restores tank capacity from the
         // recovered Vat dimensions.
         if (tag.contains("Vat", net.minecraft.nbt.Tag.TAG_COMPOUND)) {
@@ -868,7 +858,7 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
         if (inventory instanceof net.neoforged.neoforge.items.ItemStackHandler ish) {
             tag.put("Inventory", ish.serializeNBT(registries));
         }
-        // promoted from S240 stub: write the Vat structure to NBT so it survives
+        // write the Vat structure to NBT so it survives
         // world reload + chunk unload/reload + setBlock-based block-entity migrations.
         if (vat.isPresent()) {
             net.minecraft.nbt.CompoundTag vatTag = new net.minecraft.nbt.CompoundTag();
@@ -914,20 +904,19 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
     }
 
     // ============================================================
-    // Renderer-support getter stubs (unblocks VatSideRenderer / VatRenderer / VatSideFluidCapability)
+    // Renderer-support getters (VatSideRenderer / VatRenderer / VatSideFluidCapability)
     // ============================================================
 
     /**
  * Return the associated {@link Vat} multi-block, or {@link java.util.Optional#empty()} if no
- * Vat is currently assembled. Populated by {@link #tryMakeVat} (S243) on assembly + by
+ * Vat is currently assembled. Populated by {@link #tryMakeVat} on assembly + by
  * {@link #read} on NBT load round-trip. Cleared by {@link #deleteVat}.
 */
     public java.util.Optional<petrolpark.mc.destroy.core.chemistry.vat.Vat> getVatOptional() {
         return vat;
     }
 
-    /** Full impl also checks Vat
- * multi-block assembly state (liquidFull flag) — for now just uses tank space.
+    /** Uses the tank's remaining space.
 */
     public boolean canFitFluid() {
         if (fluidBehaviour == null) return true;
@@ -946,8 +935,8 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
         return fluidBehaviour.getGasHandler().getFluid();
     }
 
-    /** Uses S234 VatFluidTankBehaviour's tank capacity; falls back to
- * {@link #DEFAULT_CAPACITY} when behaviour not yet initialized.*/
+    /** Uses VatFluidTankBehaviour's tank capacity; falls back to
+ * {@link #DEFAULT_CAPACITY} when the behaviour is not yet initialized.*/
     public int getCapacity() {
         if (fluidBehaviour == null) return DEFAULT_CAPACITY;
         return fluidBehaviour.getLiquidHandler().getCapacity();
@@ -1055,7 +1044,7 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
             - AIR_PRESSURE;
     }
 
-    /** Lerped client-side pressure for animations. <b>S232 stub: reads S179 pressure LerpedFloat</b>.*/
+    /** Lerped client-side pressure for animations (reads the pressure LerpedFloat).*/
     public float getClientPressure(float partialTicks) {
         return pressure.getValue(partialTicks);
     }
@@ -1065,8 +1054,8 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
     // ============================================================
 
     /**
- * Returns 0 when no Vat is assembled. Drives vatExplodesAtHighPressure trigger in the full
- * server tick (chunk 8 deferred).
+ * Returns 0 when no Vat is assembled. Drives the vatExplodesAtHighPressure trigger in the
+ * server tick.
 */
     public float getPercentagePressure() {
         if (vat.isEmpty()) return 0f;
@@ -1097,21 +1086,21 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
 
     /**
  *
- * <p>正确写法:直接 encapsulate 外层 wall 角(lowerCorner + upperCorner)即可,
- * encapsulatingFullBlocks 会自动包含 upperCorner 那个 block 的完整面。无需 inflate。</p>
+ * <p>Encapsulates the outer wall corners (lowerCorner + upperCorner) directly;
+ * {@code encapsulatingFullBlocks} already includes the full face of the upperCorner block,
+ * so no inflate is needed.</p>
 */
     public AABB wholeVatAABB() {
         return AABB.encapsulatingFullBlocks(vat.get().getLowerCorner(), vat.get().getUpperCorner());
     }
 
-    /** when player viewed the vat from angles where the controller cube was off-screen,
- * the {@link VatRenderer} BER didn't run → side-cell overlays (THERMOMETER / BAROMETER /
- * VENT bars / fluid box) disappeared).
- *
- * <p>User report: "位于特定角度时无法看到温度计和压强表".</p>
+    /** When the vat is viewed from angles where the controller cube is off-screen,
+ * the {@link VatRenderer} BER doesn't run → side-cell overlays (THERMOMETER / BAROMETER /
+ * VENT bars / fluid box) disappear (symptom: at certain viewing angles the thermometer and
+ * barometer are not visible).
  *
  * <p>Fix: expand the BER's render bounding box to {@link #wholeVatAABB} so vanilla's frustum
- * culling considers any vat-side cell visibility as keeping the BER active. {@code AABB}
+ * culling treats any vat-side cell visibility as keeping the BER active. {@code AABB}
  * computed lazily — falls back to vanilla default when no Vat is assembled (1×1 around
  * controller, since there's nothing else to render).</p>
 */
@@ -1154,7 +1143,7 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
 
     /** Shows live liquid + gas tank contents when the Vat is
  * fully assembled; otherwise a "not initialized" red-text hint once {@link #initializationTicks}
- * has elapsed. Builds on S244 ThresholdSwitch foundation + S237 tank behaviour.
+ * has elapsed.
 */
     @Override
     public boolean addToGoggleTooltip(java.util.List<Component> tooltip, boolean isPlayerSneaking) {
@@ -1169,7 +1158,7 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
         return true;
     }
 
-    /** uses S237 tank getters + {@link DestroyLang#tankInfoTooltip}
+    /** Uses the tank getters + {@link DestroyLang#tankInfoTooltip}
  * for formatting.
 */
     public static void vatFluidTooltip(VatControllerBlockEntity vatController, java.util.List<Component> tooltip) {
@@ -1189,10 +1178,10 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
     }
 
     /**
- * Liquid tank handler. <b>S235 stub: null</b> — full impl returns the
+ * Liquid tank handler. Returns the
  * {@link petrolpark.mc.destroy.core.chemistry.vat.VatFluidTankBehaviour#getLiquidHandler
  * VatFluidTankBehaviour's liquid handler} when the controller has a VatFluidTankBehaviour
- * behaviour attached.
+ * behaviour attached, otherwise {@code null}.
 */
     public petrolpark.mc.destroy.core.chemistry.vat.VatFluidTankBehaviour.VatTankSegment.VatFluidTank getLiquidTank() {
         return fluidBehaviour == null ? null : fluidBehaviour.getLiquidHandler();
@@ -1336,16 +1325,34 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
                         petrolpark.mc.destroy.DestroyDataComponents.MIXTURE,
                         new net.minecraft.nbt.CompoundTag()));
 
-            double scaleFactor = mixture.getTotalConcentration() / molarDensity;
-            int amountToDrain = Math.min((int) Math.ceil(scaleFactor * amount), amount);
-            FluidStack lostFluid = drainGasTank(amountToDrain, action);
+            double concentration = mixture.getTotalConcentration();
+            if (concentration <= 0d) return FluidStack.EMPTY;
 
-            int drainedAmount = amount;
-            if (action.execute() && !lostFluid.isEmpty()) {
-                mixture.scale((float) drainedAmount / lostFluid.getAmount());
+            // To hand out `amount` mB of gas at `molarDensity` the recipe must pull
+            // `amount * molarDensity / concentration` mB out of the tank, whose gas sits at
+            // `concentration` — so the moles removed equal the moles delivered. The original drained
+            // the INVERSE (`amount * concentration / molarDensity`, capped at `amount`): for a gas
+            // thinner than air (concentration < molarDensity) it removed fewer moles than it returned,
+            // so extracting through a pipe and pumping the result back minted gas from nothing.
+            int tankAmountToDrain = (int) Math.ceil(amount * molarDensity / concentration);
+
+            // Size the delivery off what the tank can actually give (peek, no mutation), then floor +
+            // cap at the request so the delivered moles can never exceed the moles removed — this is
+            // what closes the duplication even under a tank-limited drain or integer rounding.
+            int lostAmount = drainGasTank(tankAmountToDrain, FluidAction.SIMULATE).getAmount();
+            int deliveredAmount = Math.min(amount, (int) Math.floor((double) lostAmount * concentration / molarDensity));
+            if (deliveredAmount <= 0) return FluidStack.EMPTY;
+
+            // Don't scale the mixture when simulating — it confuses Create's fluid-network planning.
+            if (action.execute()) {
+                lostAmount = drainGasTank(tankAmountToDrain, FluidAction.EXECUTE).getAmount();
+                if (lostAmount <= 0) return FluidStack.EMPTY;
+                // Spread exactly the removed moles (concentration * lostAmount) across deliveredAmount
+                // mB, so moles-out == moles-removed with no drift in either direction.
+                mixture.scale((float) lostAmount / deliveredAmount);
             }
 
-            return petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid.of(drainedAmount, mixture);
+            return petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid.of(deliveredAmount, mixture);
         }
 
         protected void updateVatGasVolume(FluidStack drained, FluidAction action) {
@@ -1368,7 +1375,9 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
         }
     }
 
-    /** reports moles).</li>
+    /** Display-link source variants for a Vat's contents:
+ * <ul>
+ * <li>{@link #createAllSource ALL} — combined liquid + gas (reports moles).</li>
  * <li>{@link #createSolutionSource SOLUTION} — liquid tank only.</li>
  * <li>{@link #createGasSource GAS} — gas tank only.</li>
  * </ul>

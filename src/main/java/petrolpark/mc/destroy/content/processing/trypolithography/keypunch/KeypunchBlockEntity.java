@@ -43,12 +43,6 @@ import petrolpark.mc.destroy.core.data.advancement.DestroyAdvancementBehaviour;
  *
  * <p>Implements {@link ICircuitPuncher} so {@link CircuitPuncherHandler} can resolve a mask's
  * {@code PUNCHED_BY} UUID list back into puncher names for the mask tooltip.</p>
- *
- * <p><strong>Deferred (need follow-up sessions)</strong>:</p>
- * <ul>
- * * <li>GUI Screen (KeypunchScreen) — S122</li>
- * <li>Renderer (KeypunchRenderer) — S123</li>
- * * </ul>
 */
 public class KeypunchBlockEntity extends KineticBlockEntity implements ICircuitPuncher, CircuitPunchingSpecifics {
 

@@ -105,9 +105,32 @@ public class CustomExplosiveMixChargeBlock extends PowderChargeBlock implements 
             provider);
     }
 
-    // getExtractedItem / getHandloadingInfo inherited from PowderChargeBlock (1.21 CBC base
-    // handles ItemStack↔StructureBlockInfo roundtrip via BE save/load pipeline; our BE writes
-    // ExplosiveMix + Color + CustomName tags which the pipeline preserves automatically).
+    /**
+     * CBC hand-loading integration — see {@link CustomExplosiveMixShellBlock#getHandloadingInfo}.
+     * CBC's default writes the item's <em>DataComponents</em> into the bore tag, but
+     * {@link #getPropellantProperties(StructureBlockInfo)} reads a raw {@code "ExplosiveMix"} NBT
+     * key. Without this override a hand-loaded charge arrived with no mix → {@code inv.isEmpty()} →
+     * DEFAULT (zero) propellant → the cannon couldn't fire. Rebuild the tag through the BE's own
+     * serialization so the raw key is present.
+     */
+    @Override
+    public StructureBlockInfo getHandloadingInfo(ItemStack stack, BlockPos localPos, Direction cannonOrientation, HolderLookup.Provider provider) {
+        StructureBlockInfo base = super.getHandloadingInfo(stack, localPos, cannonOrientation, provider);
+        CustomExplosiveMixChargeBlockEntity be = new CustomExplosiveMixChargeBlockEntity(getBlockEntityType(), base.pos(), base.state());
+        be.onPlace(stack, provider); // explosive mix + dye color + custom name
+        return new StructureBlockInfo(base.pos(), base.state(), be.saveWithId(provider));
+    }
+
+    /** Inverse of hand-loading — extract the bore block back to a filled charge item. */
+    @Override
+    public ItemStack getExtractedItem(StructureBlockInfo info, HolderLookup.Provider provider) {
+        ItemStack stack = CreateBigCannonsBlocks.CUSTOM_EXPLOSIVE_MIX_CHARGE.asStack();
+        if (info.nbt() == null) return stack;
+        if (BlockEntity.loadStatic(info.pos(), info.state(), info.nbt(), provider) instanceof CustomExplosiveMixChargeBlockEntity ebe) {
+            stack = ebe.getFilledItemStack(stack, provider);
+        }
+        return stack;
+    }
 
     @Override
     public float getChargePower(StructureBlockInfo data) {

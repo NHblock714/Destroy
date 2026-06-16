@@ -35,9 +35,9 @@ public class MixedExplosiveEntityRenderer extends PrimedBombEntityRenderer<Mixed
             .color(entity.color);
 
         // Removed asymmetric {@code .center()} on label.
-        // <p><b>User report</b>: "混合炸药点燃后会有模型混乱的问题" + screenshot showing the primed
-        // entity rendering as a white cube with a thin rectangular extrusion sticking out one side.</p>
-        // {@code .center()} on {@code label} but NOT on {@code base}. {@code .center()} translates
+        // <p>Symptom: once primed, the entity rendered as a white cube with a thin rectangular
+        // extrusion sticking out one side.</p>
+        // {@code .center()} was applied on {@code label} but NOT on {@code base}. {@code .center()} translates
         // SuperByteBuffer vertices by (-0.5, -0.5, -0.5) in block units (with no later
         // {@code .uncenter()} to cancel it out — unlike e.g. TreeTapRenderer which uses
         // {@code .center() ... .uncenter()} as a rotation-pivot pattern).</p>
@@ -49,11 +49,9 @@ public class MixedExplosiveEntityRenderer extends PrimedBombEntityRenderer<Mixed
         // <li>label ends up at (-1, -0.5, -1)–(0, 0.5, 0) — offset 0.5 SW + 0.5 down</li>
         // </ul>
         // <p>The non-overlap region of label (the half-cube that sticks out beyond base) renders
-        // as the "extrusion" the user sees. Most visible during the white-fuse-blink phase since
+        // as the visible "extrusion". Most visible during the white-fuse-blink phase since
         // the WHITE_OVERLAY hides the texture details.</p>
-        // because explosives aren't usually viewed up close mid-fuse. Bytecode-level diff between
-        // the two catnip versions would confirm which, but for fix purposes we just align the
-        // transforms by removing the asymmetric {@code .center()}.</p>
+        // The fix aligns the transforms by removing the asymmetric {@code .center()}.</p>
         SuperByteBuffer label = CachedBuffers.partial(DestroyPartials.CUSTOM_EXPLOSIVE_MIX_OVERLAY, state)
             .light(light);
 
@@ -63,7 +61,7 @@ public class MixedExplosiveEntityRenderer extends PrimedBombEntityRenderer<Mixed
             label.overlay(overlay);
         }
 
-        // BER now ported — renderTruncated activated. Uses constant light (entity has no
+        // renderTruncated uses constant light (entity has no
         // neighbor-light context like block does).
         if (entity.hasCustomName()) {
             final int constLight = light;

@@ -24,12 +24,12 @@ import petrolpark.mc.destroy.core.explosion.SmartExplosion;
  * (fuse start), carries the inventory's color + {@link MixedExplosiveInventory} through the air,
  * and detonates via {@link CustomExplosiveMixExplosion} after fuse expires.
  *
- * <p><b>Dependencies — all ready</b>:</p>
+ * <p><b>Dependencies</b>:</p>
  * <ul>
- * <li>{@link PrimedBombEntity} (S45) — parent with explode / setFuse / owner tracking.</li>
- * <li>{@link CustomExplosiveMixExplosion#create} (S207) — property-driven explosion factory.</li>
- * <li>{@link MixedExplosiveInventory} (S204) — inventory container + property aggregation.</li>
- * <li>{@link DestroyEntityTypes#PRIMED_CUSTOM_EXPLOSIVE} (S210 new registration).</li>
+ * <li>{@link PrimedBombEntity} — parent with explode / setFuse / owner tracking.</li>
+ * <li>{@link CustomExplosiveMixExplosion#create} — property-driven explosion factory.</li>
+ * <li>{@link MixedExplosiveInventory} — inventory container + property aggregation.</li>
+ * <li>{@link DestroyEntityTypes#PRIMED_CUSTOM_EXPLOSIVE} registration.</li>
  * </ul>
 */
 public class MixedExplosiveEntity extends PrimedBombEntity implements IEntityWithComplexSpawn {
@@ -51,7 +51,6 @@ public class MixedExplosiveEntity extends PrimedBombEntity implements IEntityWit
 
     @Override
     public BlockState getBlockStateToRender() {
-        // DestroyBlocks.CUSTOM_EXPLOSIVE_MIX registered — swap from S210's Blocks.TNT stub.
         return DestroyBlocks.CUSTOM_EXPLOSIVE_MIX.getDefaultState();
     }
 
@@ -71,7 +70,7 @@ public class MixedExplosiveEntity extends PrimedBombEntity implements IEntityWit
     protected void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         color = compound.getInt("Color");
-        // S210 stub: DestroyAllConfigs.SERVER.blocks.customExplosiveMixSize.get() pending config audit.
+        // Placeholder: DestroyAllConfigs.SERVER.blocks.customExplosiveMixSize.get() pending config audit.
         inv = new MixedExplosiveInventory(9);
         if (compound.contains("Inventory")) {
             inv.deserializeNBT(level().registryAccess(), compound.getCompound("Inventory"));
@@ -79,7 +78,7 @@ public class MixedExplosiveEntity extends PrimedBombEntity implements IEntityWit
     }
 
     /**
- * S210 IEntityWithComplexSpawn write — spawn-packet payload for client renderer.
+ * IEntityWithComplexSpawn write — spawn-packet payload for client renderer.
  * {@link RegistryFriendlyByteBuf} required by 1.21 for DataComponent-aware stream codecs.
 */
     @Override

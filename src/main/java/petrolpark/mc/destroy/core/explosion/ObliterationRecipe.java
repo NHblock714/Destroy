@@ -11,7 +11,7 @@ import petrolpark.mc.destroy.DestroyRecipeTypes;
 /**
  * Display-only recipe type for Obliteration: a block-loot replacement triggered by a custom
  * explosive mixture's detonation. These recipes are JEI-display-only — they never match at
- * runtime (loot-table-driven), but the JEI {@code ObliterationCategory} (S283) shows them so
+ * runtime (loot-table-driven), but the JEI {@code ObliterationCategory} shows them so
  * players can discover which blocks give which loot when obliterated.
 */
 public class ObliterationRecipe extends AdvancedProcessingRecipe<RecipeInput> {

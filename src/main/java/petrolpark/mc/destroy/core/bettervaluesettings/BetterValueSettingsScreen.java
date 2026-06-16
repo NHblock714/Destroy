@@ -20,7 +20,7 @@ import net.minecraft.world.InteractionHand;
  * the value from.
  *
  * <p><b>Wire</b>: needed when a {@link BetterValueSettingsBehaviour} wants its access info
- * preserved end-to-end. SidedScrollValueBehaviour (S356) uses lastSideAccessed which gets set
+ * preserved end-to-end. SidedScrollValueBehaviour uses lastSideAccessed which gets set
  * via {@code acceptAccessInformation} from the server-side packet handler — this Screen ensures
  * the packet actually carries the side+hand info.</p>
 */
@@ -30,7 +30,7 @@ public class BetterValueSettingsScreen extends ValueSettingsScreen {
     protected final InteractionHand hand;
     protected final BlockPos pos;       // Mirrors parent's private 'pos'
     protected final int packetNetId;    // Mirrors parent's private 'netId' (1.21 Create made it
-                                        // private; cross-jar AT didn't apply, simpler to capture
+                                        // private; cross-jar AT didn't apply, so it is captured
                                         // at ctor time)
 
     public BetterValueSettingsScreen(BlockPos pos, Direction sideAccessed, InteractionHand hand,
@@ -50,9 +50,9 @@ public class BetterValueSettingsScreen extends ValueSettingsScreen {
         // BetterValueSettingsBehaviour.acceptAccessInformation sees the correct face/hand.
         CatnipServices.NETWORK.sendToServer(new ValueSettingsPacket(
             pos, closest.row(), closest.value(),
-            hand,             // 1.21 parent passes null; we pass the actual hand
+            hand,             // 1.21 parent passes null; this passes the actual hand
             null,             // hitResult (not needed by SidedScrollValueBehaviour)
-            sideAccessed,     // 1.21 parent passes Direction.UP; we pass the actual side
+            sideAccessed,     // 1.21 parent passes Direction.UP; this passes the actual side
             AllKeys.ctrlDown(),
             packetNetId));    // mirrored from parent's private netId at ctor time
         onClose();

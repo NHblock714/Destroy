@@ -26,14 +26,14 @@ import petrolpark.mc.destroy.core.item.tooltip.DestroyTooltipComponent;
  * <ul>
  * <li>{@link DestroyGuiTextures} CUSTOM_EXPLOSIVE_CHART / BAR / FULFILLED_LESS / FULFILLED_ZERO
  * / FULFILLED_GREATER / UNFULFILLED_LESS / UNFULFILLED_ZERO / UNFULFILLED_GREATER — all 8
- * texture entries present in S102 port (line 140-148 of DestroyGuiTextures.java verified).</li>
+ * texture entries.</li>
  * <li>{@link ExplosiveProperties} with inner types (ExplosiveProperty / ExplosivePropertyCondition
- * / ExplosivePropertiesEntry) — S203 full port.</li>
+ * / ExplosivePropertiesEntry).</li>
  * <li>{@link TransformStack} — Flywheel {@code dev.engine_room.flywheel.lib.transform.TransformStack}
- * path preserved in 1.21 (multiple existing usages: SeismographItemRenderer S103 etc).</li>
+ * path preserved in 1.21.</li>
  * </ul>
  *
- * <p><b>Real (non-stub) ports — S203</b>:</p>
+ * <p>Structural pieces:</p>
  * <ul>
  * <li>{@link Selectable} interface (1-method).</li>
  * <li>{@link #EMPTY} no-op Selectable constant.</li>
@@ -41,7 +41,7 @@ import petrolpark.mc.destroy.core.item.tooltip.DestroyTooltipComponent;
  * <li>{@link ClientExplosivePropertiesTooltip#getHeight getHeight} / {@code getWidth} — fixed 77 / 76.</li>
  * </ul>
  *
- * <p><b>Full render components — S205</b>:</p>
+ * <p>Render components:</p>
  * <ul>
  * <li>{@link #renderProperties}(properties, font, graphics, mX, mY) — 5-row iteration with value
  * bars ({@link DestroyGuiTextures#CUSTOM_EXPLOSIVE_BAR}) + condition icon dispatch (zero /
@@ -53,8 +53,6 @@ import petrolpark.mc.destroy.core.item.tooltip.DestroyTooltipComponent;
  * renderProperties call with mX/mY = -1 (no hover selection in tooltip-only context) +
  * pose pop.</li>
  * </ul>
- *
- * <p><b>Rule applications</b> (zero new):</p>
 */
 public class ExplosivePropertiesTooltip extends DestroyTooltipComponent<ExplosivePropertiesTooltip, ExplosivePropertiesTooltip.ClientExplosivePropertiesTooltip> {
 
@@ -93,7 +91,7 @@ public class ExplosivePropertiesTooltip extends DestroyTooltipComponent<Explosiv
     }
 
     /**
- * Render the Explosive-Properties 5-row chart. 1:1 Draws:
+ * Render the Explosive-Properties 5-row chart. Draws:
  * <ul>
  * <li>CUSTOM_EXPLOSIVE_CHART background texture at (0, 0).</li>
  * <li>For each of 5 {@link ExplosiveProperty} rows:
@@ -164,7 +162,7 @@ public class ExplosivePropertiesTooltip extends DestroyTooltipComponent<Explosiv
     }
 
     /**
- * Hover-position dispatch. 1:1 Returns:
+ * Hover-position dispatch. Returns:
  * <ul>
  * <li>{@link #EMPTY} if mX out-of-bounds [0, 76] or mY row index out of [0, 5).</li>
  * <li>The {@link ExplosivePropertyCondition} whose icon is under the cursor (x-range check

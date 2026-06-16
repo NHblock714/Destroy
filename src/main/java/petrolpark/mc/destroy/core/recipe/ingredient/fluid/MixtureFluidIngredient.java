@@ -21,8 +21,6 @@ import petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid;
  * criteria (molecule present · ion pair present · pure species · tag match · etc.) against the
  * {@link LegacyMixture} payload stored in a FluidStack's {@code destroy:mixture} DataComponent.
  *
- * <p>S307 port · NeoForge 1.21 path:
- *
  * <p><b>Subtypes</b>: MoleculeFluidIngredient · SaltFluidIngredient · MoleculeTagFluidIngredient
  * · IonFluidIngredient · PureSpeciesFluidIngredient · RefrigerantDummyFluidIngredient.</p>
 */
@@ -77,7 +75,7 @@ public abstract class MixtureFluidIngredient extends FluidIngredient {
  * Which {@link LegacySpecies molecules} this ingredient references — i.e. molecules whose
  * presence in a mixture would influence the {@link #testMixture testMixture} verdict.
  * Used by {@link petrolpark.mc.destroy.mixin.compat.jei.JeiProcessingRecipeMixin
- * JeiProcessingRecipeMixin} (S368) to populate
+ * JeiProcessingRecipeMixin} to populate
  * {@link petrolpark.mc.destroy.compat.jei.DestroyJEI#MOLECULES_INPUT MOLECULES_INPUT} so JEI
  * can drill from "I'm looking up molecule X" → "show recipes whose Mixture inputs reference X".
  *

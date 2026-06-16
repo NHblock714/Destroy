@@ -103,7 +103,7 @@ public class VatMaterialResourceListener extends SimpleJsonResourceReloadListene
                     if (id.startsWith("#")) { // Tags
                         id = id.substring(1);
                         datapackMaterials.put(new BlockTagIngredient(TagKey.create(Registries.BLOCK, ResourceLocation.parse(id))), material);
-                    } else { // Individual blocks — use S177 inlined VatMaterial.SingleBlockIngredient
+                    } else { // Individual blocks — use inlined VatMaterial.SingleBlockIngredient
                         Optional<? extends Holder<Block>> blockOptional = BuiltInRegistries.BLOCK.asLookup().get(ResourceKey.create(Registries.BLOCK, ResourceLocation.parse(id)));
                         if (blockOptional.isEmpty()) throw new IllegalArgumentException();
                         datapackMaterials.put(new VatMaterial.SingleBlockIngredient(blockOptional.get().value()), material);

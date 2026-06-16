@@ -50,7 +50,7 @@ import petrolpark.mc.destroy.core.extendedinventory.RequestInventoryFullStateC2S
  * layer ({@link ExtendedInventory} — server + client shared) and the network layer
  *.
  *
- * <p>Effect of this S369 partial port:</p>
+ * <p>Behavior:</p>
  * <ul>
  * <li>Extra hotbar slots appear in the corners of the HUD (configurable left/right
  * distribution via {@link DestroyConfigs.client extraHotbarSlotLocation} +
@@ -68,7 +68,7 @@ public class ExtendedInventoryClientHandler {
     private static final List<KeyMapping> HOTBAR_KEYS = new ArrayList<>(17);
     private static boolean HOTBAR_KEYS_INITIALIZED = false;
 
-    // ---- S370: Screen-integration state. The "current screen" + Rect2i panel coords are
+    // ---- Screen-integration state. The "current screen" + Rect2i panel coords are
     // refreshed on ScreenEvent.Init.Post + invalidated on ScreenEvent.Closing. Static because
     // there's only one client → one screen at a time.
 
@@ -103,7 +103,7 @@ public class ExtendedInventoryClientHandler {
             inv = ExtendedInventory.get(mc.player);
         } catch (ClassCastException ex) {
             // Player.inventory wasn't replaced — the mixin failed or the player is some non-vanilla
-            // entity that doesn't carry our subclass. Skip the tick rather than crashing.
+            // entity that doesn't carry the ExtendedInventory subclass. Skip the tick rather than crashing.
             return;
         }
 
@@ -216,7 +216,7 @@ public class ExtendedInventoryClientHandler {
             ms.pushPose();
             for (int i = 0; i < slotCount; i++) {
                 DestroyGuiTextures.HOTBAR_SLOT.render(graphics, x + i * 20, y);
-                // Magic seed (42069) — matches petrolpark library reference. The seed parameter
+                // Fixed seed (42069). The seed parameter
                 // is for animated stack overlay timing (e.g. enchantment glint) — using a fixed
                 // value keeps the animation phase constant for these slots, fine for HUD render.
                 mc.gui.renderSlot(graphics, 2 + x + i * 20, y + 2, deltaTracker, player,
@@ -226,7 +226,7 @@ public class ExtendedInventoryClientHandler {
             ms.popPose();
         }
 
-        // Selected-slot highlight — re-render over our extra hotbar if an extra slot is selected.
+        // Selected-slot highlight — re-render over the extra hotbar if an extra slot is selected.
         ms.pushPose();
         int selected = inv.getSelectedHotbarIndex();
         int selectedX = graphics.guiWidth() / 2 - 92;
@@ -240,8 +240,8 @@ public class ExtendedInventoryClientHandler {
         ms.popPose();
     }
 
-    // ---- S370: Geometry helpers for placing extra-inventory panels around an open Screen.
-    // (also matches the petrolpark-library 1.21 reference). Coordinate system is screen-relative
+    // ---- Geometry helpers for placing extra-inventory panels around an open Screen.
+    // Coordinate system is screen-relative
     // (origin at upper-left of the Screen, positive y down).
 
     /** Top-left of the LEFT extra-hotbar window (the bracket that wraps the slot row).
@@ -378,7 +378,7 @@ public class ExtendedInventoryClientHandler {
 
     /** Rebuild the survival inventory menu with extra slots positioned per current screen geometry.
  * Calls {@link ExtendedInventory#refreshPlayerInventoryMenu} which reassigns
- * {@link Player#inventoryMenu} (requires the {@code public-f} AT from S370).*/
+ * {@link Player#inventoryMenu} (requires the {@code public-f} AT on that field).*/
     public static void refreshClientInventoryMenu(ExtendedInventory inv) {
         Rect2i screenArea = new Rect2i(0, 0, 176, 166);  // Default vanilla InventoryScreen size
         Rect2i leftHb = getLeftHotbarLocation(inv, screenArea, 142);
@@ -466,7 +466,7 @@ public class ExtendedInventoryClientHandler {
         AbstractContainerMenu menu = screen.getMenu();
 
         if (menu == player.inventoryMenu) {
-            // Just-opened survival inventory — request a full state broadcast in case our
+            // Just-opened survival inventory — request a full state broadcast in case the
             // local menu is stale (e.g. re-built after a size change).
             CatnipServices.NETWORK.sendToServer(RequestInventoryFullStateC2SPacket.INSTANCE);
         }
@@ -484,10 +484,10 @@ public class ExtendedInventoryClientHandler {
             refreshExtraInventoryAreas(inv);
         }
 
-        // For non-vanilla, non-Creative, non-IExtendedInventoryMenu menus, we add slots
+        // For non-vanilla, non-Creative, non-IExtendedInventoryMenu menus, slots are added
         // post-hoc here. (The other 3 paths add slots elsewhere: vanilla via Player
-        // inventoryMenu reassignment, Creative via the Creative-screen mixin path which is
-        // S371+ deferred, IExtendedInventoryMenu screens add their own slots.)
+        // inventoryMenu reassignment, Creative via the Creative-screen mixin path,
+        // IExtendedInventoryMenu screens add their own slots.)
         if (!(menu == player.inventoryMenu
             || screen instanceof CreativeModeInventoryScreen
             || menu instanceof IExtendedInventoryMenu)) {

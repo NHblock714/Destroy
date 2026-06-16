@@ -25,7 +25,7 @@ import petrolpark.mc.destroy.core.explosion.mixedexplosive.ExplosiveProperties.E
  * on our {@link IDyeableMixedExplosiveBlockEntity} surface — dye color + custom name + mixed
  * inventory payload.
  *
- * <p>Cannot inherit from the 1.21 ported {@code MixedExplosiveBlockEntity} (S209) because we must
+ * <p>Cannot inherit from {@code MixedExplosiveBlockEntity} because it must
  * extend CBC's {@code FuzedBlockEntity} for fuze integration. Duplicates the inv/color/name fields
  * + serialization logic inline.</p>
 */
@@ -120,6 +120,47 @@ public class CustomExplosiveMixShellBlockEntity extends FuzedBlockEntity impleme
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
+        readMixData(tag, registries);
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        writeMixData(tag, registries);
+    }
+
+    // CBC's FuzedBlockEntity (via Create's SyncedBlockEntity) syncs to the client through
+    // writeClient/readClient, NOT saveAdditional. Without overriding these, the client-side BE
+    // never receives the explosive-mix inventory, so creative pick-block (getCloneItemStack runs
+    // client-side) reads an empty inventory and duplicates an empty shell. Mirror the disk fields
+    // onto the sync packet so the payload is present client-side too.
+    @Override
+    public CompoundTag writeClient(CompoundTag tag, HolderLookup.Provider registries) {
+        super.writeClient(tag, registries);
+        writeMixData(tag, registries);
+        return tag;
+    }
+
+    @Override
+    public void readClient(CompoundTag tag, HolderLookup.Provider registries) {
+        super.readClient(tag, registries);
+        readMixData(tag, registries);
+    }
+
+    /** Shared field serialization for both disk (saveAdditional) and client sync (writeClient). */
+    private void writeMixData(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.putInt("Color", color);
+        if (customName != null) {
+            ComponentSerialization.CODEC
+                .encodeStart(registries.createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), customName)
+                .resultOrPartial()
+                .ifPresent(t -> tag.put("CustomName", t));
+        }
+        tag.put("ExplosiveMix", inv.serializeNBT(registries));
+    }
+
+    /** Shared field deserialization for both disk (loadAdditional) and client sync (readClient). */
+    private void readMixData(CompoundTag tag, HolderLookup.Provider registries) {
         color = tag.getInt("Color");
         if (tag.contains("CustomName")) {
             ComponentSerialization.CODEC
@@ -133,19 +174,6 @@ public class CustomExplosiveMixShellBlockEntity extends FuzedBlockEntity impleme
         if (tag.contains("ExplosiveMix")) {
             inv.deserializeNBT(registries, tag.getCompound("ExplosiveMix"));
         }
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.putInt("Color", color);
-        if (customName != null) {
-            ComponentSerialization.CODEC
-                .encodeStart(registries.createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), customName)
-                .resultOrPartial()
-                .ifPresent(t -> tag.put("CustomName", t));
-        }
-        tag.put("ExplosiveMix", inv.serializeNBT(registries));
     }
 
     /** CBC explode hook — no-op; projectile (entity) handles detonation on impact.*/

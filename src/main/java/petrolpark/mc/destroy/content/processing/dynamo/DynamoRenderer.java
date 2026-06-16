@@ -24,9 +24,9 @@ import petrolpark.mc.destroy.client.DestroyPartials;
  * (electrode → random mid-point 1 → random mid-point 2 → target), colored cyan, randomly
  * flickered on a 10% per-frame chance.
  *
- * <p>Runtime note: until S149+ DynamoBE full port lets ChargingBehaviour actually start running,
- * the arc lightning effect won't appear. The shaft rotation (via parent {@code KineticBlockEntityRenderer})
- * works immediately — shows spinning Dynamo/Arc-Furnace-shaft as soon as kinetic speed arrives.</p>
+ * <p>Runtime note: the arc lightning effect only appears once ChargingBehaviour is actually
+ * running. The shaft rotation (via parent {@code KineticBlockEntityRenderer}) works immediately —
+ * it shows the spinning Dynamo/Arc-Furnace shaft as soon as kinetic speed arrives.</p>
 */
 public class DynamoRenderer extends KineticBlockEntityRenderer<DynamoBlockEntity> {
 

@@ -3,7 +3,7 @@ package petrolpark.mc.destroy.compat.createbigcannons;
 import petrolpark.mc.destroy.compat.createbigcannons.block.CustomExplosiveMixChargeProperties;
 
 /**
- * S338 port — holds the single instance of the Custom-Mix-Charge propellant property handler. CBC's
+ * Holds the single instance of the Custom-Mix-Charge propellant property handler. CBC's
  * {@code MunitionPropertiesHandler.registerBlockPropellantHandler} is called at block-registration
  * time to bind the block → handler.
 */

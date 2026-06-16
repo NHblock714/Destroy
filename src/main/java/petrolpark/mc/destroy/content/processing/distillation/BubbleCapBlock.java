@@ -34,9 +34,9 @@ import petrolpark.mc.destroy.DestroyVoxelShapes;
  * {@link #stateForPositionInTower}. {@link Block} + {@link IBE}<{@link BubbleCapBlockEntity}> +
  * {@link IWrenchable} (default PASS wrench — handled via tower-level logic).
  *
- * <p>BubbleCapBlockEntity is **S126 stub** — createOrAddToTower + getLuminosity no-op until S127+
- * full BE + DistillationTower port. Block registration + BE type registration complete; recipe
- * processing deferred.</p>
+ * <p>BubbleCapBlockEntity is a stub — createOrAddToTower + getLuminosity are no-ops pending the
+ * full BE + DistillationTower implementation. Block registration + BE type registration complete;
+ * recipe processing deferred.</p>
 */
 public class BubbleCapBlock extends Block implements IBE<BubbleCapBlockEntity>, IWrenchable {
 

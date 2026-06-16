@@ -18,13 +18,14 @@ import petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid;
 /**
  * Item-backed Mixture fluid tank. Stores 1 Mixture FluidStack in the item's
  * {@link DataComponents#FLUID_CONTENTS} data component via NeoForge's 1.21 FluidHandlerItemStack
- * pattern (uses the standard DataComponentType rather than legacy NBT). // ← 不同 mixture 在这被拒
- * }
- * }</pre>
+ * pattern (uses the standard DataComponentType rather than legacy NBT). The vanilla
+ * {@code super.fill} rejects a fluid that differs from the one already stored.
  *
- * <p><b>修复</b>: 覆盖 {@link #fill}，先调 super.fill 走 vanilla 路径；如果返回 0 且仍有空间，
- * 检查双方是否都是带 MIXTURE component 的 mixture，是则做 molar-weighted merge（与
- * {@code GeniusFluidTank.fill} 同模式）通过 {@code setFluid(MixtureFluid.of(...))} 写回。</p>
+ * <p>{@link #fill} is overridden to handle that case: it first calls {@code super.fill} for the
+ * vanilla path; if that returns 0 and space remains, and both the incoming and stored fluids are
+ * mixtures carrying a MIXTURE component, it performs a molar-weighted merge (same approach as
+ * {@code GeniusFluidTank.fill}) and writes the result back via
+ * {@code setFluid(MixtureFluid.of(...))}.</p>
 */
 public class ItemMixtureTank extends FluidHandlerItemStack {
 
@@ -34,8 +35,9 @@ public class ItemMixtureTank extends FluidHandlerItemStack {
 
     /**
  *
- * <p><b>User report</b>: "用烧瓶装原版的流体水不能右键倒进反应釜，本来是应该执行流体转化配方，
- * 转化为destroy的混合物水的。用泵可以把流体水灌进去，并成功转化"</p>
+ * <p>(symptom: a flask carrying vanilla {@code minecraft:water} could not be right-clicked to
+ * empty into a Vat — the fluid-conversion recipe that turns it into Destroy's Mixture water
+ * never ran; filling the Vat with a pump did convert successfully.)</p>
  *
  * <ol>
  * <li>Player picks up {@code minecraft:water} into a flask/beaker/cylinder (via Create spout,

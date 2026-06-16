@@ -25,7 +25,7 @@ import petrolpark.mc.destroy.chemistry.legacy.ReadOnlyMixture;
 public class IonFluidIngredient extends MixtureFluidIngredient {
 
     public static final MapCodec<IonFluidIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-        // Accept "molecule" primarily, "ion" (S307 wrong rename) as alias.
+        // Accept "molecule" primarily, "ion" as a legacy alias.
         // Implemented as two optional fields + post-validation since DataFixerUpper Codec doesn't
         // ship a built-in alias helper; either-required is enforced after both reads.
         Codec.STRING.optionalFieldOf("molecule", "").forGetter(i -> i.ionId),

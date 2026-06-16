@@ -53,7 +53,7 @@ import petrolpark.mc.destroy.core.fluid.gasparticle.GasParticleData;
 
 /**
  *
- * <p>Ported today (3 scenes):</p>
+ * <p>Implemented scenes (3):</p>
  * <ul>
  * <li>{@link #pipesAndTanks}: pipe-break pollution demo — GasParticleData EVAPORATION from
  * broken tank + NITROGEN_DIOXIDE mixture</li>
@@ -62,19 +62,17 @@ import petrolpark.mc.destroy.core.fluid.gasparticle.GasParticleData;
  * <li>{@link #catalyticConverter}: NITROGEN_DIOXIDE gas entering block → clean air exit</li>
  * </ul>
  *
- * <p>Key 1.21 migrations applied:</p>
- *
  * <p>Registered via {@link petrolpark.mc.destroy.client.DestroyPonderScenes#register}: only the
- * 3 ported scenes are wired. Remaining 9 slots use {@link #scenePending} which displays a
+ * 3 implemented scenes are wired. Remaining 9 slots use {@link #scenePending} which displays a
  * "scene under construction" placeholder.</p>
 */
 public class PollutionPonderScenes {
 
     /**
- * Placeholder scene for the 9 not-yet-ported pollution scenes. Shows title + text and
+ * Placeholder scene for the 9 not-yet-implemented pollution scenes. Shows title + text and
  * markAsFinished so wrench+Ponder on pollution-tagged blocks/items doesn't hit a null
- * scene. S165+ each replaces this with its real implementation as SmogPonderInstruction
- * and Vat subsystem become available.
+ * scene. Each is replaced with its real implementation as SmogPonderInstruction
+ * and the Vat subsystem become available.
 */
     public static void scenePending(SceneBuilder scene, SceneBuildingUtil util) {
         scene.title("pollution.scene_pending", "This scene is not yet implemented.");
@@ -88,7 +86,7 @@ public class PollutionPonderScenes {
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════════════════
-    // Ported scenes (3/12)
+    // Implemented scenes (3/12)
     // ═══════════════════════════════════════════════════════════════════════════════════════════
 
     public static void pipesAndTanks(SceneBuilder builder, SceneBuildingUtil util) {
@@ -547,8 +545,8 @@ public class PollutionPonderScenes {
  * <li>Wrench right-click prompt on top vat side → {@link SetVatSideType Instruction}
  * to {@link DisplayType#OPEN_VENT}; second NITROGEN_DIOXIDE particle emission
  * (vented through OPEN_VENT).</li>
- * <li>{@link VatControllerBlockEntity#flush} stub method call (S189 no-op — full Vat
- * gas-phase drain delegated to future session).</li>
+ * <li>{@link VatControllerBlockEntity#flush} stub method call (currently a no-op — full Vat
+ * gas-phase drain not yet implemented).</li>
  * <li>Reveal lever + toggle redstone → {@link DisplayType#CLOSED_VENT} (player can halt
  * venting via redstone control).</li>
  * </ol>

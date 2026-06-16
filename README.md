@@ -49,6 +49,7 @@ Tweaks to existing mechanics. Most are user-visible.
 - **Distillation output temperatures quantised to 0.1 K.** Floating-point drift no longer prevents cross-mod tanks from stacking the resulting Mixture FluidStacks.
 - **Blowpipe extracts fluid on left-click.** Matches Test Tube / Beaker / Cylinder UX; upstream supported right-click drain only.
 - **Measuring Cylinder max stack size: 64 → 1.** Aligns with the other glass containers; upstream was already `stacksTo(1)`, the port silently dropped it.
+- **Circuit Mask max stack size: 64 → 1.** Each mask carries its own punched 4×4 pattern plus up-to-three puncher-contamination UUIDs; upstream was `stacksTo(1)`, the port silently dropped it.
 - **Vat side block: Flask + vanilla water → MixtureConversionRecipe** triggers from the side as well as from a pump. Both paths now respect the conversion recipe.
 - **Pollutometer is a valid Display Link source.** Selectable pollution-type readout (percentage or progress-bar style).
 - **Colourimeter generalised.** Works against any tank Block Entity exposing a fluid handler + glass window, not only Vat side blocks.
@@ -63,6 +64,7 @@ Tweaks to existing mechanics. Most are user-visible.
 - **Centrifuge gas/liquid phase sort** — trace gas-phase species were ranked as "densest" by a sort key that mixed mixture-wide concentration with phase-specific volume; the gas pair now ranks by post-separation gas density and lands in the light tank.
 - **Round-Bottomed Flask / Beaker / Test Tube pour-out lost fluid** — `tryEmpty` drained the source first, then filled the destination; if the destination couldn't accept the full amount, the surplus disappeared. Now sim-then-execute: only the amount that fits is drained.
 - **CBC `custom_explosive_mix_shell` fuze install** — overriding `getFuze() → getItem(0)` silently lost the fuze on install/drop/render; CBC stores fuzes in a data component, not a numbered slot. Override removed.
+- **Vat gas extraction minted moles through non-Create fluid transport** — `drainGasTankWithMolarDensity` pulled `amount × concentration ÷ molarDensity` mB from the tank, the inverse of the correct volume, so gas thinner than air handed out more moles than it removed. Extracting through a pipe and pumping it back duplicated gas. Now removes the matching volume and re-expresses exactly the moles removed.
 - **JEI item-side reverse-reaction lookup no-op** — missing `return` in an `anyMatch` lambda made the reverse lookup never match.
 - **JEI reaction recipe ClassCastException** — `ReactionRecipe` was unchecked-cast straight to `RecipeHolder<R>`; now wrapped properly.
 - **Achievement chain stalled after dichromate stub** — advancement listeners were stubbed; rewired so the late-game advancement chain unlocks again.
@@ -100,6 +102,9 @@ Tweaks to existing mechanics. Most are user-visible.
 - **BubbleCap render perf** — VoxelShape rebuild thrash and per-frame fluid → fluid-type → light-level lookup eliminated via precomputed shape table and `whenFluidUpdates`-driven luminosity cache.
 - **Cooler captured by Mechanical Bearing leaked liquid air ex nihilo** — virtual-state propagation tightened.
 - **Blowpipe first-person glass orientation**.
+- **CBC custom shell / charge lost their payload when hand-loaded** — CBC 1.21 serialises the munition item's DataComponents into the bore structure tag, but the Destroy block entity persists a raw NBT save tag; a hand-loaded shell arrived with no explosive mix (and never detonated) and the charge read as zero propellant (the cannon wouldn't fire). `getHandloadingInfo` / `getExtractedItem` now round-trip through the block entity's own serialization.
+- **CBC custom shell creative middle-click returned an empty shell** — `FuzedBlockEntity` syncs to clients through `writeClient` / `readClient`, not `saveAdditional`, so the client-side inventory was empty when pick-block read it. Sync overrides added.
+- **Trypolithography circuit board always came out blank** — Create's `SequencedAssemblyRecipe.advance()` reset the work item to the transitional template between steps, stripping the punched pattern; a mixin conserves the components mid-sequence and re-stamps the circuit pattern.
 
 ### New features (additions vs upstream 1.20.1)
 
@@ -124,6 +129,7 @@ Tweaks to existing mechanics. Most are user-visible.
 - **NeoForge tag namespace migration** — 21 datapack tag files moved from `forge:` to `neoforge:`.
 - **Spout filling non-fluid-handler items** path restored (Fire Retardant spray fires correctly).
 - **CircuitPatternIngredient** ingredient type eagerly registered so Colourimeter / Pollutometer / Redstone Programmer recipes load reliably.
+- **CBC custom shell fuze rendering** — an installed fuze now renders on the placed shell (Flywheel visual) and on the item model in the inventory / in hand, matching CBC's own shells; breaking a fuzed shell drops a single shell that keeps the fuze.
 
 ## Building
 

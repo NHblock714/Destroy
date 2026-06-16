@@ -77,47 +77,40 @@ import petrolpark.mc.destroy.content.processing.treetap.TreeTapBlockEntity;
 import petrolpark.mc.destroy.core.fluid.gasparticle.GasParticleData;
 
 /**
- *
- * <p>**Ported (13/13) 🎊 COMPLETE**:</p>
+ * Ponder scenes for Destroy processing machinery (13 scenes):
  * <ul>
- * <li>{@link #agingBarrel}: (S169) Water bucket → yeast + wheat → UNDISTILLED_MOONSHINE →
- * Innkeeper villager spawn using {@link DestroyVillagers#INNKEEPER} profession (ported S169).</li>
- * <li>{@link #bubbleCapGeneric}: (S173) Distillation tower {@code showIndependentSection} +
+ * <li>{@link #agingBarrel}: Water bucket → yeast + wheat → UNDISTILLED_MOONSHINE →
+ * Innkeeper villager spawn using {@link DestroyVillagers#INNKEEPER} profession.</li>
+ * <li>{@link #bubbleCapGeneric}: Distillation tower {@code showIndependentSection} +
  * kinetics propagation + 3-cap fill sequence + {@link GasParticleData} DISTILLATION
- * particles + Blaze Burner reveal. Zero 1.21 deltas (BubbleCapBlockEntity API preserved).</li>
- * * * <li>{@link #centrifugeMixture}: Simple 3-panel text overlay showing mixture separation.</li>
- * <li>{@link #cooler}: (S170) Stray freeze pose + Blaze-Burner → Blaze-Cake kinetic-pipe demo.
- * setPosRaw→setPos + direct-field yBodyRot/yHeadRot assignment (matches S164 Sheep pattern).</li>
- * <li>{@link #extrusionDie}: (S170) Piston-contraption slide + StickerBlock EXTENDED toggle +
- * quartz → quartz_pillar emit particles. Create 1.21 StickerBlock/StickerBlockEntity
- * {@code com.simibubi.create.content.contraptions.chassis.*} preserved (javap-verified).</li>
+ * particles + Blaze Burner reveal.</li>
+ * <li>{@link #centrifugeMixture}: Simple 3-panel text overlay showing mixture separation.</li>
+ * <li>{@link #cooler}: Stray freeze pose + Blaze-Burner → Blaze-Cake kinetic-pipe demo.</li>
+ * <li>{@link #extrusionDie}: Piston-contraption slide + StickerBlock EXTENDED toggle +
+ * quartz → quartz_pillar emit particles.</li>
  * <li>{@link #phytomining}: HYPERACCUMULATING_FERTILIZER + GOLDEN_CARROTS crop mutation.</li>
  * <li>{@link #mechanicalSieve}: Belt + COPPER_INFUSED_BEETROOT_ASHES → CRUSHED_COPPER +
  * BEETROOT_ASHES pulverization.</li>
- * <li>{@link #siphon}: (S171) Redstone-pulse drain logic using
- * {@link SiphonBlockEntity#leftToDrain} field + lever toggle + batch-pulse sequence.
- * Zero 1.21 migration deltas — SiphonBlockEntity.leftToDrain public int preserved (S120+).</li>
+ * <li>{@link #siphon}: Redstone-pulse drain logic using
+ * {@link SiphonBlockEntity#leftToDrain} field + lever toggle + batch-pulse sequence.</li>
  * <li>{@link #treeTap}: Jungle log + tree tap + {@link BlockTapping#latex latex} fluid +
  * pipe propagation.</li>
  * </ul>
- *
- * <p>**Deferred (0/13) 🎊 — ALL 13 scenes real.** scenePending helper retained for
- * future-session reuse pattern.</p>
-*/
+ */
 public class ProcessingPonderScenes {
 
     // Visually distinct fluids for the centrifugeGeneric scene.
     // AWKWARD / HEALING potion fluids via Create's PotionFluid.withEffects(int, Potion, List).
     // Create 1.21 changed to PotionFluid.of(int, PotionContents, BottleType) which needs
-    // Holder<Potion> + PotionContents wrapping. S168 substitutes with pre-registered DestroyFluids
-    // client-display potion variants — same "distinct colored fluids" story without the 1.21 API
-    // dance. Swap back to real potions when DataComponent-based PotionContents wiring lands.
+    // Holder<Potion> + PotionContents wrapping. These substitute with pre-registered DestroyFluids
+    // client-display potion variants — same distinct colored fluids without the 1.21 API
+    // overhead. Could be swapped back to real potions when DataComponent-based PotionContents wiring lands.
     public static final FluidStack PURPLE_FLUID = new FluidStack(DestroyFluids.LONG_POTION.get(), 1000);
     public static final FluidStack BLUE_FLUID = new FluidStack(DestroyFluids.STRONG_POTION.get(), 500);
     public static final FluidStack RED_FLUID = new FluidStack(DestroyFluids.SPLASH_POTION.get(), 500);
 
     /**
- * Clear-water mixture fluid builder (S173). Used by {@link #bubbleCapMixtures} for distillation
+ * Clear-water mixture fluid builder. Used by {@link #bubbleCapMixtures} for distillation
  * narrative. Builds a {@link LegacyMixture#pure(petrolpark.mc.destroy.chemistry.legacy.LegacySpecies)
  * pure water} mixture + wraps as {@link MixtureFluid} FluidStack.
 */
@@ -127,7 +120,7 @@ public class ProcessingPonderScenes {
     }
 
     /**
- * Placeholder scene for the 8 not-yet-ported processing scenes. Same pattern as
+ * Placeholder scene for processing scenes that are not yet implemented. Same pattern as
  * {@link petrolpark.mc.destroy.core.pollution.PollutionPonderScenes#scenePending}.
 */
     public static void scenePending(SceneBuilder scene, SceneBuildingUtil util) {
@@ -142,7 +135,7 @@ public class ProcessingPonderScenes {
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════════════════
-    // Ported scenes (13/13) 🎊 — Processing COMPLETE
+    // Processing scenes
     // ═══════════════════════════════════════════════════════════════════════════════════════════
 
     public static void centrifugeGeneric(SceneBuilder builder, SceneBuildingUtil util) {
@@ -351,7 +344,7 @@ public class ProcessingPonderScenes {
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════════════════
-    // Deferred scenes (0/13) 🎊 — S191 blowpipeAutomation final port; Processing 100% real
+    // Additional processing scenes
     // ═══════════════════════════════════════════════════════════════════════════════════════════
 
     public static void agingBarrel(SceneBuilder scene, SceneBuildingUtil util) {
@@ -444,14 +437,13 @@ public class ProcessingPonderScenes {
  * internalTank fill + {@link GasParticleData} distillation particles.</li>
  * <li>Move tower up + reveal Blaze Burner; explain heat source.</li>
  * </ol>
- * <p>Key 1.21 deltas (zero):</p>
+ * <p>Relevant APIs:</p>
  * <ul>
- * <li>{@link BubbleCapBlockEntity} API preserved: {@code getTank() / getInternalTank() /
- * getTankCapacity() / getTransferRate() / setTicksToFill(int)} all available from S??
- * distillation port.</li>
- * <li>{@link GasParticleData} + {@link DestroyParticleTypes#DISTILLATION} ported (S166+).</li>
+ * <li>{@link BubbleCapBlockEntity}: {@code getTank() / getInternalTank() /
+ * getTankCapacity() / getTransferRate() / setTicksToFill(int)}.</li>
+ * <li>{@link GasParticleData} + {@link DestroyParticleTypes#DISTILLATION}.</li>
  * <li>Uses {@link #PURPLE_FLUID} / {@link #BLUE_FLUID} / {@link #RED_FLUID} display-potion
- * substitutes (established S168 pattern).</li>
+ * substitutes.</li>
  * </ul>
 */
     public static void bubbleCapGeneric(SceneBuilder builder, SceneBuildingUtil util) {
@@ -524,14 +516,14 @@ public class ProcessingPonderScenes {
  * mixture amounts (400/150/250 mB) + stagger fill-tick timings.</li>
  * <li>Goggles prompt + show 2nd stage with 4-tier cap tower; reveal display link.</li>
  * </ol>
- * <p>Key 1.21 deltas (zero):</p>
+ * <p>Relevant APIs:</p>
  * <ul>
  * <li>Same {@link BubbleCapBlockEntity} API as {@link #bubbleCapGeneric}.</li>
  * <li>{@link #clearMixture} helper uses {@link LegacyMixture#pure(petrolpark.mc.destroy.chemistry.legacy.LegacySpecies)} +
- * {@link MixtureFluid#of(int, ReadOnlyMixture)} — chemistry API preserved 1:1.</li>
+ * {@link MixtureFluid#of(int, ReadOnlyMixture)}.</li>
  * <li>{@link BubbleCapBlock#BOTTOM} / {@link BubbleCapBlock#TOP} boolean properties
- * preserved (used by {@link petrolpark.mc.destroy.content.processing.distillation.BubbleCapRenderer}).</li>
- * <li>{@link AllItems#GOGGLES} Create 1.21 Registrate entry preserved.</li>
+ * (used by {@link petrolpark.mc.destroy.content.processing.distillation.BubbleCapRenderer}).</li>
+ * <li>{@link AllItems#GOGGLES} Create Registrate entry.</li>
  * </ul>
 */
     public static void bubbleCapMixtures(SceneBuilder scene, SceneBuildingUtil util) {
@@ -734,7 +726,7 @@ public class ProcessingPonderScenes {
             scene.world().modifyEntity(playerElement, e -> {
                 if (!(e instanceof Player player)) return;
                 ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-                // LastProgress) on player's blowpipe each tick. 1.21 uses DestroyDataComponents.
+                // Write blowing state (Blowing / Progress / LastProgress) on the player's blowpipe each tick via DestroyDataComponents.
                 stack.set(DestroyDataComponents.BLOWPIPE_BLOWING,
                     j < (int) (BlowpipeBlockEntity.BLOWING_TIME_PROPORTION * (float) BlowpipeBlockEntity.BLOWING_DURATION));
                 int progress = stack.getOrDefault(DestroyDataComponents.BLOWPIPE_PROGRESS, 0);
@@ -753,8 +745,7 @@ public class ProcessingPonderScenes {
         scene.idle(20);
         scene.addInstruction(new LivingEntitySwingInstruction(playerElement, le -> {
             le.setItemInHand(InteractionHand.MAIN_HAND, DestroyBlocks.BLOWPIPE.asStack());
-            // Items.GLASS_BOTTLE
-            // is the S190 visual substitute until ROUND_BOTTOMED_FLASK block port lands.
+            // Items.GLASS_BOTTLE is a visual substitute until the ROUND_BOTTOMED_FLASK block is available.
             le.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.GLASS_BOTTLE));
         }));
         scene.idle(50);
@@ -781,7 +772,7 @@ public class ProcessingPonderScenes {
     /**
  * Client-side {@link HolderLookup.Provider} accessor for Ponder scene NBT serialization.
  * 1.21 ItemStack serialization (via {@code save} / {@code saveOptional}) requires a registry
- * provider — not available inside {@code modifyBlockEntityNBT} lambda scope. S191 helper
+ * provider — not available inside {@code modifyBlockEntityNBT} lambda scope. This helper
  * tunnels via {@link Minecraft#getConnection()} (client-side guaranteed — Ponder scenes
  * only run client-side).
 */
@@ -789,7 +780,7 @@ public class ProcessingPonderScenes {
         return Minecraft.getInstance().getConnection().registryAccess();
     }
 
-    /** Longest Processing scene (166 LoC) demonstrating
+    /** Demonstrates
  * mechanical automation of glassblowing via Spout → Depot → Deployer → Basin → gantry →
  * fan-driven blowing → GLASS_BOTTLE output. Phases:
  * <ol>
@@ -870,7 +861,7 @@ public class ProcessingPonderScenes {
         scene.idle(20);
         scene.world().modifyBlockEntityNBT(deployerS, DeployerBlockEntity.class,
             nbt -> nbt.put("HeldItem", filledPipe.save(sceneRegistries(), new CompoundTag())));
-        // BasinBE.inputTank is public SmartFluidTankBehaviour in Create 1.21 (javap-verified);
+        // BasinBE.inputTank is public SmartFluidTankBehaviour in Create 1.21.
         scene.world().modifyBlockEntity(basin, BasinBlockEntity.class,
             be -> be.inputTank.getPrimaryHandler().drain(250, FluidAction.EXECUTE));
         scene.idle(10);
@@ -977,7 +968,7 @@ public class ProcessingPonderScenes {
             });
             scene.idle(1);
         }
-        // S190 ROUND_BOTTOMED_FLASK → Items.GLASS_BOTTLE substitute pattern.
+        // ROUND_BOTTOMED_FLASK → Items.GLASS_BOTTLE substitute.
         scene.world().createItemEntity(util.vector().blockSurface(pipe, Direction.NORTH),
             util.vector().of(0d, 0.1d, -0.1d), new ItemStack(Items.GLASS_BOTTLE));
         scene.idle(20);
@@ -991,17 +982,17 @@ public class ProcessingPonderScenes {
     /** Narrative:
  * <ol>
  * <li>{@link Stray} spawns on the base plate (freezes via xo/yo/zo + yBodyRotO/yHeadRotO
- * — consistent with S164 {@code PollutionPonderScenes.breedingFailure} Sheep pattern).</li>
+ * — consistent with the {@code PollutionPonderScenes.breedingFailure} Sheep pattern).</li>
  * <li>Show Blaze Burner {@code showControls} hint.</li>
  * <li>Discard the Stray, reveal cooler + fluid pipe tank + frostbite animation prompt.</li>
  * <li>Reveal kinetics + Creative Blaze Cake prompt.</li>
  * </ol>
- * <p>Key 1.21 deltas:</p>
+ * <p>1.21 notes:</p>
  * <ul>
- * <li>{@code setPosRaw} → {@code setPos} (matches S164 Sheep + S169 Villager pattern;
+ * <li>{@code setPosRaw} → {@code setPos} (matches the Sheep + Villager pattern;
  * Entity AABB-refresh cleaner).</li>
  * <li>{@code setYBodyRot} / {@code setYHeadRot} mutator → direct field assignment
- * {@code yBodyRot = yBodyRotO = yHeadRot = yHeadRotO = 180} (matches S164 established
+ * {@code yBodyRot = yBodyRotO = yHeadRot = yHeadRotO = 180} (matches the
  * PollutionPonderScenes Sheep/Villager pattern).</li>
  * </ul>
 */
@@ -1105,11 +1096,11 @@ public class ProcessingPonderScenes {
  * <li>Place quartz block; show redstone pulse toggling {@link StickerBlock#EXTENDED}.</li>
  * <li>Slide the contraption, emit quartz-block particles, set quartz pillar axis.</li>
  * </ol>
- * <p>Key 1.21 dependencies preserved (via javap {@code create-1.21.1-6.0.9.jar}):</p>
+ * <p>Key Create / vanilla dependencies:</p>
  * <ul>
- * <li>{@code com.simibubi.create.content.contraptions.chassis.StickerBlock.EXTENDED} — BooleanProperty unchanged.</li>
- * <li>{@code StickerBlockEntity} — BE class preserved; used by {@code modifyBlockEntityNBT} as a dirty-trigger nop.</li>
- * <li>{@link BlockParticleOption}{@code (ParticleTypes.BLOCK, QUARTZ_BLOCK.defaultBlockState())} — vanilla 1.21.</li>
+ * <li>{@code com.simibubi.create.content.contraptions.chassis.StickerBlock.EXTENDED} — BooleanProperty.</li>
+ * <li>{@code StickerBlockEntity} — used by {@code modifyBlockEntityNBT} as a dirty-trigger nop.</li>
+ * <li>{@link BlockParticleOption}{@code (ParticleTypes.BLOCK, QUARTZ_BLOCK.defaultBlockState())} — vanilla.</li>
  * <li>{@link BlockStateProperties#AXIS} / {@link Axis#X} — vanilla.</li>
  * </ul>
 */
@@ -1188,7 +1179,6 @@ public class ProcessingPonderScenes {
  * <li>Right-click amount picker hint ({@link Pointing#DOWN}) → pulse toggled multiple times
  * demonstrates batch-drain pattern.</li>
  * </ol>
- * <p>Key 1.21 deltas (zero):</p>
 */
     public static void siphon(SceneBuilder builder, SceneBuildingUtil util) {
         CreateSceneBuilder scene = new CreateSceneBuilder(builder);

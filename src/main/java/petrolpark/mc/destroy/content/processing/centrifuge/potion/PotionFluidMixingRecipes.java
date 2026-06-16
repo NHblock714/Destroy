@@ -46,7 +46,7 @@ public class PotionFluidMixingRecipes {
 
     /**
  * Map of item → FluidStack "fluid equivalent" for runtime potion-mixing programmatic recipes.
- * S252 restoration: all 5 DestroyFluids potion entries verified registered (LONG/STRONG/SPLASH/
+ * All 5 DestroyFluids potion entries are registered (LONG/STRONG/SPLASH/
  * LINGERING/CORRUPTING_POTION · DestroyFluids.java lines 125-129).
 */
     public static final Map<Item, FluidStack> FLUID_EQUIVALENTS = Map.of(

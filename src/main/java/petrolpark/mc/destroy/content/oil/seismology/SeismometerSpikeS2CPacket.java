@@ -25,8 +25,7 @@ public final class SeismometerSpikeS2CPacket implements ClientboundPacketPayload
 
     @Override
     public void handle(LocalPlayer player) {
-        // Seismometer renderer ported (S104), DestroyGuiTextures broken
-        // in S102. Wire the spike animation: this flips SeismometerItemRenderer.spikeNextPage to
+        // Trigger the spike animation: this flips SeismometerItemRenderer.spikeNextPage to
         // 32 ticks, causing the renderer to show PAGE_SPIKE on its next 32-tick animation cycle
         // and the needle to execute the 4-phase jitter pattern (-30° → 30° → 10° → -10°).
         SeismometerItemRenderer.spike();

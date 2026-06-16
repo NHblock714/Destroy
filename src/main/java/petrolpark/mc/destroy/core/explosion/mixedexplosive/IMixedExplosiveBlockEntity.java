@@ -73,7 +73,7 @@ public interface IMixedExplosiveBlockEntity extends MenuProvider, ClipboardClone
     // ---------- MenuProvider ----------
 
     /**
- * S218 active — MixedExplosiveMenu.create constructs the container-menu for this BE.
+ * MixedExplosiveMenu.create constructs the container-menu for this BE.
 */
     @Override
     default AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {

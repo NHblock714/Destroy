@@ -25,8 +25,7 @@ import petrolpark.mc.destroy.Destroy;
  * truncated to ≤16px width, A-Z/0-9 subset) using a custom {@code destroy:explosive} bitmap font.
  *
  * <p>Wired to {@link petrolpark.mc.destroy.DestroyBlockEntityTypes#CUSTOM_EXPLOSIVE_MIX} via
- * Registrate {@code .renderer(() -> MixedExplosiveBlockEntityRenderer::new)} — see S215
- * DestroyBlockEntityTypes edit.</p>
+ * Registrate {@code .renderer(() -> MixedExplosiveBlockEntityRenderer::new)}.</p>
 */
 public class MixedExplosiveBlockEntityRenderer extends SafeBlockEntityRenderer<MixedExplosiveBlockEntity> {
 

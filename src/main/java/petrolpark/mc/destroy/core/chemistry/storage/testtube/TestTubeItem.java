@@ -38,10 +38,10 @@ public class TestTubeItem extends Item implements IMixtureStorageItem {
         // Stackable fluid items break with
         // FluidHandlerItemStack — the cap stores fluid in the stack-shared DataComponent, so
         // 16 tubes share 1 cap state. Filling/draining a stack of 16 only fills 1 tube's worth
-        // (200 mB), rest of the stack appears empty but can't be re-filled because the shared
+        // (200 mB); the rest of the stack appears empty but can't be re-filled because the shared
         // component blocks. Vanilla / Create's convention for fluid items is stacksTo(1) for
-        // exactly this reason. User reported "试管堆叠多个则无法取出流体" — fixed by enforcing
-        // single-stack.
+        // exactly this reason (a stacked test tube otherwise couldn't have its fluid extracted),
+        // so single-stack is enforced.
         super(properties.stacksTo(1));
     }
 

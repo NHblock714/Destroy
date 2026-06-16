@@ -44,9 +44,8 @@ public class DestroyDisplaySources {
         DISPLAY_SOURCES.register("pollutometer", petrolpark.mc.destroy.core.pollution.pollutometer.PollutometerDisplaySource::new);
 
     // Vat content display sources (3 variants picked on the Display Link GUI).
-    // had these as inner-class factories on VatControllerBlockEntity; the 1.21 port deferred them
-    // when DestroyDisplaySources was first written (S138 stub) and didn't back-fill after S244+
-    // ported VatControllerBlockEntity. User report: "新版本没做显示连接器链接反应釜的内容".
+    // These are inner-class factories on VatControllerBlockEntity, wired so a Display Link can
+    // read a Vat's contents.
     public static final java.util.function.Supplier<VatControllerBlockEntity.VatDisplaySource> VAT_ALL =
         DISPLAY_SOURCES.register("vat_all", VatControllerBlockEntity.VatDisplaySource::createAllSource);
     public static final java.util.function.Supplier<VatControllerBlockEntity.VatDisplaySource> VAT_SOLUTION =

@@ -51,10 +51,10 @@ import petrolpark.mc.destroy.core.chemistry.hazard.ChemistryHazardHelper;
  * {@link GlassblowingRecipe} output.
  *
  * <ul>
- * <li>S153 skeleton (class shape + constants + DataComponents)</li>
- * <li>S154 BlowpipeItemRenderer / RenderLayer (visual while held/blowing)</li>
- * <li>S155 SelectGlassblowingRecipeC2SPacket (recipe selection)</li>
- * <li>S156 BlowpipeScreen (recipe picker GUI)</li>
+ * <li>class shape + constants + DataComponents</li>
+ * <li>BlowpipeItemRenderer / RenderLayer (visual while held/blowing)</li>
+ * <li>SelectGlassblowingRecipeC2SPacket (recipe selection)</li>
+ * <li>BlowpipeScreen (recipe picker GUI)</li>
  * </ul>
 */
 public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
@@ -111,7 +111,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
         return result;
     }
 
-    /** Read the required fluid directly from the item's S153 DataComponent.*/
+    /** Read the required fluid directly from the item's DataComponent.*/
     public static SizedFluidIngredient getFluidIngredient(ItemStack stack) {
         return stack.get(DestroyDataComponents.BLOWPIPE_REQUIRED_FLUID);
     }
@@ -170,7 +170,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
         // and DEFENSIVE-COPY the executed result before storing into the TANK
         // DataComponent. Some IFluidHandler implementations (Create basin / vanilla potion
         // cauldron) cache the FluidStack instance they return, and subsequent operations
-        // on the same handler can MUTATE that instance back to empty. Without .copy(), our
+        // on the same handler can MUTATE that instance back to empty. Without .copy(), the
         // TANK component would observe its FluidStack getting silently zeroed-out, making
         // the next click see an empty tank and re-drain.
         FluidStack simulated = fh.drain(ingredient.amount(), IFluidHandler.FluidAction.SIMULATE);
@@ -311,9 +311,9 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
  * <li>**Only in survival** does it call {@code player.getInventory().placeItemBackInInventory(out)}
  * to give the player the modified copy</li>
  * </ol>
- * In CREATIVE mode (which is how the user pulls a Blowpipe from the creative tab), the
- * `out` stack is silently discarded — basin drains but TANK never reaches the player's hand.
- * Symptom: every right-click drains basin fluid, blowpipe never appears loaded, can't blow.
+ * In CREATIVE mode (e.g. when a Blowpipe is taken from the creative tab), the
+ * `out` stack is silently discarded — the basin drains but TANK never reaches the player's hand.
+ * Symptom: every right-click drains basin fluid, the blowpipe never appears loaded, can't blow.
  *
  * <p>Original purpose of the cap was Spout-block filling (Create Spout's drip-fill via
  * tryFluidTransfer). With the cap disabled, Spout-filling of Blowpipe is broken, but

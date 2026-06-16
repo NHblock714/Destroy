@@ -14,10 +14,8 @@ import petrolpark.mc.destroy.core.explosion.mixedexplosive.ExplosiveProperties.E
  * BlockItem form of {@link MixedExplosiveBlock} that carries the {@link MixedExplosiveInventory}
  * payload + dye color across pick-block / creative-dup / shulker-box storage via DataComponents.
  *
- * <p><b>Deferred to T2b closer</b>:</p>
- *
- * <p>DestroyAllConfigs.SERVER.blocks.customExplosiveMixSize hardcoded to 9 (matches S209 BE +
- * S210 Entity defaults) pending config audit port.</p>
+ * <p>DestroyAllConfigs.SERVER.blocks.customExplosiveMixSize hardcoded to 9 (matches the BE and
+ * Entity defaults) pending config audit.</p>
 */
 public class MixedExplosiveBlockItem extends BlockItem implements IMixedExplosiveItem {
 
@@ -41,12 +39,12 @@ public class MixedExplosiveBlockItem extends BlockItem implements IMixedExplosiv
         stack.set(DataComponents.DYED_COLOR, new DyedItemColor(color, true));
     }
 
-    // ---------- IMixedExplosiveItem (S208 interface) contract ----------
+    // ---------- IMixedExplosiveItem interface contract ----------
 
     @Override
     public int getExplosiveInventorySize() {
-        // S213 stub: DestroyAllConfigs.SERVER.blocks.customExplosiveMixSize pending config audit.
-        // Matches S209 MixedExplosiveBlockEntity.createInv() + S210 MixedExplosiveEntity default.
+        // Placeholder: DestroyAllConfigs.SERVER.blocks.customExplosiveMixSize pending config audit.
+        // Matches MixedExplosiveBlockEntity.createInv() + MixedExplosiveEntity default.
         return 9;
     }
 

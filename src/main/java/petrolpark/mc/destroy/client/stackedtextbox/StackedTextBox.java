@@ -122,17 +122,17 @@ public class StackedTextBox extends AbstractStackedTextBox {
         // manual beforeRender pump: bypasses AbstractSimiWidget.renderWidget which
         // normally invokes beforeRender (and afterRender). Without it isHovered /
         // isActivationAreaHovered never update.
-        // **also** call afterRender (in finally) to balance beforeRender's pushPose.
+        // afterRender (in finally) must also be called to balance beforeRender's pushPose.
         // {@link net.createmod.catnip.gui.widget.AbstractSimiWidget#beforeRender} does
         // {@code pose.pushPose()} expecting {@link
         // net.createmod.catnip.gui.widget.AbstractSimiWidget#afterRender} to {@code popPose}.
-        // PoseStack push, accumulating each frame. JEI's renderer expects balanced stack, so the
-        // leak desynced the matrix and shifted **the entire JEI overlay** (catalyst sidebar,
-        // inventory grid, top-bar navigation) down-right by the cumulative push offset. User
-        // report : "jei原来的界面会莫名其妙向右下偏移 [...] jei这些挂载组件的偏移跟超链接
-        // 字体位置直接挂钩" — the offset scaled with cursor Y because beforeRender's downstream
-        // ElementWidget.beforeRender conditionally adds a fade-related translate that depends
-        // on widget state. Each leaked push compounded that.
+        // An unbalanced PoseStack push accumulates each frame. JEI's renderer expects a balanced
+        // stack, so the leak desynced the matrix and shifted the entire JEI overlay (catalyst
+        // sidebar, inventory grid, top-bar navigation) down-right by the cumulative push offset
+        // (symptom: the whole JEI interface drifted toward the lower-right, the drift tracking the
+        // hyperlink-word font position). The offset scaled with cursor Y because beforeRender's
+        // downstream ElementWidget.beforeRender conditionally adds a fade-related translate that
+        // depends on widget state. Each leaked push compounded that.
         // Also the previous early-return-on-!isActive path skipped popping → another leak.
         // Wrapping the whole body in try/finally ensures afterRender always fires.
         beforeRender(guiGraphics, mouseX, mouseY, partialTicks);
@@ -160,21 +160,20 @@ public class StackedTextBox extends AbstractStackedTextBox {
             // layoutHeight would falsely jam the tooltip up to the top of the current recipe
             // even when there's plenty of room above/below in the JEI overlay (multiple recipes
             // stacked vertically, or other free space).
-            // User report : "靠下的蓝色偏移会更下" — tooltip Y was being clamped to the top
-            // of the recipe when trigger word was near the recipe's bottom, making it appear
-            // increasingly far from the cursor as the trigger moved down. Root cause: passing
-            // layoutHeight as the screenHeight to RemovedGuiUtils + my own Y flip both fired
+            // (symptom: a trigger word near a recipe's bottom pushed the tooltip increasingly far
+            // from the cursor as it moved down.) Root cause: passing
+            // layoutHeight as the screenHeight to RemovedGuiUtils + a separate Y flip both fired
             // simultaneously on small layoutHeight, double-shifting the tooltip far up.
-            // Lessons accumulated:
+            // Approaches that failed:
             // hardcoded 88/60 thresholds — over-flipped narrow panels.
             // PoseStack matrix m30/m31 reading — m30 unreliable.
             // layout bounds for both X and Y — Y was over-clamping.
-            // horizontally), Y uses screen height (good — tooltip can extend above/
-            // below the single-recipe area, like vanilla MC tooltips).
+            // X flips within the recipe panel; Y uses screen height so the tooltip can extend
+            // above/below the single-recipe area, like vanilla MC tooltips.
             int boxX = getX();
             int boxY = getY();
             // X flip: keep tooltip inside the recipe layout's horizontal bounds. RemovedGuiUtils
-            // renders bg starting at (mouseX_param + 12 - 3). With our mouseX_param = boxX - 22,
+            // renders bg starting at (mouseX_param + 12 - 3). With mouseX_param = boxX - 22,
             // bg right edge = boxX + width - 7.
             if (layoutWidth > 0 && boxX + width - 7 > layoutWidth) {
                 boxX -= width;

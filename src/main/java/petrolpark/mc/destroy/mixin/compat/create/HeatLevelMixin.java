@@ -18,7 +18,7 @@ import com.simibubi.create.content.processing.burner.BlazeBurnerBlock.HeatLevel;
  * against {@code KINDLED}/{@code SEETHING}, so FROSTING-tagged recipes can be wired through
  * Create's existing processing BE machinery without forking every BE class.
  *
- * <p>Registered via {@code destroy.mixins.json} {@code "mixins"} array (S251 addition).
+ * <p>Registered via {@code destroy.mixins.json} {@code "mixins"} array.
  * Technique originally from
  * <a href="https://github.com/LudoCrypt/Noteblock-Expansion-Forge/blob/main/src/main/java/net/ludocrypt/nbexpand/mixin/NoteblockInstrumentMixin.java">Noteblock-Expansion-Forge NoteblockInstrumentMixin</a>.</p>
 */

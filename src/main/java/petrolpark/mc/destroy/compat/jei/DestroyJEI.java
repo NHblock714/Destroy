@@ -60,8 +60,7 @@ import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
 import com.simibubi.create.content.processing.basin.BasinRecipe;
 
 /**
- * Destroy's JEI plugin. S268 introduced the minimal skeleton; S270 adds the first registered
- * category (MixtureConversionCategory from S269) + the category-registration pipeline.
+ * Destroy's JEI plugin. Registers the recipe categories + the category-registration pipeline.
  *
  * <p><b>Registration pattern</b> (follows Create 1.21 CreateJEI + Create-Library's
  * {@link PetrolparkCategoryBuilder}):</p>
@@ -89,15 +88,15 @@ public class DestroyJEI implements IModPlugin {
     private static final java.util.List<net.minecraft.world.item.crafting.RecipeHolder<petrolpark.mc.destroy.core.chemistry.recipe.ReactionRecipe>>
         CLIENT_DATAPACK_REACTION_HOLDERS = new java.util.ArrayList<>();
 
-    // ---- S364 Mixture infrastructure (currently empty stubs; future session populates) ----
-    // category, walked the recipe class hierarchy + Mixture-aware Ingredient types to record
+    // ---- Mixture infrastructure (currently empty stubs) ----
+    // Walks the recipe class hierarchy + Mixture-aware Ingredient types to record
     // (a) which RecipeType's are Mixture-applicable, (b) which Molecules each recipe consumes
-    // (input) or produces (output). 1.21 port currently leaves these empty —
-    // ChemicalSpeciesRecipeManagerPlugin (S363) checks size + skips its Mixture-FluidStack
+    // (input) or produces (output). Currently left empty —
+    // ChemicalSpeciesRecipeManagerPlugin checks size + skips its Mixture-FluidStack
     // drill-down branch when empty (degrades gracefully to molecule-only lookup).
     // To re-enable Mixture drill-down: hook population into loadCategories() per-category
     // .put(type, recipeClassForMixtures)` pattern). Walking MoleculeFluidIngredient sub-types
-    // requires 1.21 codec-aware Mixture introspection (defer till that infrastructure exists).
+    // requires codec-aware Mixture introspection (deferred until that infrastructure exists).
 
     /** RecipeType → recipe class mapping for recipes that accept Mixture fluid inputs.*/
     public static final java.util.Map<mezz.jei.api.recipe.RecipeType<?>, Class<? extends net.minecraft.world.item.crafting.Recipe<?>>>
@@ -129,7 +128,7 @@ public class DestroyJEI implements IModPlugin {
     private void loadCategories() {
         allCategories.clear();
 
-        // MixtureConversionCategory (S269 port): single-fluid → Mixture-fluid conversion display.
+        // MixtureConversionCategory: single-fluid → Mixture-fluid conversion display.
         // register Mechanical Mixer + Basin + Vat Controller as catalysts. Mixture conversion
         // recipes drive any chemistry-accepting block (the conversion is invoked at fill-time inside
         // VatTankWrapper.fill / ReactionInBasinRecipe.create). Without these catalysts, JEI U-key on a
@@ -197,7 +196,7 @@ public class DestroyJEI implements IModPlugin {
             .build("electrolysis", (info, helpers) -> new ElectrolysisCategory(info));
 
         // ArcFurnaceCategory: Basin-based arc-furnace recipe display. Basin + Dynamo-above + arc-furnace-lid (basin=true, arcFurnace=true).
-        // 恢复 ArcFurnaceIcon 作为 category tab icon (AnimatedDynamo 缩略 + DYNAMO item 覆盖) · 替代之前的 plain itemIcon.
+        // Uses ArcFurnaceIcon as the category tab icon (scaled AnimatedDynamo + DYNAMO item overlay) instead of a plain itemIcon.
         builder(BasinRecipe.class)
             .addTypedRecipes(DestroyRecipeTypes.ARC_FURNACE)
             .acceptsMixtures()
@@ -210,8 +209,8 @@ public class DestroyJEI implements IModPlugin {
         // switched from .addTypedRecipes(EXTRUSION) (queries non-existent JSON) to
         // .addRecipes(() -> ExtrusionRecipe.RECIPES) (programmatic, populated from
         // BlockExtrusion.EXTRUSIONS via DestroyBlockExtrusions.register). Same fix as
-        // §7.55 TappingRecipe — author's S88 stub-removal of ExtrusionRecipe.create + RECIPES
-        // initializer broke JEI display. User report: "挤压模具的挤压配方丢了".
+        // TappingRecipe — a stub-removal of ExtrusionRecipe.create + RECIPES
+        // initializer broke JEI display (symptom: the extrusion-die recipes went missing).
         builder(ExtrusionRecipe.class)
             .addRecipes(() -> petrolpark.mc.destroy.content.processing.extrusion.ExtrusionRecipe.RECIPES)
             .catalyst(petrolpark.mc.destroy.DestroyBlocks.EXTRUSION_DIE::get)
@@ -221,9 +220,9 @@ public class DestroyJEI implements IModPlugin {
 
         // TappingCategory: log-item input → fluid result with animated TreeTap.
         // Recipes come from TappingCategory.RECIPES (static-init populated from
-        // BlockTapping.ALL_TAPPINGS via TappingRecipe.create factory). Initial S276 port had
+        // BlockTapping.ALL_TAPPINGS via TappingRecipe.create factory). An earlier version had
         // .addTypedRecipes(TAPPING) expecting JSON tapping recipes that were never created —
-        // result was an empty JEI category (bug "取液器配方丢失").
+        // result was an empty JEI category (symptom: the tapping recipes went missing).
         builder(TappingRecipe.class)
             .addRecipes(() -> TappingCategory.RECIPES)
             .acceptsMixtures()  // fluid output may carry Mixture (e.g. tapped sap mixed with extracts)
@@ -299,12 +298,11 @@ public class DestroyJEI implements IModPlugin {
 
         // Recipes populated statically via ReactionCategory.RECIPES map (LegacyReaction-keyed).
         // Each ReactionRecipe's id comes from ReactionRecipe.create which counts up at class-load;
-        // we wrap each in a RecipeHolder via its built-in id.
-        // register reaction catalysts (Mechanical Mixer + Basin + Vat Controller).
-        // had a {@code reactionCatalysts()} helper called on this category; the 1.21 port omitted
-        // it, so JEI U-key on a vat / mixer / basin item only listed the Vat structure (vat_material)
+        // each is wrapped in a RecipeHolder via its built-in id.
+        // register reaction catalysts (Mechanical Mixer + Basin + Vat Controller). Without them,
+        // JEI U-key on a vat / mixer / basin item only listed the Vat structure (vat_material)
         // category and never linked back to the chemistry reactions catalog.
-        // 385-387 of DestroyJEI: any block that can drive chemistry should reverse-link here.
+        // Any block that can drive chemistry should reverse-link here.
         builder(ReactionRecipe.class)
             .addRecipes(() -> {
                 // Skip datapack-sourced reactions here. They take a separate path through
@@ -372,11 +370,11 @@ public class DestroyJEI implements IModPlugin {
             .build("mutation", MutationCategory::new);
 
         // VatMaterialCategory: one recipe per registered VatMaterial · pressure / conductivity /
-        // transparent displayed. getAllRecipes returns pre-wrapped RecipeHolders (S284 pattern).
+        // transparent displayed. getAllRecipes returns pre-wrapped RecipeHolders.
         // emptyBackground 125 → 177 px wide. {@link VatMaterialCategory#draw} renders
-        // {@code PetrolparkGuiTexture.JEI_LINE} which is 177 px wide; previous 125 px caused the
-        // dashed separator to overflow ~52 px out of the frame. we
-        // restore that. Other categories (e.g. ReactionCategory at 177×103) already had matching
+        // {@code PetrolparkGuiTexture.JEI_LINE} which is 177 px wide; a 125 px width caused the
+        // dashed separator to overflow ~52 px out of the frame, so 177 px is used here.
+        // Other categories (e.g. ReactionCategory at 177×103) already had matching
         // width so their separators rendered correctly.
         builder(VatMaterialCategory.VatMaterialRecipe.class)
             .addRecipes(VatMaterialCategory::getAllRecipes)
@@ -423,7 +421,7 @@ public class DestroyJEI implements IModPlugin {
             MoleculeJEIIngredient.RENDERER);
     }
 
-    /** Builder bridge · captures the allCategories collector. S367: returns
+    /** Builder bridge · captures the allCategories collector. Returns the
  * {@link DestroyCategoryBuilder} subclass so categories can call {@code .acceptsMixtures()}
  * to register themselves into {@link #MIXTURE_APPLICABLE_RECIPE_TYPES}.*/
     private <T extends Recipe<? extends RecipeInput>> DestroyCategoryBuilder<T> builder(Class<T> recipeClass) {
@@ -448,7 +446,7 @@ public class DestroyJEI implements IModPlugin {
         // recipes") crashes with "There is no recipe category registered for: RecipeType[uid=
         // petrolpark:item_contaminants]". Library expects downstream mods to register the
         // ContaminantInfoCategory themselves. Destroy is the canonical consumer (everything
-        // contamination-related is for Destroy's chemistry mixtures), so we register here.
+        // contamination-related is for Destroy's chemistry mixtures), so it is registered here.
         registration.addRecipeCategories(new com.petrolpark.compat.jei.category.ContaminantInfoCategory<>(
             registration.getJeiHelpers().getGuiHelper(),
             mezz.jei.api.constants.VanillaTypes.ITEM_STACK,

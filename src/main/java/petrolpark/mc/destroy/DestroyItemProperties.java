@@ -14,7 +14,7 @@ import petrolpark.mc.destroy.content.tool.swissarmyknife.SwissArmyKnifeItemRende
  * <ul>
  * <li>{@code destroy:component} on {@link DestroyItems#SWISS_ARMY_KNIFE} —
  * {@link SwissArmyKnifeItemRenderer.RenderedTool#getItemProperty} reads
- * {@code DestroyDataComponents.RENDERED_TOOL} (S83) and returns the tool-ordinal / 8f so
+ * {@code DestroyDataComponents.RENDERED_TOOL} and returns the tool-ordinal / 8f so
  * the JSON model selector picks the right blade variant.</li>
  * </ul>
 */

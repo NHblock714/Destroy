@@ -101,7 +101,7 @@ public class ColorimeterBlockEntity extends SmartBlockEntity {
     @Override
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
-        // ColorimeterScreen open-screen guard dropped (screen not ported · S262).
+        // ColorimeterScreen open-screen guard dropped (screen not ported yet).
         configure(LegacySpecies.getMolecule(tag.getString("Molecule")), tag.contains("ObservingGas"));
     }
 
@@ -159,8 +159,8 @@ public class ColorimeterBlockEntity extends SmartBlockEntity {
  * sight to the fluid is needed for the colorimeter to "see" its color.</p>
  *
  * <p>Multi-block tanks (Create FluidTank 3×3×3, etc.): {@link Capabilities#FluidHandler#BLOCK}
- * for any tank cell is delegated to the multi-block controller's combined inventory, so we
- * naturally read the whole multi-block contents without explicit controller lookup.</p>
+ * for any tank cell is delegated to the multi-block controller's combined inventory, so this
+ * naturally reads the whole multi-block contents without explicit controller lookup.</p>
 */
     @SuppressWarnings("null")
     public Optional<IFluidHandler> getWindowedFluidHandler() {

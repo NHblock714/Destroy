@@ -39,16 +39,13 @@ import petrolpark.mc.destroy.util.DestroyReloadListener;
  * {@link Listener} reload listener. Drives custom-explosive gameplay effects — thresholds decide
  * whether the mixed explosive can ignite, drops XP, drops mob heads, evaporates fluids, etc.
  *
- * <p><b>Downstream consumers of this class (future T2b ports)</b>:</p>
+ * <p><b>Downstream consumers of this class</b>:</p>
  * <ul>
- * <li>{@link ExplosivePropertiesTooltip} — GUI tooltip rendering (S203 stub, full T2b closer
- * session will restore renderProperties / getSelected logic).</li>
- * <li>{@code CustomExplosiveMixExplosion} — runtime explosion path consuming property thresholds
- * (future T2b session).</li>
- * <li>{@code FillMixedExplosiveItemRecipe} — Basin recipe reading ITEM_EXPLOSIVE_PROPERTIES map
- * (future T2b session · BasinRecipe blocker may gate).</li>
- * <li>{@code MixedExplosiveBlockEntity / MixedExplosiveMenu / Screen} — UI edit/preview
- * (future T2b session).</li>
+ * <li>{@link ExplosivePropertiesTooltip} — GUI tooltip rendering (renderProperties / getSelected
+ * logic).</li>
+ * <li>{@code CustomExplosiveMixExplosion} — runtime explosion path consuming property thresholds.</li>
+ * <li>{@code FillMixedExplosiveItemRecipe} — Basin recipe reading ITEM_EXPLOSIVE_PROPERTIES map.</li>
+ * <li>{@code MixedExplosiveBlockEntity / MixedExplosiveMenu / Screen} — UI edit/preview.</li>
  * </ul>
 */
 public class ExplosiveProperties extends EnumMap<ExplosiveProperties.ExplosiveProperty, ExplosiveProperties.ExplosivePropertiesEntry> {
@@ -220,10 +217,10 @@ public class ExplosiveProperties extends EnumMap<ExplosiveProperties.ExplosivePr
  * Each JSON file maps an item id to its explosive-property values; loaded into
  * {@link #ITEM_EXPLOSIVE_PROPERTIES} on reload.
  *
- * <p>S203 migration (PeriodicTableBlock.Listener S174 template applied):</p>
+ * <p>1.21 migration notes:</p>
  * <ul>
  * <li>IContext ctor param dropped (only used by {@code CraftingHelper.processConditions};
- * no conditions in current data files, grep-verified).</li>
+ * no conditions in current data files).</li>
  * <li>{@code new ResourceLocation(String)} → {@code ResourceLocation.parse(String)}.</li>
  * <li>Wire via {@link petrolpark.mc.destroy.core.event.DestroyCommonEvents#onAddReloadListener
  * DestroyCommonEvents.onAddReloadListener} → {@code event.addListener(new Listener())}.</li>
@@ -252,7 +249,7 @@ public class ExplosiveProperties extends EnumMap<ExplosiveProperties.ExplosivePr
             for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
                 JsonObject object = entry.getValue().getAsJsonObject();
 
-                // have no "conditions" fields — grep-verified). NeoForge 1.21 ICondition API moved to
+                // have no "conditions" fields). NeoForge 1.21 ICondition API moved to
                 // ConditionalOps codec stream; not wired here.
 
                 Optional<? extends Holder<Item>> itemOptional = BuiltInRegistries.ITEM.asLookup().get(ResourceKey.create(Registries.ITEM, ResourceLocation.parse(entry.getKey())));

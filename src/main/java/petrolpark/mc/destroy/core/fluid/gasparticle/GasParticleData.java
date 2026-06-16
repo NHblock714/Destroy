@@ -19,7 +19,7 @@ import petrolpark.mc.destroy.client.DestroyParticleTypes;
  * DISTILLATION particles have a per-particle upward lifetime driven by {@link #blockHeight}
  * (tower height); EVAPORATION particles ignore blockHeight and dissipate from a fluid amount.
  *
- * <p>Registration: {@code DestroyParticleTypes.DISTILLATION + EVAPORATION} (S140 new entries).</p>
+ * <p>Registration: {@code DestroyParticleTypes.DISTILLATION + EVAPORATION}.</p>
 */
 public class GasParticleData implements ParticleOptions, ICustomParticleDataWithSprite<GasParticleData> {
 
@@ -84,8 +84,8 @@ public class GasParticleData implements ParticleOptions, ICustomParticleDataWith
     public StreamCodec<? super RegistryFriendlyByteBuf, GasParticleData> getStreamCodec() {
         // For split codec routing by type, return a dispatch codec. Since DestroyParticleTypes
         // registers DISTILLATION + EVAPORATION as separate types and each calls getStreamCodec()
-        // on its own ICustomParticleDataWithSprite instance (which is shared since we use the
-        // same class for both), we return a conservative default (distillation stream codec).
+        // on its own ICustomParticleDataWithSprite instance (which is shared since the
+        // same class is used for both), this returns a conservative default (distillation stream codec).
         // In practice ParticleEngine only uses getStreamCodec() via the type's registered
         // StreamCodec which itself is supplied per-type by Create's ParticleType factory —
         // returning either codec works for the common case since type routing happens upstream.

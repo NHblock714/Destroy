@@ -54,7 +54,7 @@ public class PotionSeparationRecipes {
 
     /**
  * Build (or return cached) separation-recipe map. Safe to call repeatedly — lazy-init gated.
- * Same caching pattern as S253 {@link PotionFluidMixingRecipes#createRecipes}.
+ * Same caching pattern as {@link PotionFluidMixingRecipes#createRecipes}.
 */
     public static Map<Pair<Holder<Potion>, BottleType>, RecipeHolder<CentrifugationRecipe>> createSeparationRecipes(Level level) {
         if (!alreadyGenerated) {

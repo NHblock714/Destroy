@@ -49,7 +49,7 @@ public class MixedExplosiveMenu extends MenuBase<IMixedExplosiveBlockEntity> {
 
     @Override
     protected void initAndReadInventory(IMixedExplosiveBlockEntity contentHolder) {
-        // post-init inventory read deferred — inventory already comes via S217 writeToBuffer
+        // post-init inventory read deferred — inventory already comes via writeToBuffer
         // + DummyCustomExplosiveMixBlockEntity client-side deserialization.
     }
 
@@ -86,7 +86,7 @@ public class MixedExplosiveMenu extends MenuBase<IMixedExplosiveBlockEntity> {
     /**
  * Client-side stand-in for the server's {@link IMixedExplosiveBlockEntity}. Deserializes the
  * displayName + inventory + applicable-conditions from the Menu's spawn-packet buffer (format
- * matches S217 {@link IMixedExplosiveBlockEntity#writeToBuffer}).
+ * matches {@link IMixedExplosiveBlockEntity#writeToBuffer}).
 */
     protected static class DummyCustomExplosiveMixBlockEntity implements IMixedExplosiveBlockEntity {
 

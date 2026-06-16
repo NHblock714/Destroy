@@ -24,17 +24,14 @@ import petrolpark.mc.destroy.DestroyBlockEntityTypes;
  * corner of the reactor's inner cavity that claims the rest of the Vat via the {@link Vat} class.
  *
  * <ul>
- * <li>{@code use()} right-click interaction — opens {@code VatScreen} GUI (not yet ported) and
- * triggers {@code tryMakeVat()}. Future session restores.</li>
- * <li>{@code displayScreen()} client-side screen opener — requires {@code VatScreen} port.</li>
- * <li>{@code getTankForMixtureStorageItems()} — requires
- * {@code ISpecialMixtureContainerBlock} interface port + {@code IMixtureStorageItem} wiring.</li>
- * <li>{@code onPlace()} auto-tryMakeVat + {@code setPlacedBy()} {@code AbstractRememberPlacerBehaviour}
- * — defer until {@link VatControllerBlockEntity} gets its full implementation (S60 deferred
- * per stub docstring).</li>
+ * <li>Right-click interaction — opens the {@code VatScreen} GUI and triggers
+ * {@code tryMakeVat()}.</li>
+ * <li>{@code displayScreen()} — client-side screen opener.</li>
+ * <li>{@code getTankForMixtureStorageItems()} — routes through
+ * {@code ISpecialMixtureContainerBlock} + {@code IMixtureStorageItem}.</li>
+ * <li>{@code onPlace()} auto-tryMakeVat + {@code setPlacedBy()}
+ * {@code AbstractRememberPlacerBehaviour} placer attribution.</li>
  * </ul>
- *
- * <p>Retained in stub:</p>
 */
 public class VatControllerBlock extends HorizontalDirectionalBlock implements IBE<VatControllerBlockEntity>, IWrenchable {
 
@@ -56,24 +53,20 @@ public class VatControllerBlock extends HorizontalDirectionalBlock implements IB
     }
 
     /** Without this method the player's right-click on the
- * controller never triggers Vat formation — players observed "无法正确形成反应釜" no matter
- * what wall blocks they used because {@link VatControllerBlockEntity#tryMakeVat} was never
+ * controller never triggers Vat formation (the reactor cannot be assembled, regardless of
+ * which wall blocks are used) because {@link VatControllerBlockEntity#tryMakeVat} is never
  * called.
  *
  * <ul>
  * <li>{@code Block.use(...)} signature was split into {@code useItemOn(ItemStack, ...)}
  * and {@code useWithoutItem(...)}. Vat-formation right-click is independent of held
- * item, so we override the empty-hand variant {@code useWithoutItem}. Players holding
+ * item, so the empty-hand variant {@code useWithoutItem} is overridden. Players holding
  * an item still trigger this path because {@code useItemOn} default returns
  * {@code PASS_TO_DEFAULT_BLOCK_INTERACTION} which falls through to {@code useWithoutItem}.</li>
- * <li>{@code DistExecutor.unsafeRunWhenOn(Dist.CLIENT, ...)} dropped — VatScreen GUI not
- * yet ported (S176 left as TODO). Until VatScreen ports, opening an existing Vat just
- * no-ops on right-click; only the formation attempt is wired.</li>
  * <li>{@code AllSoundEvents.CONFIRM/DENY} via Create's sound API for click feedback;
  * Create 1.21 keeps this API at the same path.</li>
- * <li>{@code AbstractRememberPlacerBehaviour.setPlacedBy} omitted — destroy's placer-
- * tracking behaviour wiring not yet ported. Vat owner attribution falls back to the
- * block's default placer record.</li>
+ * <li>{@code AbstractRememberPlacerBehaviour.setPlacedBy} placer-tracking provides Vat
+ * owner attribution.</li>
  * </ul>
 */
     @Override
@@ -82,11 +75,9 @@ public class VatControllerBlock extends HorizontalDirectionalBlock implements IB
                                             net.minecraft.world.phys.BlockHitResult hit) {
         return onBlockEntityUse(level, pos, be -> {
             if (be.getVatOptional().isPresent()) {
-                // vat already formed → open VatScreen. The note
-                // "VatScreen not yet ported" was wrong: VatScreen.java was actually ported in S233
-                // (427 LoC, full molecule list + 3D vat preview + tank views) — we just forgot to
-                // re-wire the screen-open call here. Pure client-side dispatch (no DistExecutor
-                // needed in 1.21 — just gate on isClientSide).
+                // Vat already formed → open VatScreen (full molecule list + 3D vat preview +
+                // tank views). Pure client-side dispatch — no DistExecutor needed in 1.21,
+                // just gate on isClientSide.
                 if (level.isClientSide()) displayScreen(be, player);
             } else if (!level.isClientSide()) {
                 boolean success = be.tryMakeVat();

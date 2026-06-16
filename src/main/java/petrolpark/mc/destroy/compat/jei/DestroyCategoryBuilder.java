@@ -18,7 +18,7 @@ import petrolpark.mc.destroy.Destroy;
  * call {@link #acceptsMixtures()} during fluent build → at
  * {@link #finalizeBuilding finalizeBuilding} time the {@code (RecipeType, recipeClass)} pair is
  * recorded into {@link DestroyJEI#MIXTURE_APPLICABLE_RECIPE_TYPES}, which the
- * {@code ChemicalSpeciesRecipeManagerPlugin} (S363) consumes to drill down from
+ * {@code ChemicalSpeciesRecipeManagerPlugin} consumes to drill down from
  * "I'm looking up species X" → "show all recipe categories that consume/produce a Mixture
  * containing X".
 */
@@ -52,14 +52,14 @@ public class DestroyCategoryBuilder<R extends Recipe<?>>
             // RecipeType<RecipeHolder<R>> with recipeClass=RecipeHolder.class), NOT the raw
             // `type` parameter (which is RecipeType[uid=..., recipeClass=R.class]).
             // Create's CreateRecipeCategory<T> implements IRecipeCategory<RecipeHolder<T>>, so
-            // JEI registers categories keyed by RecipeType[uid, RecipeHolder.class]. If we put
-            // the raw type into MIXTURE_APPLICABLE_RECIPE_TYPES, then ChemicalSpeciesRecipeManagerPlugin
-            // returns these raw types from getRecipeTypes(focus), and JEI's
-            // RecipeTypeDataMap.get() lookup fails with IllegalStateException ("There is no
+            // JEI registers categories keyed by RecipeType[uid, RecipeHolder.class]. Putting
+            // the raw type into MIXTURE_APPLICABLE_RECIPE_TYPES makes ChemicalSpeciesRecipeManagerPlugin
+            // return these raw types from getRecipeTypes(focus), and JEI's
+            // RecipeTypeDataMap.get() lookup then fails with IllegalStateException ("There is no
             // recipe category registered for: RecipeType[uid=destroy:tapping, recipeClass=
             // class TappingRecipe]") because the category was actually registered under
             // RecipeType[uid=destroy:tapping, recipeClass=RecipeHolder].
-            // The fix: use category.getRecipeType() — same as what JEI's category map keys on.
+            // Using category.getRecipeType() keys on the same type as JEI's category map.
             DestroyJEI.MIXTURE_APPLICABLE_RECIPE_TYPES.put(category.getRecipeType(),
                 (Class<? extends net.minecraft.world.item.crafting.Recipe<?>>) trueClass);
         }

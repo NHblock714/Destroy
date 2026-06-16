@@ -272,11 +272,11 @@ public abstract class RedstoneProgram {
             // Use OPTIONAL_STREAM_CODEC, NOT STREAM_CODEC. 1.21 vanilla
             // ItemStack.STREAM_CODEC explicitly rejects empty stacks ("Empty ItemStack not
             // allowed"); the empty-allowing variant is OPTIONAL_STREAM_CODEC. RedstoneProgrammer
-            // channels can have one empty Frequency slot (e.g. just-added channel where the
-            // user dropped only one ItemStack — second frequency is still ItemStack.EMPTY) —
+            // channels can have one empty Frequency slot (e.g. just-added channel where only
+            // one ItemStack was dropped — second frequency is still ItemStack.EMPTY) —
             // that's a valid intermediate state during JEI ghost-drag. Using
             // STREAM_CODEC here crashed the network with EncoderException → world disconnect
-            // (user reported "放置成功的那一瞬间世界崩掉").
+            // (symptom: the world crashed the instant the programmer was placed).
             ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, channel.networkKey.getFirst().getStack());
             ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, channel.networkKey.getSecond().getStack());
             buf.writeVarIntArray(getEncodedSequence(channel));

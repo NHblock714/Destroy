@@ -52,17 +52,14 @@ public class DiscElectroplatingRecipe extends BasinRecipe {
             .require(Ingredient.of(discStack))
             .output(DiscStamperItem.of(discStack));
 
-        // ingredients/results to the builder. S146 mistakenly switched to the
-        // {@code withFluidIngredients/withItemOutputs/withFluidOutputs} "bulk helpers" thinking
-        // they appended a list — they actually OVERWRITE: {@code params.results = outputs;}
-        // (verified in Create 1.21 ProcessingRecipeBuilder.java:67-69). With template
-        // {@code results: []} (empty), the bulk-call wiped out the {@code .output(stamped
-        // disc_stamper)} added two lines above. Net: every disc_electroplating runtime recipe
-        // had ZERO outputs → JEI rendered the output slot as an empty placeholder (the "gray
-        // cube" the user reported, mis-diagnosed as a missing-texture / un-ported disc_stamper),
-        // and Dynamo would actually fail the recipe at execute time too because there's
-        // nothing to produce.
-        // {@code DiscElectroplatingRecipe.copyWithDisc}.
+        // Append ingredients/results individually rather than via the
+        // {@code withFluidIngredients/withItemOutputs/withFluidOutputs} "bulk helpers": those
+        // OVERWRITE rather than append ({@code params.results = outputs;} in Create 1.21
+        // ProcessingRecipeBuilder.java:67-69). With template {@code results: []} (empty), a
+        // bulk call would wipe out the {@code .output(stamped disc_stamper)} added two lines
+        // above, leaving every disc_electroplating runtime recipe with ZERO outputs → JEI
+        // would render the output slot as an empty placeholder, and Dynamo would fail the
+        // recipe at execute time because there is nothing to produce.
         ingredients.forEach(builder::require);
         fluidIngredients.forEach(builder::require);
         results.forEach(builder::output);

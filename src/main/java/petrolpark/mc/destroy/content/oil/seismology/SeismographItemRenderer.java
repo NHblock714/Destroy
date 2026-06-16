@@ -99,12 +99,11 @@ public class SeismographItemRenderer extends CustomRenderedItemModelRenderer {
         if (mc.player != null && !mc.player.isInvisible()) {
             ms.pushPose();
             // vanilla renderOneHandedMap uses `f * 10F` (handRotation * 10°), not a fixed
-            // 10°. With the fixed version, the off-hand (handRotation = -1) rotates the arm in the
+            // 10°. With a fixed 10°, the off-hand (handRotation = -1) rotates the arm in the
             // wrong direction, visually pushing the held map toward the bottom-right corner instead
-            // of the bottom-left where the off-hand should sit.
-            // — main hand happened to look right because handRotation = +1 made the multiplication
-            // a no-op; off-hand revealed the bug. Now matches vanilla 1.21 ItemInHandRenderer
-            // exactly.
+            // of the bottom-left where the off-hand should sit. The main hand looks correct either
+            // way because handRotation = +1 makes the multiplication a no-op. This matches vanilla
+            // 1.21 ItemInHandRenderer exactly.
             ms.mulPose(Axis.ZP.rotationDegrees(handRotation * 10f));
             itemRenderer.renderPlayerArm(ms, buffer, light, equippedProgress, swingProgress, hand);
             ms.popPose();
@@ -118,10 +117,10 @@ public class SeismographItemRenderer extends CustomRenderedItemModelRenderer {
             0.4f * Mth.sin(sqrtSwing * ((float) Math.PI * 2f)) - 0.3f * swingAngle,
             -0.3f * Mth.sin(swingProgress * (float) Math.PI));
         ms.mulPose(Axis.XP.rotationDegrees(swingAngle * -45f));
-        // same handRotation-multiplier fix on the swing Y rotation. Vanilla does
-        // `f * f1 * f2 * -30F`; we were missing the leading `f` (handRotation). Off-hand swing
-        // animation rotated the wrong direction. Mostly invisible at rest (swingProgress = 0 zeros
-        // the term out), but a real off-by-mirror during attack swings.
+        // same handRotation-multiplier on the swing Y rotation. Vanilla does
+        // `f * f1 * f2 * -30F`; the leading `f` (handRotation) is required. Without it the off-hand
+        // swing animation rotates the wrong direction. Mostly invisible at rest (swingProgress = 0
+        // zeros the term out), but a real off-by-mirror during attack swings.
         ms.mulPose(Axis.YP.rotationDegrees(handRotation * sqrtSwing * swingAngle * -30f));
         ms.mulPose(Axis.YP.rotationDegrees(180f));
         ms.mulPose(Axis.ZP.rotationDegrees(180f));
@@ -257,11 +256,10 @@ public class SeismographItemRenderer extends CustomRenderedItemModelRenderer {
     }
 
     /**
- * Map a {@link Mark} enum value to its corresponding {@link DestroyGuiTextures} icon. Session
- * 100 dropped the {@code Mark.icon} field (to keep Mark enum data-only while DestroyGuiTextures
- * was still deferred). Now that DestroyGuiTextures is ported (S102), this mapping lives here
- * in the renderer — the place that actually needs the textures. Mark.NONE → returned value is
- * irrelevant since callers guard with a NONE check.
+ * Map a {@link Mark} enum value to its corresponding {@link DestroyGuiTextures} icon. The
+ * {@code Mark.icon} field was dropped to keep the Mark enum data-only, so this texture mapping
+ * lives here in the renderer — the place that actually needs the textures. Mark.NONE → returned
+ * value is irrelevant since callers guard with a NONE check.
 */
     private static DestroyGuiTextures markToTexture(Mark mark) {
         return switch (mark) {

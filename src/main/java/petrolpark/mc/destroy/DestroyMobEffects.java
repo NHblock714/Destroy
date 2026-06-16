@@ -19,12 +19,10 @@ import petrolpark.mc.destroy.core.chemistry.hazard.mobeffect.LeadPoisoningMobEff
 import petrolpark.mc.destroy.core.mobeffect.DestroyMobEffect;
 import petrolpark.mc.destroy.core.mobeffect.UncurableMobEffect;
 
-/** They are stubbed below as
- * plain {@link DestroyMobEffect}s so the registry IDs and holders exist; when their content classes
- * port, swap the factory in-place without changing the registry key.
- *
- * TODO: replace the stub factories with the real subclasses once the
- * content/product/alcohol, content/product/babyblue, core/chemistry/hazard/mobeffect packages port.
+/**
+ * Destroy's {@link MobEffect} registrations. Each entry binds a registry ID + holder to its
+ * effect class; generic effects use {@link DestroyMobEffect}, while content-specific behaviours
+ * (alcohol, baby blue, chemistry hazards) use their dedicated subclasses.
 */
 public class DestroyMobEffects {
 
@@ -34,14 +32,12 @@ public class DestroyMobEffects {
         .color(0)
         .register();
 
-    // real ChemicalPoisonMobEffect swapped in.
     public static final MobEffectEntry<ChemicalPoisonMobEffect> CHEMICAL_POISON = REGISTRATE
         .mobEffect("chemical_poison", (cat, color) -> new ChemicalPoisonMobEffect(cat, color))
         .category(MobEffectCategory.HARMFUL)
         .color(0x6B8E23)
         .register();
 
-    // real CryingMobEffect swapped in.
     public static final MobEffectEntry<CryingMobEffect> CRYING = REGISTRATE
         .mobEffect("crying", (cat, color) -> new CryingMobEffect(cat, color))
         .category(MobEffectCategory.HARMFUL)
@@ -60,35 +56,30 @@ public class DestroyMobEffects {
         .color(0xF7F75D)
         .register();
 
-    // real HangoverMobEffect swapped in.
     public static final MobEffectEntry<HangoverMobEffect> HANGOVER = REGISTRATE
         .mobEffect("hangover", (cat, color) -> new HangoverMobEffect(cat, color))
         .category(MobEffectCategory.HARMFUL)
         .color(0x8B4513)
         .register();
 
-    // real InebriationMobEffect swapped in.
     public static final MobEffectEntry<InebriationMobEffect> INEBRIATION = REGISTRATE
         .mobEffect("inebriation", (cat, color) -> new InebriationMobEffect(cat, color))
         .category(MobEffectCategory.NEUTRAL)
         .color(0xD2B48C)
         .register();
 
-    // real LeadPoisoningMobEffect swapped in.
     public static final MobEffectEntry<LeadPoisoningMobEffect> LEAD_POISONING = REGISTRATE
         .mobEffect("lead_poisoning", (cat, color) -> new LeadPoisoningMobEffect(cat, color))
         .category(MobEffectCategory.HARMFUL)
         .color(0x555555)
         .register();
 
-    // real BabyBlueHighMobEffect swapped in.
     public static final MobEffectEntry<BabyBlueHighMobEffect> BABY_BLUE_HIGH = REGISTRATE
         .mobEffect("baby_blue_high", (cat, color) -> new BabyBlueHighMobEffect(cat, color))
         .category(MobEffectCategory.BENEFICIAL)
         .color(0x8BDCEB)
         .register();
 
-    // real BabyBlueWithdrawalMobEffect swapped in.
     public static final MobEffectEntry<BabyBlueWithdrawalMobEffect> BABY_BLUE_WITHDRAWAL = REGISTRATE
         .mobEffect("baby_blue_withdrawal", (cat, color) -> new BabyBlueWithdrawalMobEffect(cat, color))
         .category(MobEffectCategory.HARMFUL)

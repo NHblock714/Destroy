@@ -18,7 +18,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
- * 1.21 registry-frozen crash fix (same pattern as S315 DestroyItemAttributeTypes). 1.21 NeoForge freezes Create's mod-owned registries during NewRegistryEvent ·
+ * 1.21 registry-frozen crash fix (same pattern as DestroyItemAttributeTypes). 1.21 NeoForge freezes Create's mod-owned registries during NewRegistryEvent ·
  * static init is too late. Switched to {@link DeferredRegister} on mod event bus.
 */
 @SuppressWarnings({"rawtypes", "unchecked"})

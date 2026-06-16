@@ -24,7 +24,7 @@ public class DestroyMenuTypes {
             () -> RedstoneProgrammerScreen::new)
         .register();
 
-    // Mixed explosive crafting menu (T2b batch). Screen is S218 stub · full port S219+.
+    // Mixed explosive crafting menu, paired with MixedExplosiveScreen.
     public static final MenuEntry<MixedExplosiveMenu> CUSTOM_EXPLOSIVE =
         Destroy.REGISTRATE.menu(
             "custom_explosive",

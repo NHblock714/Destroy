@@ -21,15 +21,16 @@ import petrolpark.mc.destroy.client.DestroyParticleTypes;
  * {@link petrolpark.mc.destroy.core.pollution.PollutingOpenEndedPipeEffectHandler} (~5% chance
  * per pollution-fluid spray) to sync the visual effect across clients.
  *
- * <p>Registration: add to {@link DestroyPackets} enum (S140 new entry).</p>
+ * <p>Registration: add to {@link DestroyPackets} enum.</p>
 */
 public record EvaporatingFluidS2CPacket(BlockPos blockPos, FluidStack fluidStack) implements ClientboundPacketPayload {
 
-    /** catalytic converter that
- * fully consumes the gas it pulls). NeoForge 1.21's default {@code FluidStack.STREAM_CODEC}
- * throws {@code EncoderException("Empty FluidStack not allowed")} on encode of empty stacks,
- * which crashes the server connection ("从反应釜抽取气体到催化转化器时会弹出存档"). The
- * OPTIONAL variant accepts empty as a valid sentinel.
+    /** Uses the OPTIONAL stream codec so empty FluidStacks are allowed (e.g. a catalytic
+ * converter that fully consumes the gas it pulls). NeoForge 1.21's default
+ * {@code FluidStack.STREAM_CODEC} throws {@code EncoderException("Empty FluidStack not allowed")}
+ * on encode of empty stacks, which crashes the server connection (symptom: extracting gas from
+ * the vat to a catalytic converter disconnected the player from the save). The OPTIONAL variant
+ * accepts empty as a valid sentinel.
 */
     public static final StreamCodec<RegistryFriendlyByteBuf, EvaporatingFluidS2CPacket> STREAM_CODEC =
         StreamCodec.composite(

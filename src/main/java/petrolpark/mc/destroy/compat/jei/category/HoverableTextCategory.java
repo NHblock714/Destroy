@@ -28,7 +28,7 @@ import petrolpark.mc.destroy.client.stackedtextbox.StackedTextBox;
 
 /**
  * Abstract category base for categories that render hoverable text paragraphs (with definition
- * words that pop child text boxes on hover). Used by {@link ReactionCategory} (S289 next).
+ * words that pop child text boxes on hover). Used by {@link ReactionCategory}.
 */
 public abstract class HoverableTextCategory<T extends Recipe<?>> extends PetrolparkRecipeCategory<T> implements ITickableCategory {
 

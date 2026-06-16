@@ -23,10 +23,7 @@ import petrolpark.mc.destroy.core.explosion.mixedexplosive.ExplosiveProperties.E
  * ExplosiveProperties} at detonation time (CustomExplosiveMixExplosion.create reads this BE's
  * inventory via the BlockEntityFactory).
  *
- * <p><b>S209 stub scope narrowing</b> (parent hierarchy simplified · interfaces dropped):</p>
- *
- * <p><b>Not yet registered in DestroyBlockEntityTypes</b> — registration requires parallel
- * MixedExplosiveBlock port (both ported together in a future session · see §1.12 T2b roadmap).</p>
+ * <p>Parent hierarchy simplified; some interfaces dropped.</p>
 */
 public class MixedExplosiveBlockEntity extends SmartBlockEntity implements IDyeableMixedExplosiveBlockEntity {
 
@@ -57,26 +54,25 @@ public class MixedExplosiveBlockEntity extends SmartBlockEntity implements IDyea
     }
 
     /**
- * Factory for this BE's default inventory. stub hardcodes to
- * a sensible default (9 slots) pending DestroyAllConfigs port audit. Real port will read
- * the configured size.
+ * Factory for this BE's default inventory. Hardcodes a sensible default (9 slots) pending a
+ * DestroyAllConfigs audit, after which the configured size would be read.
 */
     public MixedExplosiveInventory createInv() {
-        // S209 stub: DestroyAllConfigs.SERVER.blocks.customExplosiveMixSize.get() pending config audit.
+        // Placeholder: DestroyAllConfigs.SERVER.blocks.customExplosiveMixSize.get() pending config audit.
         return new MixedExplosiveInventory(9, EXPLOSIVE_PROPERTY_CONDITIONS);
     }
 
     /**
- * Trigger detonation. <b>S209 stub: no-op</b>. Real trigger
- * lands in future session when MixedExplosiveBlock + onCaughtFire chain ported.
+ * Trigger detonation. Currently a no-op; the trigger is handled by MixedExplosiveBlock +
+ * the onCaughtFire chain.
 */
     public void explode(@Nullable Player cause) {
-        // S209 stub: MixedExplosiveBlock.onCaughtFire dispatch pending block port.
+        // No-op: detonation is dispatched via MixedExplosiveBlock.onCaughtFire.
     }
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        // S209 stub: full BE has no specific behaviours (SimpleDyeableNameable parent was empty too).
+        // No specific behaviours (the SimpleDyeableNameable parent was empty too).
     }
 
     public MixedExplosiveInventory getExplosiveInventory() {
@@ -124,7 +120,7 @@ public class MixedExplosiveBlockEntity extends SmartBlockEntity implements IDyea
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
         color = tag.getInt("Color");
-        // integration. Callers that need rich-text names should use the future full port.
+        // CustomName is stored as a plain literal string; rich-text names are not supported here.
         if (tag.contains("CustomName")) {
             String s = tag.getString("CustomName");
             name = s.isEmpty() ? null : Component.literal(s);

@@ -15,8 +15,7 @@ import net.minecraft.util.Mth;
  * blockstate flags. Fluid level interpolates smoothly via {@link TankSegment}'s partial-tick
  * sampling.
  *
- * <p>Wiring: added to {@code DestroyBlockEntityTypes.BUBBLE_CAP.renderer(() -> BubbleCapRenderer::new)}
- * in S128 (supersedes the S126 no-renderer registration).</p>
+ * <p>Wiring: registered via {@code DestroyBlockEntityTypes.BUBBLE_CAP.renderer(() -> BubbleCapRenderer::new)}.</p>
 */
 public class BubbleCapRenderer extends SmartBlockEntityRenderer<BubbleCapBlockEntity> {
 

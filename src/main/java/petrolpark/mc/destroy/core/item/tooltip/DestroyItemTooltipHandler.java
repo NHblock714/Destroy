@@ -36,14 +36,14 @@ public class DestroyItemTooltipHandler {
         // (SessionSearchTrees.updateCreativeTooltips, JEI indexing) where event.getEntity() is null.
         // Create's KineticStats.getKineticStats → GogglesItem.isWearingGoggles dereferences player
         // without a null check → NPE. Skip the entire chain when there's no player context;
-        // search-tree text indexing doesn't need our extra tooltip lines anyway.
+        // search-tree text indexing doesn't need the extra tooltip lines anyway.
         if (event.getEntity() == null) return;
         Item item = event.getItemStack().getItem();
-        // only apply our chain to Destroy-namespaced items. Without this filter the
+        // only apply the chain to Destroy-namespaced items. Without this filter the
         // event handler runs for EVERY mod's items including Create + Create-addons that already
         // register their own ItemDescription.Modifier chain via CreateRegistrate, producing a
-        // duplicate "Hold [Shift]" expand line + duplicate body. User report: "新版本的 destroy
-        // 会导致其他所有 create 的模组有展开显示 tooltip 的物品渲染两遍这个展开提示".
+        // duplicate "Hold [Shift]" expand line + duplicate body (symptom: items from other Create
+        // mods rendered the expand hint twice).
         net.minecraft.resources.ResourceLocation id =
             net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item);
         if (id == null || !"destroy".equals(id.getNamespace())) return;

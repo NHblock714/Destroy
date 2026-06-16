@@ -13,7 +13,7 @@ import petrolpark.mc.destroy.compat.jei.animation.AnimatedDynamo;
  * {@link petrolpark.mc.destroy.content.processing.dynamo.ChargingRecipe ChargingRecipe}'s
  * {@code getJEISubCategory()} when a Sequenced Assembly recipe chains a dynamo-charging step.
  *
- * <p>Also closes S148 {@code ChargingRecipe.getJEISubCategory} deferral — that method currently
+ * <p>Note: {@code ChargingRecipe.getJEISubCategory} currently
  * returns {@code SequencedAssemblySubCategory.AssemblyPressing::new} as a placeholder; it can now
  * be switched to {@code AssemblyChargingSubCategory::new} for proper visual fidelity.</p>
 */

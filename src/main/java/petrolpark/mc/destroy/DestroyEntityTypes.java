@@ -27,7 +27,7 @@ public class DestroyEntityTypes {
     public static final EntityEntry<PrimedBombEntity.Nitrocellulose> PRIMED_NITROCELLULOSE =
         bomb("primed_nitrocellulose", PrimedBombEntity.Nitrocellulose::new);
 
-    // mixed explosive (T2b batch) · S214: dedicated MixedExplosiveEntityRenderer inlined
+    // mixed explosive · dedicated MixedExplosiveEntityRenderer inlined
     // (not via bomb() helper, which hard-wires PrimedBombEntityRenderer).
     public static final EntityEntry<MixedExplosiveEntity> PRIMED_CUSTOM_EXPLOSIVE =
         REGISTRATE.<MixedExplosiveEntity>entity("primed_custom_explosive", MixedExplosiveEntity::new, MobCategory.MISC)

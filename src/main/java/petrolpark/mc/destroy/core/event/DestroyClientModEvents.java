@@ -120,8 +120,8 @@ public class DestroyClientModEvents {
         event.registerItem(SimpleCustomRenderer.create(DestroyItems.SWISS_ARMY_KNIFE.get(), swissArmyKnifeRenderer),
             DestroyItems.SWISS_ARMY_KNIFE.get());
 
-        // SeismographItemRenderer (S103) draws the first-person held-map nonogram overlay on top
-        // of the vanilla map tile. SeismometerItemRenderer (S104) draws the animated analog
+        // SeismographItemRenderer draws the first-person held-map nonogram overlay on top
+        // of the vanilla map tile. SeismometerItemRenderer draws the animated analog
         // needle + spike-page animation driven by SeismometerSpike
         final SeismographItemRenderer seismographRenderer = new SeismographItemRenderer();
         event.registerItem(SimpleCustomRenderer.create(DestroyItems.SEISMOGRAPH.get(), seismographRenderer),
@@ -134,7 +134,6 @@ public class DestroyClientModEvents {
         // CircuitBoardItem + CircuitMaskItem custom renderers (trypolithography batch).
         // Each renderer has a different fragment texture folder (circuit_board vs circuit_mask), so
         // they instantiate as separate renderers pointing at different ResourceLocations.
-        // 4th application (Syringe S79 + SwissArmyKnife S83 + Seismograph/Seismometer S104 + **S110 Circuit items**).
         final CircuitPatternItemRenderer circuitBoardRenderer =
             new CircuitPatternItemRenderer(Destroy.asResource("item/circuit_pattern/circuit_board"));
         event.registerItem(SimpleCustomRenderer.create(DestroyItems.CIRCUIT_BOARD.get(), circuitBoardRenderer),
@@ -158,14 +157,14 @@ public class DestroyClientModEvents {
 
         // TestTubeItem custom renderer (mixture-color translucent fluid overlay via
         // TransparentItemRenderer.transformAndRenderModel). Same SimpleCustomRenderer.create pattern
-        // as Circuit / Seismograph etc. (S345 architectural fix).
+        // as Circuit / Seismograph etc.
         final petrolpark.mc.destroy.core.chemistry.storage.testtube.TestTubeItemRenderer testTubeRenderer =
             new petrolpark.mc.destroy.core.chemistry.storage.testtube.TestTubeItemRenderer();
         event.registerItem(SimpleCustomRenderer.create(DestroyItems.TEST_TUBE.get(), testTubeRenderer),
             DestroyItems.TEST_TUBE.get());
 
         // MixedExplosiveBlockItem custom renderer.
-        // Renders vanilla item model + 4-direction truncated label via S215
+        // Renders vanilla item model + 4-direction truncated label via
         // MixedExplosiveBlockEntityRenderer.renderTruncated when stack has CUSTOM_NAME DataComponent.
         final petrolpark.mc.destroy.core.explosion.mixedexplosive.MixedExplosiveBlockItemRenderer customExplosiveMixRenderer =
             new petrolpark.mc.destroy.core.explosion.mixedexplosive.MixedExplosiveBlockItemRenderer();
@@ -175,13 +174,13 @@ public class DestroyClientModEvents {
         // SimplePlaceableMixtureTank item renderers.
         // Each of BEAKER/FLASK/JAR gets an instance of SimpleMixtureTankItemRenderer bound to the
         // underlying item's render-info interface so the held item shows a dynamic fluid fill
-        // scaled to the block's FluidBoxDimensions. Upgrades the S311 stub (no fluid fill on held
+        // scaled to the block's FluidBoxDimensions (the earlier placeholder showed no fluid fill).
         registerTankItemRenderer(event, DestroyBlocks.BEAKER);
         registerTankItemRenderer(event, DestroyBlocks.FLASK);
         registerTankItemRenderer(event, DestroyBlocks.JAR);
         registerTankItemRenderer(event, DestroyBlocks.MEASURING_CYLINDER);
-        // ROUND_BOTTOMED_FLASK was missing from this list. S335 ported the block + item
-        // but forgot to wire its custom renderer here. Without registration, the item lacks Create's
+        // ROUND_BOTTOMED_FLASK was missing from this list — the block + item were added
+        // but its custom renderer was not wired here. Without registration, the item lacks Create's
         // CustomRenderedItem ModelSwapper wrap, which can corrupt the GuiGraphics buffer-source
         // state when rendered as a recipe-result icon in BlowpipeScreen — symptom: hover over the
         // round-bottomed-flask recipe row caused all fluid+item icons across all rows in the
@@ -203,10 +202,9 @@ public class DestroyClientModEvents {
         // item with Create's CustomRenderedItems → ModelSwapper doesn't wrap the BakedModel in
         // CustomRenderedItemModel → renderer's {@code model.getOriginalModel()} returns the raw
         // 2D parent model instead of the block's 3D model → inventory shows flat icon + a tiny
-        // misplaced fluid box.
-        // . Aligning here
-        // makes inventory show the full 3D beaker/flask/cylinder model with fluid inside, matching
-        // the placed-on-ground appearance. User: "物品栏的显示应该显示放置在地面上的完整模型".
+        // misplaced fluid box. Using SimpleCustomRenderer.create here makes the inventory show the
+        // full 3D beaker/flask/cylinder model with fluid inside, matching the placed-on-ground
+        // appearance.
         event.registerItem(
             com.simibubi.create.foundation.item.render.SimpleCustomRenderer.create(blockEntry.asItem(), tankRenderer),
             blockEntry.asItem());
@@ -262,9 +260,9 @@ public class DestroyClientModEvents {
         // only render path, but Create 6.x KineticBlockEntityRenderer.renderSafe early-returns
         // when Flywheel visualization is supported (always-on in 1.21), so BER never runs and
         // the rotating inner shaft model is completely invisible.
-        // skipVanillaRender(true) so BER is skipped (we have our own DynamoRenderer for arc
-        // lightning effects which IS still wanted; renderSafe still calls super early-return,
-        // but our overridden renderSafe runs the arc-line code AFTER super returns when arcs
+        // skipVanillaRender(true) so BER is skipped (the dedicated DynamoRenderer for arc
+        // lightning effects IS still wanted; renderSafe still calls super early-return,
+        // but the overridden renderSafe runs the arc-line code AFTER super returns when arcs
         // should fire — that path is independent of the inner-shaft path).
         SimpleBlockEntityVisualizer.builder(DestroyBlockEntityTypes.DYNAMO.get())
             .factory(petrolpark.mc.destroy.content.processing.dynamo.DynamoCogVisual::new)
@@ -350,7 +348,7 @@ public class DestroyClientModEvents {
         petrolpark.mc.destroy.compat.jei.DestroyJEI.MOLECULES_OUTPUT.forEach(compact);
     }
 
-    /** we inline just the hover-dispatch
+    /** Inlines just the hover-dispatch
  * piece here. Without it TestTubeRack's per-slot outline / VatController's multi-block outline
  * never draw even though the BE implements the interface.
 */

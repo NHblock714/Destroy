@@ -19,12 +19,9 @@ import petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid;
 
 /**
  * BER for {@link VatSideBlockEntity} — draws PIPE fluid-streams (out from the pipe nozzle)
- * when spouting, + THERMOMETER mercury column scaling with Vat temperature.
- *
- * <p><b>S231 visual state with S230 stubs</b>: PIPE mode early-exit (spoutingTicks always 0),
- * THERMOMETER shows fixed mercury column at 298K baseline (all 0 since `298-298=0`) — the
- * renderer compiles + runs without crash; visual animation waits for full VatControllerBE tick
- * pipeline + VatSideBE sidecell-controller binding ports.</p>
+ * when spouting, + THERMOMETER mercury column scaling with Vat temperature. PIPE mode renders
+ * only while {@code spoutingTicks > 0}; the THERMOMETER column is flat at the 298K baseline
+ * (since {@code 298-298=0}) until the Vat temperature diverges from ambient.
 */
 public class VatSideRenderer extends SafeBlockEntityRenderer<VatSideBlockEntity> {
 

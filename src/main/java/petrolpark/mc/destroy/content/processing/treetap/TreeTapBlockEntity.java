@@ -38,7 +38,7 @@ import petrolpark.mc.destroy.core.fluid.GeniusFluidTankBehaviour;
 */
 public class TreeTapBlockEntity extends KineticBlockEntity {
 
-    // fields copied from BlockBreakingKineticBlockEntity (we no longer extend it).
+    // fields copied from BlockBreakingKineticBlockEntity (this class no longer extends it).
     public static final AtomicInteger NEXT_BREAKER_ID = new AtomicInteger();
     protected int ticksUntilNextProgress;
     protected int destroyProgress;
@@ -65,15 +65,14 @@ public class TreeTapBlockEntity extends KineticBlockEntity {
 
         // Kick on speed-resume from 0, so the tap doesn't get permanently stuck if its
         // {@code ticksUntilNextProgress} state was inconsistent with the new kinetic state.
-        // <p>User report: "现在还是会因为破坏途中应力中断导致后续接入应力无法破坏该方块,
-        // 除非打掉方块重新放置". Specific symptom: tap mid-progress + stop stress + resume stress →
-        // tap permanently can't break the target. Replacing the tap (fresh BE) fixes it.</p>
-        // <p>Hypothesis: when stress goes to 0, our tick() early-returns at the speed check and
+        // <p>Symptom: with the tap mid-progress, stopping stress then resuming it leaves the tap
+        // permanently unable to break the target; replacing the tap (fresh BE) fixes it.</p>
+        // <p>Hypothesis: when stress goes to 0, tick() early-returns at the speed check and
         // {@code ticksUntilNextProgress} freezes at whatever value it was. When stress resumes,
-        // tick decrements normally but possibly the post-break-logic recompute
-        // {@code ticksUntilNextProgress = blockHardness / breakSpeed} produces a HUGE value if
-        // {@code breakSpeed} is microscopic during a transient mid-network-update read. Or other
-        // edge cases we can't easily reproduce in code review.</p>
+        // tick decrements normally but the post-break-logic recompute
+        // {@code ticksUntilNextProgress = blockHardness / breakSpeed} can produce a HUGE value if
+        // {@code breakSpeed} is microscopic during a transient mid-network-update read, plus other
+        // edge cases that are hard to reproduce in code review.</p>
         // <p>Defensive: on every 0→non-zero speed transition, reset
         // {@code ticksUntilNextProgress} to 0 so the next tick falls through into break logic.
         // The fallthrough either:
@@ -84,8 +83,8 @@ public class TreeTapBlockEntity extends KineticBlockEntity {
         // {@code destroyProgress} to 0 and clears visual</li>
         // </ul>
         // Either way, the BE exits the stuck state.</p>
-        // <p>Note: we don't use the existing {@link #destroyNextTick()} (which sets to 1) because
-        // we want fallthrough on the very next tick, not after one decrement-cycle. Functionally
+        // <p>Note: this avoids the existing {@link #destroyNextTick()} (which sets to 1) because
+        // fallthrough is wanted on the very next tick, not after one decrement-cycle. Functionally
         // negligible difference (1 tick = 50ms) but cleaner intent.</p>
         if (prevSpeed == 0 && getSpeed() != 0) {
             ticksUntilNextProgress = 0;
@@ -104,9 +103,9 @@ public class TreeTapBlockEntity extends KineticBlockEntity {
 
     /**
  * The block this tap targets — one block in the FACING direction, then up one (the trunk
- * block above the tap's mount point). Now that we don't extend
+ * block above the tap's mount point). Since this class no longer extends
  * BlockBreakingKineticBlockEntity, Sable's @Redirect doesn't apply, so this position is
- * actually used by our local tick loop.
+ * actually used by the local tick loop.
 */
     protected BlockPos getBreakingPos() {
         return getBlockPos().relative(getBlockState().getValue(TreeTapBlock.FACING)).above();

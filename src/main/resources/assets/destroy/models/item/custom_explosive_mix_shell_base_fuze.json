@@ -1,0 +1,47 @@
+{
+    "parent": "block/block",
+    "textures": {
+        "particle": "destroy:block/custom_explosive_mix_shell",
+        "top": "destroy:block/custom_explosive_mix_shell_top",
+        "bottom": "destroy:block/custom_explosive_mix_shell_bottom",
+        "side": "destroy:block/custom_explosive_mix_shell",
+        "overlay": "destroy:block/custom_explosive_mix_shell_overlay",
+        "0": "createbigcannons:block/fuze"
+    },
+    "elements": [
+        {
+            "from": [3, 0, 3],
+            "to": [13, 16, 13],
+            "faces": {
+                "north": {"uv": [3, 0, 13, 16], "texture": "#side", "tintindex": 0, "cullface": "north"},
+                "east": {"uv": [3, 0, 13, 16], "texture": "#side", "tintindex": 0, "cullface": "east"},
+                "south": {"uv": [3, 0, 13, 16], "texture": "#side", "tintindex": 0, "cullface": "south"},
+                "west": {"uv": [3, 0, 13, 16], "texture": "#side", "tintindex": 0, "cullface": "west"},
+                "down": {"uv": [3, 3, 13, 13], "texture": "#bottom", "tintindex": 0, "cullface": "down"}
+            }
+        },
+        {
+            "from": [2.99, -0.01, 2.99],
+            "to": [13.01, 16.01, 13.01],
+            "faces": {
+                "north": {"uv": [3, 0, 13, 16], "texture": "#overlay", "tintindex": 1, "cullface": "north"},
+                "east": {"uv": [3, 0, 13, 16], "texture": "#overlay", "tintindex": 1, "cullface": "east"},
+                "south": {"uv": [3, 0, 13, 16], "texture": "#overlay", "tintindex": 1, "cullface": "south"},
+                "west": {"uv": [3, 0, 13, 16], "texture": "#overlay", "tintindex": 1, "cullface": "west"},
+                "up": {"uv": [3, 3, 13, 13], "texture": "#top", "tintindex": 1, "cullface": "up"}
+            }
+        },
+        {
+            "from": [7, -1, 7],
+            "to": [9, 0, 9],
+            "faces": {
+                "north": {"uv": [2, 0, 4, 1], "texture": "#0"},
+                "east": {"uv": [2, 0, 4, 1], "texture": "#0"},
+                "south": {"uv": [2, 0, 4, 1], "texture": "#0"},
+                "west": {"uv": [2, 0, 4, 1], "texture": "#0"},
+                "down": {"uv": [0, 0, 2, 2], "texture": "#0"}
+            }
+        }
+    ],
+    "render_type": "minecraft:cutout"
+}

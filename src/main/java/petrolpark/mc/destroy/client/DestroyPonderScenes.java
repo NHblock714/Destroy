@@ -18,10 +18,10 @@ import petrolpark.mc.destroy.core.chemistry.ChemistryPonderScenes;
 import petrolpark.mc.destroy.core.pollution.PollutionPonderScenes;
 
 /**
- * Central registrar for Destroy's Ponder scenes. **S158 stub → S159 incremental: 4 dynamo storyboards wired**.
+ * Central registrar for Destroy's Ponder scenes.
  *
  * <p>Pattern: {@code HELPER.forComponents(DestroyBlocks.XYZ).addStoryBoard(resourcePath,
- * XxxPonderScenes::method[, ...tags])}. Each scene-file port appends a block here.</p>
+ * XxxPonderScenes::method[, ...tags])}. Each scene-file appends a block here.</p>
 */
 public class DestroyPonderScenes {
 
@@ -44,7 +44,7 @@ public class DestroyPonderScenes {
             .addStoryBoard("processing/dynamo/arc_furnace", DynamoPonderScenes::arcFurnace);
 
         // Trypolithography — 3 storyboards on CIRCUIT_MASK + KEYPUNCH. Pattern
-        // overlay instructions (ShowCircuitPatternPonderInstruction) restored in S161.
+        // overlay instructions (ShowCircuitPatternPonderInstruction).
         HELPER.forComponents(DestroyItems.CIRCUIT_MASK, DestroyBlocks.KEYPUNCH)
             .addStoryBoard("trypolithography/intro", TrypolithographyPonderScenes::intro)
             .addStoryBoard("trypolithography/rotating", TrypolithographyPonderScenes::rotating)
@@ -65,12 +65,12 @@ public class DestroyPonderScenes {
             .addStoryBoard("oil/seismograph", OilPonderScenes::seismograph);
 
         // Pollution
-        // CATALYTIC_CONVERTER: 1 real scene (catalyticConverter); S164 stubs not bound.
+        // CATALYTIC_CONVERTER: 1 real scene (catalyticConverter); stubs not bound.
         HELPER.forComponents(DestroyBlocks.CATALYTIC_CONVERTER)
             .addStoryBoard("pollution/catalytic_converter", PollutionPonderScenes::catalyticConverter);
 
         // POLLUTION_SYMBOL: top-level pollution overview tab with all 12 scenes — 4 real, 8 stubs.
-        // When S165+ ports SmogPonderInstruction + Vat subsystem, each stub method becomes real
+        // Once SmogPonderInstruction + the Vat subsystem are in place, each stub method becomes real
         // without touching this registration list.
         HELPER.forComponents(DestroyItems.POLLUTION_SYMBOL)
             .addStoryBoard("pollution/tanks", PollutionPonderScenes::pipesAndTanks)
@@ -95,13 +95,13 @@ public class DestroyPonderScenes {
         HELPER.forComponents(DestroyBlocks.BUBBLE_CAP)
             .addStoryBoard("processing/bubble_cap/generic", ProcessingPonderScenes::bubbleCapGeneric)
             .addStoryBoard("processing/bubble_cap/mixtures", ProcessingPonderScenes::bubbleCapMixtures)
-            .addStoryBoard("pollution/room_temperature", ChemistryPonderScenes::roomTemperature); // S182
+            .addStoryBoard("pollution/room_temperature", ChemistryPonderScenes::roomTemperature);
         HELPER.forComponents(DestroyBlocks.CENTRIFUGE)
             .addStoryBoard("processing/centrifuge/generic", ProcessingPonderScenes::centrifugeGeneric)
             .addStoryBoard("processing/centrifuge/mixture", ProcessingPonderScenes::centrifugeMixture);
         HELPER.forComponents(DestroyBlocks.COOLER)
             .addStoryBoard("processing/cooler", ProcessingPonderScenes::cooler)
-            .addStoryBoard("vat/temperature", ChemistryPonderScenes::vatTemperature, DestroyPonderTags.CHEMISTRY); // S183
+            .addStoryBoard("vat/temperature", ChemistryPonderScenes::vatTemperature, DestroyPonderTags.CHEMISTRY);
         HELPER.forComponents(DestroyBlocks.EXTRUSION_DIE)
             .addStoryBoard("processing/extrusion_die", ProcessingPonderScenes::extrusionDie);
         HELPER.forComponents(DestroyItems.HYPERACCUMULATING_FERTILIZER)
@@ -116,29 +116,28 @@ public class DestroyPonderScenes {
         // Chemistry.
         // BUBBLE_CAP chemistry tab, COLORIMETER, COOLER vat temp tab, POLLUTION_SYMBOL tabs,
         // VAT_CONTROLLER, element blocks via PonderIndex-reflection dispatcher); most are blocked
-        // on Vat subsystem. S174 wires 2 of 7+ paths:
-        // - AllBlocks.BASIN → reactions (S172, real) with DestroyPonderTags.CHEMISTRY tag
-        // - DestroyBlocks.PERIODIC_TABLE → periodicTable (S174, real)
+        // on the Vat subsystem. Currently wires 2 of 7+ paths:
+        // - AllBlocks.BASIN → reactions with DestroyPonderTags.CHEMISTRY tag
+        // - DestroyBlocks.PERIODIC_TABLE → periodicTable
         // Other component wirings added incrementally as their stubs land real bodies.
         HELPER.forComponents(AllBlocks.BASIN)
             .addStoryBoard("reactions", ChemistryPonderScenes::reactions, DestroyPonderTags.CHEMISTRY);
         HELPER.forComponents(DestroyBlocks.PERIODIC_TABLE)
             .addStoryBoard("periodic_table", ChemistryPonderScenes::periodicTable);
-        // vat/pressure. S181:
-        // vat/items. S182: pollution/room_temperature (shared Ponder schematic with BUBBLE_CAP).
+        // vat/items shares its Ponder schematic with BUBBLE_CAP's pollution/room_temperature.
         // Other vat-controller-attached Chemistry scenes (vatConstruction / vatFluids /
         // vatTemperature / vatReading / colorimeter / vatUV) wired incrementally as their stubs
         // land real bodies.
         HELPER.forComponents(DestroyBlocks.VAT_CONTROLLER)
-            .addStoryBoard("vat/construction", ChemistryPonderScenes::vatConstruction) // S184
-            .addStoryBoard("vat/fluids", ChemistryPonderScenes::vatFluids, AllCreatePonderTags.FLUIDS) // S185
+            .addStoryBoard("vat/construction", ChemistryPonderScenes::vatConstruction)
+            .addStoryBoard("vat/fluids", ChemistryPonderScenes::vatFluids, AllCreatePonderTags.FLUIDS)
             .addStoryBoard("vat/pressure", ChemistryPonderScenes::vatPressure)
             .addStoryBoard("vat/items", ChemistryPonderScenes::vatItems)
             .addStoryBoard("pollution/room_temperature", ChemistryPonderScenes::roomTemperature)
-            .addStoryBoard("vat/temperature", ChemistryPonderScenes::vatTemperature) // S183
-            .addStoryBoard("vat/reading", ChemistryPonderScenes::vatReading) // S187
-            .addStoryBoard("colorimeter", ChemistryPonderScenes::colorimeter) // S188
-            .addStoryBoard("vat/uv", ChemistryPonderScenes::vatUVWithBlackLight); // S186
+            .addStoryBoard("vat/temperature", ChemistryPonderScenes::vatTemperature)
+            .addStoryBoard("vat/reading", ChemistryPonderScenes::vatReading)
+            .addStoryBoard("colorimeter", ChemistryPonderScenes::colorimeter)
+            .addStoryBoard("vat/uv", ChemistryPonderScenes::vatUVWithBlackLight);
 
         // BLACKLIGHT block wires vatUVWithBlackLight (with-blacklight narrative variant).
         HELPER.forComponents(DestroyBlocks.BLACKLIGHT)

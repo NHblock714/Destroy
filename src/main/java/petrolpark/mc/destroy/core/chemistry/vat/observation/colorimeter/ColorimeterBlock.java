@@ -130,10 +130,10 @@ public class ColorimeterBlock extends HorizontalDirectionalBlock implements IBE<
                     fluids.add(handler.getFluidInTank(i));
                 }
             });
-            // S266 stub: IMixtureStorageItem player-inventory scan deferred (storage-item subsystem
-            // partial port).
-            // mixture-carrying items + adds their species. Skipping this reduces the species list
-            // but the two Vat tank scans still provide the primary options.
+            // Placeholder: IMixtureStorageItem player-inventory scan deferred (storage-item subsystem
+            // partially implemented). It would scan held mixture-carrying items and add their
+            // species. Skipping this reduces the species list but the two Vat tank scans still
+            // provide the primary options.
 
             for (net.neoforged.neoforge.fluids.FluidStack fluid : fluids) {
                 if (petrolpark.mc.destroy.DestroyFluids.isMixture(fluid)) {

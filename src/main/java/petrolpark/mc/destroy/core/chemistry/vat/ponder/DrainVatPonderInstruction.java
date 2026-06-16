@@ -10,7 +10,7 @@ import petrolpark.mc.destroy.DestroyBlockEntityTypes;
  * One-shot {@link PonderInstruction} that drains a specified amount from a
  * {@link petrolpark.mc.destroy.core.chemistry.vat.VatControllerBlockEntity VatControllerBlockEntity}
  * — liquid or gas phase — at the given {@link BlockPos} in a Ponder scene world. Used by Vat Ponder
- * scenes (future S?? vatFluids) to demonstrate Vat draining via the vent / pipe side-cells.
+ * scenes (future vatFluids work) to demonstrate Vat draining via the vent / pipe side-cells.
 */
 public class DrainVatPonderInstruction extends PonderInstruction {
 
@@ -35,8 +35,7 @@ public class DrainVatPonderInstruction extends PonderInstruction {
 
     @Override
     public void tick(PonderScene scene) {
-        // The
-        // VatControllerBlockEntity stub is referenced via getBlockEntity() to validate scene-world
+        // The VatControllerBlockEntity is referenced via getBlockEntity() to validate scene-world
         // presence + preserve ifPresent-chain invariants; drain itself is no-op until the tank
         // wrapper + storage subsystem lands.
         scene.getWorld().getBlockEntity(vatControllerPos, DestroyBlockEntityTypes.VAT_CONTROLLER.get()).ifPresent(vat -> {

@@ -16,8 +16,8 @@ import net.minecraft.world.item.ItemStack;
  * the {@link MixedExplosiveBlockEntityRenderer#renderTruncated} 4-direction uppercase label when
  * the stack has a custom name (pick-block / user-renamed).
  *
- * <p>Completes T2b renderer trio: MixedExplosiveEntityRenderer (S214) +
- * MixedExplosiveBlockEntityRenderer (S215) + MixedExplosiveBlockItemRenderer (S216).</p>
+ * <p>One of the renderer trio: MixedExplosiveEntityRenderer +
+ * MixedExplosiveBlockEntityRenderer + MixedExplosiveBlockItemRenderer.</p>
 */
 public class MixedExplosiveBlockItemRenderer extends CustomRenderedItemModelRenderer {
 

@@ -97,11 +97,11 @@ public class VatSideBlockEntity extends CopycatBlockEntity
         super(type, pos, state);
         displayType = DisplayType.NORMAL;
         // DON'T construct redstoneMonitor here. addBehaviours runs inside super(),
-        // which is BEFORE this ctor's body executes. Old code initialized redstoneMonitor
-        // here on line 134, but addBehaviours had already run with redstoneMonitor=null →
+        // which is BEFORE this ctor's body executes. If redstoneMonitor were initialized in
+        // this ctor body, addBehaviours would already have run with redstoneMonitor=null →
         // {@code behaviours.add(null)} → Create's SmartBlockEntity {@code behaviours.forEach
-        // (b -> behaviourMap.put(b.getType(), b))} NPE because b is null. The fix is to
-        // construct redstoneMonitor inside addBehaviours itself (where {@code this} is fully
+        // (b -> behaviourMap.put(b.getType(), b))} NPEs because b is null. So redstoneMonitor is
+        // constructed inside addBehaviours itself (where {@code this} is fully
         // accessible — the BlockEntity is sufficient init for the behaviour ctor's needs).
     }
 
@@ -279,7 +279,7 @@ public class VatSideBlockEntity extends CopycatBlockEntity
             direction = null;
         }
         if (tag.contains("ControllerPosition")) {
-            // still exists). S236 uses the deprecated no-arg reader via the tag-get path.
+            // Stored relative to this block's position (offset back on read).
             controllerPosition = NbtUtils.readBlockPos(tag, "ControllerPosition")
                 .map(p -> p.offset(getBlockPos()))
                 .orElse(null);
@@ -299,12 +299,12 @@ public class VatSideBlockEntity extends CopycatBlockEntity
                 registries, tag.getCompound("SpoutingFluid"));
             ventOpenness.chase(displayType == DisplayType.OPEN_VENT ? 1f : 0f, 0.3f, LerpedFloat.Chaser.EXP);
         }
-        // promoted from S236 deferred TODO. Now that VatControllerBE exposes real
-        // getPressure + getTemperature impls, rebind the redstoneMonitor's quantityObserved
-        // supplier from the loaded displayType. Without this rebind, after world reload the
-        // BE has displayType=THERMOMETER but quantityObserved=Optional.empty (set in addBehaviours
-        // before NBT was read) → redstoneMonitor.tick reads 0 → no redstone signal output.
-        // User report: "反应釜侧壁的温度计和压强表...也没有输出红石信号".
+        // Rebind the redstoneMonitor's quantityObserved supplier from the loaded displayType
+        // using VatControllerBE's getPressure + getTemperature. Without this rebind, after a
+        // world reload the BE has displayType=THERMOMETER but quantityObserved=Optional.empty
+        // (set in addBehaviours before NBT was read) → redstoneMonitor.tick reads 0 → no
+        // redstone signal output (symptom: a Vat side wall's thermometer / barometer emits no
+        // redstone signal after reload).
         rebindQuantityObserved();
     }
 
@@ -351,11 +351,12 @@ public class VatSideBlockEntity extends CopycatBlockEntity
     }
 
     /**
- * Set the display type of this side. Stub implementation: **simple field write, no side
- * effects**. Ponder scene use (SetVatSideTypePonderInstruction) only needs the field
- * write.
+ * Set the display type of this side. Beyond the field write, this updates the vent state,
+ * neighbour shapes, the open-vent registration on the controller, and rebinds the redstone
+ * monitor's observed quantity + thresholds. (Ponder scene use via
+ * SetVatSideTypePonderInstruction effectively only exercises the field write, since no
+ * controller/level side effects apply there.)
 */
-    
     @SuppressWarnings("null")
     public void setDisplayType(DisplayType displayType) {
         DisplayType oldDisplayType = this.displayType;
@@ -403,26 +404,26 @@ public class VatSideBlockEntity extends CopycatBlockEntity
     }
 
     // ============================================================
-    // Renderer-support getter stubs + fields (unblocks VatSideRenderer / VatSideFluidCapability)
+    // Renderer-support getters + fields (VatSideRenderer / VatSideFluidCapability)
     // ============================================================
 
     /**
  * Fuse-style spout animation tick counter · set to 10 in {@link #tryInsertFluidInVat} on
- * a successful fluid transfer (S257), decremented in {@link #tick} server-tick loop. Drives
+ * a successful fluid transfer, decremented in {@link #tick} server-tick loop. Drives
  * VatSideRenderer's PIPE-mode fluid-stream draw window.
 */
     public int spoutingTicks = 0;
 
     /**
  * Vent openness LerpedFloat (0=closed, 1=open) for VatRenderer OPEN_VENT/CLOSED_VENT bars
- * rotation animation. Chase target updated in {@link #setDisplayType} (S264) to 1f when
+ * rotation animation. Chase target updated in {@link #setDisplayType} to 1f when
  * DisplayType becomes OPEN_VENT, 0f otherwise; ticked client-side in {@link #tick}.
 */
     public final net.createmod.catnip.animation.LerpedFloat ventOpenness = net.createmod.catnip.animation.LerpedFloat.linear().startWithValue(0f);
 
     /**
  * Current spouting fluid (pipe-output) · set to the drained fluid in
- * {@link #tryInsertFluidInVat} (S257) when a side-cell pipe successfully transfers fluid
+ * {@link #tryInsertFluidInVat} when a side-cell pipe successfully transfers fluid
  * into the vat's main tank. Read by VatSideRenderer for PIPE-mode fluid-stream colour.
 */
     public net.neoforged.neoforge.fluids.FluidStack spoutingFluid = net.neoforged.neoforge.fluids.FluidStack.EMPTY;
@@ -442,8 +443,7 @@ public class VatSideBlockEntity extends CopycatBlockEntity
  * <li>DOWN-facing side: always submerged (pipe nozzle is under liquid)</li>
  * <li>UP-facing side: submerged iff Vat can't fit more fluid (full tank)</li>
  * <li>Horizontal side: pipe height < fluid level (client uses getRenderedFluidLevel, server
- * uses getFluidLevel — S236 stub VatControllerBE doesn't have getFluidLevel so we reuse
- * getRenderedFluidLevel for both)</li>
+ * uses the authoritative getFluidLevel)</li>
  * </ul>
 */
     public boolean isPipeSubmerged(boolean client, @Nullable Float partialTicks) {
@@ -453,8 +453,8 @@ public class VatSideBlockEntity extends CopycatBlockEntity
         if (direction == Direction.UP) return !controller.canFitFluid();
         // Server path uses the authoritative {@link VatControllerBlockEntity#getFluidLevel}
         // (server-side tank.getFluidAmount); client path keeps the lerped renderer value.
-        // The original stub fell back to {@code getRenderedFluidLevel(0f)} for both sides,
-        // which broke server-side extraction: the per-tick {@code setMixture} writeback
+        // Using {@code getRenderedFluidLevel(0f)} for both sides breaks server-side
+        // extraction: the per-tick {@code setMixture} writeback
         // round-trips the liquid tank (drain to 0 → fill back), and
         // {@code getTotalUnits(0f)} returns the animation START frame (= 0 right after the
         // drain step), so isPipeSubmerged saw fluid level = 0 and routed
@@ -483,7 +483,7 @@ public class VatSideBlockEntity extends CopycatBlockEntity
     }
 
     // ============================================================
-    // tryMakeVat cascade unblocker stubs (7 methods)
+    // tryMakeVat support methods
     // ============================================================
 
     /** {@link #setMaterial}/{@link #getMaterial}/{@link #setConsumedItem}
@@ -583,7 +583,7 @@ public class VatSideBlockEntity extends CopycatBlockEntity
 
     /** When the side receives any
  * redstone signal it closes; when the signal drops, it opens. Called by VatSideBlock
- * neighborChanged (future wire).
+ * neighborChanged.
 */
     @SuppressWarnings("null")
     public void updateRedstoneInput() {
@@ -648,9 +648,9 @@ public class VatSideBlockEntity extends CopycatBlockEntity
         return false;
     }
 
-    /** Same pattern as S247
- * MoleculeDisplayItem.mapConfigUnit. Two-enum drift stays until DestroyLang canonical
- * TemperatureUnit collapses back (TODO on DestroyClientChemistryConfigs line 6).
+    /** Same pattern as
+ * MoleculeDisplayItem.mapConfigUnit. The two TemperatureUnit enums stay separate until the
+ * config and DestroyLang variants are unified (see the TODO in DestroyClientChemistryConfigs).
 */
     private static petrolpark.mc.destroy.client.DestroyLang.TemperatureUnit mapConfigTempUnit(
             petrolpark.mc.destroy.config.DestroyClientChemistryConfigs.TemperatureUnit c) {
@@ -678,8 +678,8 @@ public class VatSideBlockEntity extends CopycatBlockEntity
         return uvPower;
     }
 
-    /** Kept as no-op so callers in {@link VatControllerBlockEntity#tryMakeVat}
- * stay compile-compatible · can be removed in a future audit pass.
+    /** No-op; capabilities are resolved per-query in 1.21, so callers in
+ * {@link VatControllerBlockEntity#tryMakeVat} have nothing to refresh.
 */
     public void refreshFluidCapability() {
     }
@@ -689,10 +689,10 @@ public class VatSideBlockEntity extends CopycatBlockEntity
         // No-op.
     }
 
-    /** S242 stub: Invalidate cached render bounding box (CopycatBlockEntity base). No-op in stub
- * — SmartBlockEntity base doesn't have a stale bounding box to invalidate.*/
+    /** Invalidate the cached render bounding box (CopycatBlockEntity base). No-op here —
+ * the SmartBlockEntity base has no stale bounding box to invalidate.*/
     public void invalidateRenderBoundingBox() {
-        // No-op · Copycat base not yet ported.
+        // No-op.
     }
 
     /** Each variant encodes validity for placement on

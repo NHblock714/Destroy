@@ -50,8 +50,7 @@ import petrolpark.mc.destroy.core.explosion.mixedexplosive.ExplosiveProperties.E
  *
  * <p><b>1.21 migrations applied</b>:</p>
  *
- * <p><b>SERIALIZER registration</b>: Wired in {@link SmartExplosion} static init block
- * (unblocks prior TODO(S40+ PrimedBomb 批) at line 100 of SmartExplosion.java).</p>
+ * <p><b>SERIALIZER registration</b>: Wired in {@link SmartExplosion} static init block.</p>
 */
 public class CustomExplosiveMixExplosion extends SmartExplosion {
 

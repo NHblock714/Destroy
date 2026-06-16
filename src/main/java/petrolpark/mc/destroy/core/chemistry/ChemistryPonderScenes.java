@@ -64,18 +64,16 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 
 /**
  *
- * <p>0/14 stubs remain (Chemistry 100% complete). {@code scenePending} helper retained for
- * future-session reuse pattern (same approach as
+ * <p>The {@code scenePending} helper is retained as a reusable placeholder (same approach as
  * {@link petrolpark.mc.destroy.content.processing.ProcessingPonderScenes#scenePending} +
- * {@link petrolpark.mc.destroy.core.pollution.PollutionPonderScenes#scenePending}). Swap to
- * real body when Vat / PeriodicTable subsystems land; scene-registry wiring in
- * {@link petrolpark.mc.destroy.client.DestroyPonderScenes} stays untouched (stub-for-future
- * pattern established S164).</p>
+ * {@link petrolpark.mc.destroy.core.pollution.PollutionPonderScenes#scenePending}); the
+ * scene-registry wiring in {@link petrolpark.mc.destroy.client.DestroyPonderScenes} is
+ * independent of the individual scene bodies.</p>
 */
 public class ChemistryPonderScenes {
 
     /**
- * Placeholder for the 12 stubs. Same pattern as
+ * Placeholder scene. Same pattern as
  * {@link petrolpark.mc.destroy.content.processing.ProcessingPonderScenes#scenePending}.
 */
     public static void scenePending(SceneBuilder scene, SceneBuildingUtil util) {
@@ -90,13 +88,13 @@ public class ChemistryPonderScenes {
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════════════════
-    // Ported scenes (14/14) 🎊 — Chemistry COMPLETE
+    // Chemistry scenes
     // ═══════════════════════════════════════════════════════════════════════════════════════════
 
     /**
- * Reactions scene (S172). Basin + MechanicalMixer processing narrative. 21 migration
- * deltas. Registered in {@link petrolpark.mc.destroy.client.DestroyPonderScenes} on
- * {@code AllBlocks.BASIN} component with {@code DestroyPonderTags.CHEMISTRY} tag.
+ * Reactions scene. Basin + MechanicalMixer processing narrative. Registered in
+ * {@link petrolpark.mc.destroy.client.DestroyPonderScenes} on {@code AllBlocks.BASIN}
+ * component with {@code DestroyPonderTags.CHEMISTRY} tag.
 */
     public static void reactions(SceneBuilder scene, SceneBuildingUtil util) {
         scene.title("reactions", "This text is defined in a language file.");
@@ -138,15 +136,11 @@ public class ChemistryPonderScenes {
     }
 
     /**
- * Bunsen burner scene (S172).
+ * Bunsen burner scene.
 */
     public static void bunsenBurner(SceneBuilder scene, SceneBuildingUtil util) {
         scene.title("bunsen_burner", "This text is defined in a language file.");
     }
-
-    // ═══════════════════════════════════════════════════════════════════════════════════════════
-    // Deferred scenes (0/14) 🎊 — ALL Chemistry scenes restored (S188 colorimeter final unblock)
-    // ═══════════════════════════════════════════════════════════════════════════════════════════
 
     /** Complex
  * multi-Vat tutorial narrative demonstrating Vat shape/size constraints:
@@ -174,7 +168,7 @@ public class ChemistryPonderScenes {
  * <li>{@link HighlightTagInstruction} at {@code com.petrolpark.client.ponder.instruction.*}
  * — petrolpark library 1.21 preserves the Ponder instruction package path 1:1 (unlike
  * other petrolpark-lib classes using `core/` extra layer).</li>
- * <li>{@link DestroyPonderTags#VAT_SIDE_BLOCKS} constant available (S158 skeleton port).</li>
+ * <li>{@link DestroyPonderTags#VAT_SIDE_BLOCKS} constant available.</li>
  * <li>{@link PonderPalette#RED} / {@link PonderPalette#GREEN}.</li>
  * </ul>
 */
@@ -343,12 +337,11 @@ public class ChemistryPonderScenes {
  * </ol>
  *
  * <ul>
- * <li>{@link SetVatSideTypePonderInstruction} (S178) — 4 invocations stress-testing all
+ * <li>{@link SetVatSideTypePonderInstruction} — 4 invocations exercising all
  * DisplayType transitions (NORMAL, PIPE, back-and-forth).</li>
- * <li>{@link DrainVatPonderInstruction} (S179) — stress-tested in real scene. NOTE: S179
- * DrainVat is **stub-backed** (SinglePhaseVatExtraction unported) — tick body no-op,
- * so the drain animation is visual-only (propagatePipeChange triggers fluid flow
- * visualization; actual fluid amount drain deferred).</li>
+ * <li>{@link DrainVatPonderInstruction} — the drain animation is visual-only
+ * (propagatePipeChange triggers the fluid-flow visualization; the actual fluid-amount
+ * drain is not applied here).</li>
  * <li>{@code propagatePipeChange / showIndependentSection / moveSection /
  * hideIndependentSection / showOutline} preserved.</li>
  * <li>{@link Items#LAVA_BUCKET} + {@link Blocks#AIR} vanilla.</li>
@@ -569,14 +562,14 @@ public class ChemistryPonderScenes {
  * </ol>
  *
  * <ul>
- * <li>{@link ThermometerInstruction} (S175) 5-gauge stress test — each {@code add(...)}
+ * <li>{@link ThermometerInstruction} drives 5 gauges — each {@code add(...)}
  * call instantiates a new ThermometerElement with its own lifetime + initial value +
  * screen position.</li>
- * <li>{@link SetVatSideTypePonderInstruction} (S178) + DisplayType.THERMOMETER.</li>
+ * <li>{@link SetVatSideTypePonderInstruction} + DisplayType.THERMOMETER.</li>
  * <li>{@code showIndependentSection / moveSection / hideIndependentSection /
  * showSectionAndMerge} Ponder API preserved.</li>
  * <li>{@link AllItems#WRENCH} + {@link Pointing#RIGHT}.</li>
- * <li>{@link IVatHeaterBlock} (S64) — not directly instantiated in this Ponder scene
+ * <li>{@link IVatHeaterBlock} — not directly instantiated in this Ponder scene
  * (scene uses visual burner reveal + ThermometerInstruction.chase for animation; full
  * heating simulation would need Vat BE tick integration).</li>
  * </ul>
@@ -713,12 +706,11 @@ public class ChemistryPonderScenes {
  * </ol>
  *
  * <ul>
- * * <li>**S175+S178+S179 Vat Ponder instructions 全 available**:
- * {@link SetVatSideTypePonderInstruction} (S178) + {@link SetVatPressurePonderInstruction}
- * (S179) + {@link ExplodePonderInstruction} (S180). {@code pressure.chase(...)} is
- * functional due to S179 VatControllerBE pressure field addition.</li>
- * <li>**First Vat Chemistry scene real body** — demonstrates 5 Vat Ponder instructions
- * stress-test under real scene load.</li>
+ * * <li>Vat Ponder instructions used:
+ * {@link SetVatSideTypePonderInstruction} + {@link SetVatPressurePonderInstruction}
+ * + {@link ExplodePonderInstruction}. {@code pressure.chase(...)} is
+ * functional via the VatControllerBE pressure field.</li>
+ * <li>Demonstrates 5 Vat Ponder instructions under real scene load.</li>
  * </ul>
 */
     public static void vatPressure(SceneBuilder scene, SceneBuildingUtil util) {
@@ -846,7 +838,7 @@ public class ChemistryPonderScenes {
         scene.addInstruction(new FadeOutOfSceneInstruction<>(0, Direction.DOWN, piping));
         scene.addInstruction(new FadeOutOfSceneInstruction<>(0, Direction.DOWN, copperRoof));
         scene.addInstruction(new ExplodePonderInstruction(level -> {
-            // 1.21 Explosion ctor 13-arg — see vatPressure Javadoc. Stub damage source via
+            // 1.21 Explosion ctor takes 13 args. Damage source built via
             // DamageTypes.EXPLOSION Holder lookup; vanilla default damage calculator (null).
             Holder<DamageType> dtHolder = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.EXPLOSION);
             DamageSource damageSource = new DamageSource(dtHolder, null, null);
@@ -873,16 +865,16 @@ public class ChemistryPonderScenes {
  * </ol>
  *
  * <ul>
- * <li>{@link ThermometerInstruction} (S175) stress-tested in non-Vat-controller context
+ * <li>{@link ThermometerInstruction} used in a non-Vat-controller context
  * (uses pure pointingAt Vec3, no BE binding). Two gauges coexist in one scene via
- * independent {@link ThermometerElement} handles — validates the S175
+ * independent {@link ThermometerElement} handles via the
  * {@code Consumer<PonderScene>} factory pattern.</li>
- * <li>{@link BubbleCapBlockEntity} S173 API preserved: {@code getTank / getInternalTank /
+ * <li>{@link BubbleCapBlockEntity} API: {@code getTank / getInternalTank /
  * getTankCapacity / getTransferRate / setTicksToFill}.</li>
- * <li>{@link GasParticleData} + {@link DestroyParticleTypes#DISTILLATION} ✓ (S166+).</li>
- * <li>{@link ProcessingPonderScenes#PURPLE_FLUID} display-potion substitute (S168
- * PotionFluid API pattern continuation).</li>
- * <li>{@link VecHelper#getCenterOf(BlockPos)} catnip ✓.</li>
+ * <li>{@link GasParticleData} + {@link DestroyParticleTypes#DISTILLATION}.</li>
+ * <li>{@link ProcessingPonderScenes#PURPLE_FLUID} display-potion substitute (PotionFluid
+ * API pattern).</li>
+ * <li>{@link VecHelper#getCenterOf(BlockPos)} catnip.</li>
  * </ul>
 */
     public static void roomTemperature(SceneBuilder scene, SceneBuildingUtil util) {
@@ -1092,7 +1084,7 @@ public class ChemistryPonderScenes {
  * <li>Reveal Vat frame (3×3 cube) + Colorimeter adjacent; show rotation animation (-90°
  * rotated + offset → snap back into position via {@code rotateSection / moveSection}).</li>
  * <li>Cycle {@link ColorimeterBlock#POWERED} property (blushing visual state flip).</li>
- * <li>Right-click prompt on Colorimeter top face (GUI hint — stub BE has no actual GUI).</li>
+ * <li>Right-click prompt on Colorimeter top face (GUI hint — the BE has no actual GUI).</li>
  * <li>Reveal 2nd Colorimeter separate from vat; demonstrate side-attach constraint with
  * RED/GREEN chaseBoundingBoxOutline (invalid c2 RED, valid c1 GREEN).</li>
  * <li>Reveal redstone + NixieTube; drive POWER=4/10 and display RedstoneStrength on
@@ -1100,8 +1092,8 @@ public class ChemistryPonderScenes {
  * </ol>
  *
  * <ul>
- * <li>{@link ColorimeterBlock#POWERED} BooleanProperty — S188 stub port exposes this.</li>
- * <li>{@link NixieTubeBlockEntity} RedstoneStrength NBT (S187 reused pattern).</li>
+ * <li>{@link ColorimeterBlock#POWERED} BooleanProperty exposes the powered state.</li>
+ * <li>{@link NixieTubeBlockEntity} RedstoneStrength NBT.</li>
  * <li>Pure Ponder API: {@code rotateSection / moveSection / cycleBlockProperty /
  * chaseBoundingBoxOutline / modifyBlock / indicateRedstone / modifyBlockEntityNBT /
  * showIndependentSection / hideIndependentSection}.</li>
@@ -1109,10 +1101,8 @@ public class ChemistryPonderScenes {
  * <li>{@link AABB} single-arg BlockPos ctor.</li>
  * </ul>
  *
- * <p>**Chemistry scenes 14/14 complete** 🎊 — all ported-or-restored. Vat subsystem Chemistry
- * narrative coverage functional. ColorimeterBlock stub BE doesn't power real GUI /
- * redstone-monitor readout but scene's visual narrative works via stubbed blockstate + NixieTube
- * display workflows.</p>
+ * <p>The ColorimeterBlock BE does not drive a real GUI / redstone-monitor readout, but the
+ * scene's visual narrative works via the blockstate + NixieTube display workflows.</p>
 */
     public static void colorimeter(SceneBuilder scene, SceneBuildingUtil util) {
         scene.title("colorimeter", "This text is defined in a language file.");
@@ -1330,7 +1320,6 @@ public class ChemistryPonderScenes {
         scene.markAsFinished();
     }
 
-    // vatUV(SceneBuilder, SceneBuildingUtil, boolean) helper restored above now that
-    // BlacklightBlock is ported and the 2 delegate methods (vatUVWithoutBlackLight /
-    // vatUVWithBlackLight) are functional.
+    // The vatUV(SceneBuilder, SceneBuildingUtil, boolean) helper above backs the two delegate
+    // methods (vatUVWithoutBlackLight / vatUVWithBlackLight).
 }
