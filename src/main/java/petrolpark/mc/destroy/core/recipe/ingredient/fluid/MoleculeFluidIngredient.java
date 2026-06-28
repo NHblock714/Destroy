@@ -15,6 +15,7 @@ import petrolpark.mc.destroy.DestroyFluidIngredientTypes;
 import petrolpark.mc.destroy.chemistry.legacy.LegacyMixture;
 import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
 import petrolpark.mc.destroy.chemistry.legacy.ReadOnlyMixture;
+import petrolpark.mc.destroy.chemistry.legacy.index.DestroyMolecules;
 
 /**
  * Matches a Mixture fluid containing {@code molecule} at concentration in [minConcentration,
@@ -69,8 +70,12 @@ public class MoleculeFluidIngredient extends MixtureFluidIngredient {
         LegacySpecies molecule = LegacySpecies.getMolecule(moleculeId);
         if (molecule == null) return List.of();
         LegacyMixture m = new LegacyMixture();
-        float conc = (minConcentration + Math.min(maxConcentration, 1000f)) / 2f;
-        m.addMolecule(molecule, Math.max(conc, 0.01f));
+        float conc = Math.max((minConcentration + Math.min(maxConcentration, 1000f)) / 2f, 0.01f);
+        m.addMolecule(molecule, conc);
+        // Fill the remaining volume with water so the example mixture has a realistic concentration
+        // and heat capacity rather than the lone solute.
+        float water = DestroyMolecules.WATER.getPureConcentration() * (1f - (conc / molecule.getPureConcentration()));
+        if (water > 0f) m.addMolecule(DestroyMolecules.WATER, water);
         return List.of(m);
     }
 

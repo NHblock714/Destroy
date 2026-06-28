@@ -186,6 +186,15 @@ public class VatFluidTankBehaviour extends GeniusFluidTankBehaviour {
         getGasHandler().setFluid(MixtureFluid.of((int) freeSpace, mixture));
     }
 
+    /**
+ * Write {@code temperature} onto both phase tanks' stored Mixtures without altering their volumes
+ * (see {@link VatTankSegment.VatFluidTank#syncMixtureTemperature}).
+*/
+    public void syncTankTemperatures(float temperature) {
+        getLiquidHandler().syncMixtureTemperature(temperature);
+        getGasHandler().syncMixtureTemperature(temperature);
+    }
+
     public class VatFluidHandler extends InternalFluidHandler {
 
         public VatFluidHandler(IFluidHandler[] handlers) {
@@ -327,6 +336,26 @@ public class VatFluidTankBehaviour extends GeniusFluidTankBehaviour {
             @Override
             public FluidStack drain(int maxDrain, FluidAction action) {
                 return super.drain(maxDrain, action);
+            }
+
+            /**
+ * Write a new temperature onto this tank's stored Mixture without changing its volume, molecule
+ * content, or the {@code flushed}/{@code liquidFull} flags. No-op when the tank is empty,
+ * payload-less, or already at this temperature.
+*/
+            public void syncMixtureTemperature(float temperature) {
+                if (fluid.isEmpty() || !fluid.has(DestroyDataComponents.MIXTURE)) return;
+                LegacyMixture mixture = LegacyMixture.readNBT(
+                    fluid.getOrDefault(DestroyDataComponents.MIXTURE, new CompoundTag()), false);
+                if (mixture.isEmpty() || Math.abs(mixture.getTemperature() - temperature) < 1e-3f) return;
+                mixture.setTemperature(temperature);
+                boolean wasFlushed = flushed;
+                boolean wasLiquidFull = liquidFull;
+                FluidStack updated = fluid.copy();
+                updated.set(DestroyDataComponents.MIXTURE, mixture.writeNBT());
+                setFluid(updated);          // marks the BE dirty + syncs to client
+                flushed = wasFlushed;       // a temperature change must not re-open the gas-vent gate
+                liquidFull = wasLiquidFull; // nor flip the liquid-full flag (volume is unchanged)
             }
         }
     }

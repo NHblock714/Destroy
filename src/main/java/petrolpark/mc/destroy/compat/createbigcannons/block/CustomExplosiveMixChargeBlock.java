@@ -67,6 +67,34 @@ public class CustomExplosiveMixChargeBlock extends PowderChargeBlock implements 
         withBlockEntityDo(level, pos, be -> be.onPlace(stack, level.registryAccess()));
     }
 
+    /** Detonate the contained mix when caught in an explosion, instead of dropping the charge item. */
+    @Override
+    public void onBlockExploded(BlockState state, Level level, BlockPos pos, net.minecraft.world.level.Explosion explosion) {
+        if (destroy$detonate(level, pos)) return;
+        super.onBlockExploded(state, level, pos, explosion);
+    }
+
+    /** A charge caught in an explosion detonates rather than dropping its item. */
+    @Override
+    public boolean canDropFromExplosion(BlockState state, BlockGetter level, BlockPos pos, net.minecraft.world.level.Explosion explosion) {
+        return false;
+    }
+
+    private boolean destroy$detonate(Level level, BlockPos pos) {
+        if (!(level.getBlockEntity(pos) instanceof CustomExplosiveMixChargeBlockEntity be)) return false;
+        MixedExplosiveInventory inv = be.getExplosiveInventory();
+        if (inv.isEmpty() || !inv.getExplosiveProperties().fulfils(ExplosiveProperties.CAN_EXPLODE)) return false;
+        level.removeBlock(pos, false);
+        if (level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+            // Null source: a chain detonation is not a deliberate player action, so it does not award
+            // the detonation advancement or count against whatever triggered it.
+            petrolpark.mc.destroy.core.explosion.SmartExplosion.explode(serverLevel,
+                petrolpark.mc.destroy.core.explosion.mixedexplosive.CustomExplosiveMixExplosion.create(
+                    level, inv, null, net.minecraft.world.phys.Vec3.atCenterOf(pos)));
+        }
+        return true;
+    }
+
     @Override
     public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         InteractionResult dyeResult = onBlockEntityUse(level, pos, be -> be.tryDye(stack, hit, level, pos, player));
@@ -190,7 +218,10 @@ public class CustomExplosiveMixChargeBlock extends PowderChargeBlock implements 
 
     public BigCannonPropellantPropertiesComponent getPropellantProperties(@Nullable CompoundTag explosiveMixTag) {
         if (explosiveMixTag == null || explosiveMixTag.isEmpty()) return BigCannonPropellantPropertiesComponent.DEFAULT;
-        MixedExplosiveInventory inv = new MixedExplosiveInventory(DestroyConfigs.server().compat.customExplosiveMixChargeSize.get());
+        // Build the inventory with the charge's conditions so getExplosiveProperties registers
+        // CAN_EXPLODE; fulfils() requires the condition to be present before it tests the threshold.
+        MixedExplosiveInventory inv = new MixedExplosiveInventory(DestroyConfigs.server().compat.customExplosiveMixChargeSize.get(),
+            CustomExplosiveMixChargeBlockEntity.EXPLOSIVE_PROPERTY_CONDITIONS);
         inv.deserializeNBT(net.minecraft.core.RegistryAccess.EMPTY, explosiveMixTag);
         if (inv.isEmpty()) return BigCannonPropellantPropertiesComponent.DEFAULT;
         CustomExplosiveMixChargeProperties chargeProperties = DestroyMunitionPropertiesHandlers.CUSTOM_EXPLOSIVE_MIX_CHARGE.getPropertiesOf(this);

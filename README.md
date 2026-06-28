@@ -55,6 +55,9 @@ Tweaks to existing mechanics. Most are user-visible.
 - **Colourimeter generalised.** Works against any tank Block Entity exposing a fluid handler + glass window, not only Vat side blocks.
 - **JEI is now optional.** The mod runs without JEI; the plugin is gated by `Mods.JEI.isLoading()` and lazy-loads only when JEI is present.
 - **First-join fork-welcome chat message** with clickable links to the upstream Discord and this fork's GitHub. Toggleable via the `ForkWelcomeMessage` client config.
+- **Fired cannon shell explosion radius ×1.6.** A `custom_explosive_mix_shell` launched from a cannon detonates larger than the same mix hand-placed; the charge's sympathetic detonation and the hand-held bomb keep the base radius. Tunable via `SHELL_EXPLOSION_RADIUS_MULTIPLIER`.
+- **Empty Vat reads the local ambient temperature** (biome + pollution) instead of a fixed 298 K, matching the rest of the chemistry temperature model.
+- **Mixed-explosive explosion effects broadcast to a wide radius.** Particles + sound were only sent within 64 blocks, so a cannon shell that detonated far downrange showed nothing; the blast is now visible to anyone who can see that far (e.g. with extended render distance).
 
 ### Bug fixes
 
@@ -75,6 +78,8 @@ Tweaks to existing mechanics. Most are user-visible.
 - **Mixed-explosive blockstate typo** (`cullface: "dpwn"`).
 - **`cordite_rods` missing from creative tab** — registry-id drift from `cordite`.
 - **`urine_cauldron` mined into `minecraft:air`** instead of dropping a cauldron — loot entry fix.
+- **Centrifuge crash separating some ionic mixtures** — the counter-ion pairing loop reused a `moles` value read once at loop entry; a species pairing with several counter-ions was over-counted past depletion, dropping its moles entry while volume remained and crashing the centrifuge tick on the next pass. Now re-reads the remaining moles each pass and skips depleted entries.
+- **CBC `custom_explosive_mix_charge` produced zero propellant strength** — the strength lookup built its inventory without the charge's `CAN_EXPLODE` condition, so `fulfils(CAN_EXPLODE)` short-circuited at its condition check and the charge could never launch a shell (the same size-only inventory exists in 1.20.1).
 
 #### Surfaced by 1.21's stricter APIs (or introduced during the port and caught in series)
 
@@ -105,6 +110,10 @@ Tweaks to existing mechanics. Most are user-visible.
 - **CBC custom shell / charge lost their payload when hand-loaded** — CBC 1.21 serialises the munition item's DataComponents into the bore structure tag, but the Destroy block entity persists a raw NBT save tag; a hand-loaded shell arrived with no explosive mix (and never detonated) and the charge read as zero propellant (the cannon wouldn't fire). `getHandloadingInfo` / `getExtractedItem` now round-trip through the block entity's own serialization.
 - **CBC custom shell creative middle-click returned an empty shell** — `FuzedBlockEntity` syncs to clients through `writeClient` / `readClient`, not `saveAdditional`, so the client-side inventory was empty when pick-block read it. Sync overrides added.
 - **Trypolithography circuit board always came out blank** — Create's `SequencedAssemblyRecipe.advance()` reset the work item to the transitional template between steps, stripping the punched pattern; a mixin conserves the components mid-sequence and re-stamps the circuit pattern.
+- **Vat temperature snapped to ambient (25 °C) on every fluid insert/extract** — the tank write-back was gated to ticks where a reaction or phase change occurred (to stop an infinite-extraction exploit), which also stopped pure heating from persisting to the tanks, so accumulated heat was discarded on the next fluid-I/O rebuild. Heating ticks now write the temperature back to the tank stacks without regenerating their volume.
+- **CBC custom shell launched by a nearby explosion didn't detonate** — CBC 5.11.7's explosion/physicalize path spawns the projectile through a different `getProjectile` overload than cannon firing, and the un-overridden default carried no explosive mix, so the launched shell fizzled. The overload now transfers the mix, fuze and colour from the block entity.
+- **In-flight custom shell could fizzle after a chunk save/reload** — the reloaded projectile inventory was rebuilt without its `CAN_EXPLODE` condition.
+- **CBC custom charge dropped itself and awarded the detonation advancement on a chain detonation** — `canDropFromExplosion` now returns `false` for the charge, and a sympathetic detonation uses a null explosion source so it is not credited to a player.
 
 ### New features (additions vs upstream 1.20.1)
 
@@ -130,6 +139,8 @@ Tweaks to existing mechanics. Most are user-visible.
 - **Spout filling non-fluid-handler items** path restored (Fire Retardant spray fires correctly).
 - **CircuitPatternIngredient** ingredient type eagerly registered so Colourimeter / Pollutometer / Redstone Programmer recipes load reliably.
 - **CBC custom shell fuze rendering** — an installed fuze now renders on the placed shell (Flywheel visual) and on the item model in the inventory / in hand, matching CBC's own shells; breaking a fuzed shell drops a single shell that keeps the fuze.
+- **CBC custom shell / charge sympathetic detonation** — a `custom_explosive_mix_charge` or `custom_explosive_mix_shell` caught in a nearby explosion detonates its own mix (chain reaction) instead of dropping; integrates with CBC 5.11.7's physicalize-on-explosion path so a shell with an impact fuze detonates where it lands.
+- **Create: Big Cannons compat updated to 5.11.7** — tracks the new `FuzedBlockEntity` save API and explosion-launched fuzed projectiles.
 
 ## Building
 
@@ -137,7 +148,7 @@ Tweaks to existing mechanics. Most are user-visible.
 ./gradlew jar
 ```
 
-Produces `build/libs/destroy-1.21.1-0.3.7.jar` (about 9 MB).
+Produces `build/libs/destroy-1.21.1-0.3.9.jar` (about 9 MB).
 
 > Build requires a local `_Migration-Toolkit-1.21/` directory as a sibling of
 > the project root, containing the petrolpark library Maven layout and the

@@ -469,9 +469,13 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
                 for (int i = 0; i < entry.getValue(); i++) entry.getKey().onVatReaction(getLevel(), this);
             });
             updateFluidMixture();
-        } else if (shouldLog) {
-            petrolpark.mc.destroy.Destroy.LOGGER.info(
-                "[VAT-DBG]   shouldUpdate=FALSE → tanks unchanged this tick");
+        } else {
+            // No reaction or phase change this tick, so skip the volume-regenerating setMixture
+            // write-back. If the heat loop changed the temperature, persist just that to the tank
+            // stacks so the next fill/drain rebuild keeps it.
+            if (heatDisturbedAtLeastOnce && cachedMixture != null && !cachedMixture.isEmpty()) {
+                fluidBehaviour.syncTankTemperatures(cachedMixture.getTemperature());
+            }
         }
 
         // Gas venting — fires only when the gas tank holds reaction-produced gas, not just
@@ -979,7 +983,9 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
 */
     public float getTemperature() {
         if (hasLevel() && getLevel().isClientSide()) return temperature.getChaseTarget();
-        if (cachedMixture == null || cachedMixture.isEmpty()) return 298f;
+        // An empty vat reads the ambient/local temperature, so it reflects pollution and biome warmth.
+        if (cachedMixture == null || cachedMixture.isEmpty())
+            return petrolpark.mc.destroy.core.pollution.PollutionHelper.getLocalTemperature(getLevel(), getBlockPos());
         return cachedMixture.getTemperature();
     }
 

@@ -66,14 +66,25 @@ public class CustomExplosiveMixExplosion extends SmartExplosion {
     }
 
     public static CustomExplosiveMixExplosion create(Level level, MixedExplosiveInventory inv, @Nullable Entity source, Vec3 position) {
-        return create(level, inv.getExplosiveProperties(), inv.getSpecialItems(), source, position);
+        return create(level, inv, source, position, 1f);
+    }
+
+    /**
+ * @param radiusMultiplier scales the computed blast radius (1.0 = default; fired shells pass {@code >1}).
+*/
+    public static CustomExplosiveMixExplosion create(Level level, MixedExplosiveInventory inv, @Nullable Entity source, Vec3 position, float radiusMultiplier) {
+        return create(level, inv.getExplosiveProperties(), inv.getSpecialItems(), source, position, radiusMultiplier);
     }
 
     protected static CustomExplosiveMixExplosion create(Level level, ExplosiveProperties properties, List<ItemStack> specialItems, @Nullable Entity source, Vec3 position) {
+        return create(level, properties, specialItems, source, position, 1f);
+    }
+
+    protected static CustomExplosiveMixExplosion create(Level level, ExplosiveProperties properties, List<ItemStack> specialItems, @Nullable Entity source, Vec3 position, float radiusMultiplier) {
         float oxygenBalance = Math.abs(properties.get(ExplosiveProperty.OXYGEN_BALANCE).value) / 10f;
         if (properties.fulfils(ExplosiveProperties.DROPS_HEADS)) source = new DummyChargedCreeper(level, source);
 
-        return new CustomExplosiveMixExplosion(level, properties, specialItems, source, null, new DamageCalculator(properties), position, (4f + (properties.get(ExplosiveProperty.ENERGY).value / 3f)) * (1f - oxygenBalance * oxygenBalance), 0.5f);
+        return new CustomExplosiveMixExplosion(level, properties, specialItems, source, null, new DamageCalculator(properties), position, (4f + (properties.get(ExplosiveProperty.ENERGY).value / 3f)) * (1f - oxygenBalance * oxygenBalance) * radiusMultiplier, 0.5f);
     }
 
     /**

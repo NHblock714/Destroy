@@ -186,6 +186,24 @@ public class CustomExplosiveMixShellBlock extends FuzedProjectileBlock<CustomExp
         return projectile;
     }
 
+    /**
+     * Build the projectile when the shell block is launched by an explosion (CBC's
+     * {@code spawnFromExplosion} / {@code detonateProjectileOnTheSpot} use this overload, not the
+     * {@code List<StructureBlockInfo>} one used for cannon firing). Transfers the mix, fuze and colour
+     * from the block entity so the launched shell carries its payload.
+     */
+    @Override
+    public AbstractBigCannonProjectile getProjectile(Level level, BlockPos pos, BlockState state) {
+        CustomExplosiveMixShellProjectile projectile = CreateBigCannonsEntityTypes.CUSTOM_EXPLOSIVE_MIX_SHELL.get().create(level);
+        if (projectile == null) return null;
+        if (level.getBlockEntity(pos) instanceof CustomExplosiveMixShellBlockEntity shell) {
+            projectile.color = shell.getColor();
+            projectile.setExplosiveInventory(shell.getExplosiveInventory());
+            projectile.setFuze(shell.getFuze().copy());
+        }
+        return projectile;
+    }
+
     @Override
     public boolean isBaseFuze() {
         return CBCMunitionPropertiesHandlers.COMMON_SHELL_BIG_CANNON_PROJECTILE.getPropertiesOf(getAssociatedEntityType()).fuze().baseFuze();

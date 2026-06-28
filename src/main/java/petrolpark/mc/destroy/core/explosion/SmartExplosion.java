@@ -86,7 +86,11 @@ public class SmartExplosion extends Explosion {
         if (level instanceof ServerLevel serverLevel) {
             Vec3 pos = explosion.getPosition();
             Map<Player, Vec3> knockbacks = explosion.getHitPlayers();
-            for (net.minecraft.server.level.ServerPlayer player : serverLevel.getPlayers(p -> p.distanceToSqr(pos) < 4096d)) {
+            // Broadcast the visual/sound to a wide radius: a launched munition can detonate far from
+            // any player, and the effect must still reach viewers. Sound self-attenuates by distance,
+            // and knockback stays gated to hit players via the knockbacks map (others receive Vec3.ZERO).
+            final double effectRangeSq = 1024d * 1024d;
+            for (net.minecraft.server.level.ServerPlayer player : serverLevel.getPlayers(p -> p.distanceToSqr(pos) < effectRangeSq)) {
                 Vec3 kb = knockbacks.getOrDefault(player, Vec3.ZERO);
                 net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player,
                     new SmartExplosionS2CPacket(pos,

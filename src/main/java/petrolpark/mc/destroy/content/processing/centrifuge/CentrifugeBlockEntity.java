@@ -395,12 +395,21 @@ public class CentrifugeBlockEntity extends KineticBlockEntity implements IHaveLa
                 } else {
                     // Ion: must pair with counter-ions to preserve charge balance
                     findCounterions: while (Optional.ofNullable(phasedMoleculesRemainingVolumes.get(phasedMolecule)).orElse(0f) > 0f) {
+                        // Re-read the remaining moles each pass: the molecule is consumed across
+                        // successive counter-ion pairings, so the loop-entry value goes stale.
+                        Float remainingMoleculeMoles = phasedMoleculesRemainingMoles.get(phasedMolecule);
+                        if (remainingMoleculeMoles == null) break findCounterions;
+                        moles = remainingMoleculeMoles;
+
                         Pair<LegacySpecies, Boolean> phasedCounterion = getNextIon(orderedPhasedMolecules, phasedMoleculesRemainingVolumes, molecule.getCharge() < 0);
                         LegacySpecies counterion = phasedCounterion.getFirst();
                         if (counterion == null) {
                             petrolpark.mc.destroy.Destroy.LOGGER.error("Tried to centrifuge charge-imbalanced Mixture");
                             break findCounterions;
                         }
+                        // Skip a counter-ion whose moles are already used up even if getNextIon still
+                        // offered it by volume.
+                        if (phasedMoleculesRemainingMoles.get(phasedCounterion) == null) break findCounterions;
 
                         // Charge balance: n_primary * c_primary + n_counter * c_counter = 0
                         //   →  n_counter = - n_primary * c_primary / c_counter
@@ -450,11 +459,11 @@ public class CentrifugeBlockEntity extends KineticBlockEntity implements IHaveLa
                             return newVolume <= 1 / 256f / 256f ? null : newVolume;
                         });
                         phasedMoleculesRemainingMoles.compute(phasedMolecule, (pm, mol) -> {
-                            float newMol = mol - molesOfMoleculeUsed;
+                            float newMol = (mol == null ? 0f : mol) - molesOfMoleculeUsed;
                             return newMol <= 1 / 256f / 256f ? null : newMol;
                         });
                         phasedMoleculesRemainingMoles.compute(phasedCounterion, (pm, mol) -> {
-                            float newMol = mol - molesOfCounterionUsed;
+                            float newMol = (mol == null ? 0f : mol) - molesOfCounterionUsed;
                             return newMol <= 1 / 256f / 256f ? null : newMol;
                         });
 

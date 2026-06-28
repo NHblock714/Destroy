@@ -18,6 +18,8 @@ import rbasamoyai.createbigcannons.munitions.config.components.EntityDamagePrope
 
 import petrolpark.mc.destroy.compat.createbigcannons.block.CreateBigCannonsBlocks;
 import petrolpark.mc.destroy.compat.createbigcannons.block.CustomExplosiveMixShellBlock;
+import petrolpark.mc.destroy.compat.createbigcannons.block.entity.CustomExplosiveMixShellBlockEntity;
+import petrolpark.mc.destroy.config.DestroyConfigs;
 import petrolpark.mc.destroy.core.explosion.SmartExplosion;
 import petrolpark.mc.destroy.core.explosion.mixedexplosive.CustomExplosiveMixExplosion;
 import petrolpark.mc.destroy.core.explosion.mixedexplosive.ExplosiveProperties;
@@ -32,6 +34,9 @@ import petrolpark.mc.destroy.core.explosion.mixedexplosive.MixedExplosiveInvento
  * HE-shell common shell property binding.</p>
 */
 public class CustomExplosiveMixShellProjectile extends FuzedBigCannonProjectile {
+
+    /** Blast-radius multiplier for a fired shell's detonation; the charge and hand bomb use 1.0. */
+    public static final float SHELL_EXPLOSION_RADIUS_MULTIPLIER = 1.6f;
 
     protected MixedExplosiveInventory inv;
     public int color = 0xFFFFFF;
@@ -51,7 +56,10 @@ public class CustomExplosiveMixShellProjectile extends FuzedBigCannonProjectile 
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         color = tag.getInt("Color");
-        inv = new MixedExplosiveInventory(16);
+        // Build the inventory with the shell's conditions so getExplosiveProperties registers
+        // CAN_EXPLODE, which detonate() tests before exploding.
+        inv = new MixedExplosiveInventory(DestroyConfigs.server().compat.customExplosiveMixShellSize.get(),
+            CustomExplosiveMixShellBlockEntity.EXPLOSIVE_PROPERTY_CONDITIONS);
         if (tag.contains("ExplosiveMix")) inv.deserializeNBT(level().registryAccess(), tag.getCompound("ExplosiveMix"));
     }
 
@@ -73,7 +81,7 @@ public class CustomExplosiveMixShellProjectile extends FuzedBigCannonProjectile 
             && inv.getExplosiveProperties().fulfils(ExplosiveProperties.CAN_EXPLODE)) {
             SmartExplosion.explode(serverLevel,
                 CustomExplosiveMixExplosion.create(serverLevel, inv, this,
-                    new Vec3(position.x(), position.y(), position.z())));
+                    new Vec3(position.x(), position.y(), position.z()), SHELL_EXPLOSION_RADIUS_MULTIPLIER));
         }
     }
 

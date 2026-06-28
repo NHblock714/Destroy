@@ -146,7 +146,7 @@ dependencies {
 
     // Compat-module compile-only jars — runtime users load these as normal Minecraft mods
     // alongside Destroy; we only need the symbols at compile-time so the jars don't get bundled.
-    compileOnly(files("../../../_Migration-Toolkit-1.21/lib-1.21/createbigcannons-5.11.3+mc.1.21.1.jar"))
+    compileOnly(files("../../../_Migration-Toolkit-1.21/lib-1.21/createbigcannons-5.11.7+mc.1.21.1.jar"))
     compileOnly(files("../../../_Migration-Toolkit-1.21/lib-1.21/ritchiesprojectilelib-2.1.2+mc.1.21.1-neoforge.jar"))
 
     // Create: Connected — required for compat.create_connected.FluidVessel*Mixin source

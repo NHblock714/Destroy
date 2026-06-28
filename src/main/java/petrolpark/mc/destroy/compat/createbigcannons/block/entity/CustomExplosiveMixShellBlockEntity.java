@@ -118,13 +118,13 @@ public class CustomExplosiveMixShellBlockEntity extends FuzedBlockEntity impleme
     // from the same component CBC writes to.
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         readMixData(tag, registries);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         writeMixData(tag, registries);
     }
