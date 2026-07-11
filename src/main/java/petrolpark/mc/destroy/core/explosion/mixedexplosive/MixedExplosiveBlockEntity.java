@@ -59,7 +59,26 @@ public class MixedExplosiveBlockEntity extends SmartBlockEntity implements IDyea
 */
     public MixedExplosiveInventory createInv() {
         // Placeholder: DestroyAllConfigs.SERVER.blocks.customExplosiveMixSize.get() pending config audit.
-        return new MixedExplosiveInventory(9, EXPLOSIVE_PROPERTY_CONDITIONS);
+        return new MixedExplosiveInventory(9, EXPLOSIVE_PROPERTY_CONDITIONS).withChangeCallback(this::onInventoryChanged);
+    }
+
+    /**
+ * Mark dirty + push to clients whenever the stored explosives change (menu edits go straight to
+ * the inventory handler), so the change is saved and the client BE stays current for creative
+ * pick-block (which reads the client BE).
+*/
+    protected void onInventoryChanged() {
+        sync();
+    }
+
+    /**
+ * Mark dirty + push the whole BE (inventory + colour + custom name) to clients. Colour and name
+ * must reach the client BE: the dye tint is baked into the chunk mesh via {@link
+ * DyeableMixedExplosiveBlockColor} (tintindex 0) and the name label is drawn by the BER.
+*/
+    protected void sync() {
+        setChanged();
+        if (hasLevel() && !getLevel().isClientSide()) notifyUpdate();
     }
 
     /**
@@ -80,8 +99,8 @@ public class MixedExplosiveBlockEntity extends SmartBlockEntity implements IDyea
     }
 
     public void setExplosiveInventory(MixedExplosiveInventory inv) {
-        this.inv = inv;
-        setChanged();
+        this.inv = inv.withChangeCallback(this::onInventoryChanged);
+        onInventoryChanged();
     }
 
     public int getColor() {
@@ -89,8 +108,16 @@ public class MixedExplosiveBlockEntity extends SmartBlockEntity implements IDyea
     }
 
     public void setColor(int color) {
+        boolean changed = this.color != color;
         this.color = color;
-        setChanged();
+        sync();
+        // Block.useItemOn runs client-side too, so a dyeing interaction sets the colour here on the
+        // client via prediction; the following server sync packet then carries the SAME colour, so
+        // read()'s change-gated re-mesh no-ops. Re-mesh right here so the tint updates live instead
+        // of only after breaking + replacing the block.
+        if (changed && hasLevel() && getLevel().isClientSide()) {
+            IDyeableMixedExplosiveBlockEntity.reRender(getLevel(), getBlockPos());
+        }
     }
 
     @Nullable
@@ -100,7 +127,7 @@ public class MixedExplosiveBlockEntity extends SmartBlockEntity implements IDyea
 
     public void setCustomName(@Nullable Component name) {
         this.name = name;
-        setChanged();
+        sync();
     }
 
     @Override
@@ -119,6 +146,7 @@ public class MixedExplosiveBlockEntity extends SmartBlockEntity implements IDyea
     @Override
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
+        int oldColor = color;
         color = tag.getInt("Color");
         // CustomName is stored as a plain literal string; rich-text names are not supported here.
         if (tag.contains("CustomName")) {
@@ -130,6 +158,12 @@ public class MixedExplosiveBlockEntity extends SmartBlockEntity implements IDyea
         inv = createInv();
         if (tag.contains("ExplosiveMix")) {
             inv.deserializeNBT(registries, tag.getCompound("ExplosiveMix"));
+        }
+        // The dye tint is baked into the chunk mesh (BlockColor on tintindex 0), so a synced colour
+        // change needs a section re-mesh to show. The name label is drawn by the BER each frame and
+        // needs none.
+        if (clientPacket && color != oldColor && hasLevel()) {
+            IDyeableMixedExplosiveBlockEntity.reRender(getLevel(), getBlockPos());
         }
     }
 

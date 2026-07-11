@@ -77,6 +77,13 @@ public class CircuitPatternItemRenderer extends CustomRenderedItemModelRenderer 
         ItemRenderer itemRenderer = mc.getItemRenderer();
         // Render the base item normally
         itemRenderer.render(stack, ItemDisplayContext.NONE, false, ms, buffer, light, overlay, model.getOriginalModel());
+
+        // Fragments are item/generated extrusions sharing the base's Z slab, so their copper is
+        // coplanar with the base and z-fights it in 3D contexts (held / item frame / display); the
+        // GUI's fixed camera hides it. Nudge the fragments a hair toward the camera (+Z) so they
+        // sit just in front of the base instead of fighting it — sub-pixel, invisible to the eye.
+        ms.translate(0, 0, 0.01);
+
         // Overlay punched-hole fragments per the pattern bitmask
         int pattern = CircuitPatternItem.getPattern(stack);
         for (int i = 0; i < 16; i++) {

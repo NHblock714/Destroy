@@ -20,6 +20,9 @@ public class DyeableMixedExplosiveItemColor implements ItemColor {
     @Override
     public int getColor(ItemStack stack, int tintIndex) {
         if (tintIndex != 0) return -1;
-        return DyedItemColor.getOrDefault(stack, 0xFFFFFF);
+        // Opaque white default (0xFF alpha). An undyed stack has no DYED_COLOR, and getOrDefault
+        // returns this default verbatim — a bare 0xFFFFFF (alpha 0) tints the layer fully
+        // transparent, so a freshly-crafted / creative-tab mix rendered see-through.
+        return DyedItemColor.getOrDefault(stack, 0xFFFFFFFF);
     }
 }

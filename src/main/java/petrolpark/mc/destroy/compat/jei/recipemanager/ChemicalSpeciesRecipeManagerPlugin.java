@@ -2,7 +2,6 @@ package petrolpark.mc.destroy.compat.jei.recipemanager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.IFocus;
@@ -89,18 +88,32 @@ public class ChemicalSpeciesRecipeManagerPlugin implements IRecipeManagerPlugin 
         switch (focus.getRole()) {
             case INPUT -> {
                 if (recipeCategory instanceof GenericReactionCategory) {
+                    // A molecule can carry several groups of the same type (a diol has two alcohol
+                    // groups, this borane two C–B bonds); collect the distinct generic reactions
+                    // first so each appears once instead of once per matching group.
+                    java.util.Set<petrolpark.mc.destroy.chemistry.legacy.genericreaction.GenericReaction> generics =
+                        new java.util.LinkedHashSet<>();
                     molecule.getFunctionalGroups().forEach(group -> {
                         var maybeSet = LegacyFunctionalGroup.groupTypesAndReactions.get(group.getType());
-                        Optional.ofNullable(maybeSet).ifPresent(set -> set.forEach(genericReaction -> {
-                            ReactionRecipe recipe = GenericReactionCategory.RECIPES.get(genericReaction);
-                            if (recipe != null) recipes.add((T) new net.minecraft.world.item.crafting.RecipeHolder<>(
-                                petrolpark.mc.destroy.Destroy.asResource("plugin_input_generic_" + counter[0]++), recipe));
-                        }));
+                        if (maybeSet != null) generics.addAll(maybeSet);
                     });
+                    for (var genericReaction : generics) {
+                        ReactionRecipe recipe = GenericReactionCategory.RECIPES.get(genericReaction);
+                        if (recipe != null) recipes.add((T) new net.minecraft.world.item.crafting.RecipeHolder<>(
+                            petrolpark.mc.destroy.Destroy.asResource("plugin_input_generic_" + counter[0]++), recipe));
+                    }
                 } else if (recipeCategory instanceof ReactionCategory) {
+                    // Built-in fixed Reactions surface through JEI's own ingredient matching, so
+                    // contributing them here would list each twice. DATAPACK Reactions, however,
+                    // only reach JEI via refreshDatapackReactionsClientSide, whose sync-packet /
+                    // JEI-runtime timing is fragile — so surface them straight from the molecule's
+                    // reaction index here, building the recipe on
+                    // the fly when it isn't already cached in ReactionCategory.RECIPES.
                     molecule.getReactantReactions().forEach(reaction -> {
-                        ReactionRecipe r = ReactionCategory.RECIPES.get(reaction.getReactionDisplayedInJEI());
-                        if (r != null) recipes.add((T) new net.minecraft.world.item.crafting.RecipeHolder<>(
+                        if (!reaction.isDatapack() || !reaction.includeInJei()) return;
+                        ReactionRecipe r = ReactionCategory.RECIPES.get(reaction);
+                        if (r == null) r = petrolpark.mc.destroy.core.chemistry.recipe.ReactionRecipe.create(reaction);
+                        recipes.add((T) new net.minecraft.world.item.crafting.RecipeHolder<>(
                             petrolpark.mc.destroy.Destroy.asResource("plugin_input_reaction_" + counter[0]++), r));
                     });
                 } else {
@@ -130,18 +143,27 @@ public class ChemicalSpeciesRecipeManagerPlugin implements IRecipeManagerPlugin 
             }
             case OUTPUT -> {
                 if (recipeCategory instanceof GenericReactionCategory) {
+                    // Distinct generic reactions only — see the INPUT branch for why a molecule can
+                    // otherwise match the same generic once per repeated functional group.
+                    java.util.Set<petrolpark.mc.destroy.chemistry.legacy.genericreaction.GenericReaction> generics =
+                        new java.util.LinkedHashSet<>();
                     molecule.getFunctionalGroups().forEach(group -> {
                         var maybeSet = GenericReactionCategory.GROUP_RECIPES.get(group.getType());
-                        Optional.ofNullable(maybeSet).ifPresent(set -> set.forEach(genericReaction -> {
-                            ReactionRecipe recipe = GenericReactionCategory.RECIPES.get(genericReaction);
-                            if (recipe != null) recipes.add((T) new net.minecraft.world.item.crafting.RecipeHolder<>(
-                                petrolpark.mc.destroy.Destroy.asResource("plugin_output_generic_" + counter[0]++), recipe));
-                        }));
+                        if (maybeSet != null) generics.addAll(maybeSet);
                     });
+                    for (var genericReaction : generics) {
+                        ReactionRecipe recipe = GenericReactionCategory.RECIPES.get(genericReaction);
+                        if (recipe != null) recipes.add((T) new net.minecraft.world.item.crafting.RecipeHolder<>(
+                            petrolpark.mc.destroy.Destroy.asResource("plugin_output_generic_" + counter[0]++), recipe));
+                    }
                 } else if (recipeCategory instanceof ReactionCategory) {
+                    // See the INPUT branch: built-in Reactions come from JEI's own matching;
+                    // datapack Reactions are surfaced here (built on the fly if not yet cached).
                     molecule.getProductReactions().forEach(reaction -> {
-                        ReactionRecipe r = ReactionCategory.RECIPES.get(reaction.getReactionDisplayedInJEI());
-                        if (r != null) recipes.add((T) new net.minecraft.world.item.crafting.RecipeHolder<>(
+                        if (!reaction.isDatapack() || !reaction.includeInJei()) return;
+                        ReactionRecipe r = ReactionCategory.RECIPES.get(reaction);
+                        if (r == null) r = petrolpark.mc.destroy.core.chemistry.recipe.ReactionRecipe.create(reaction);
+                        recipes.add((T) new net.minecraft.world.item.crafting.RecipeHolder<>(
                             petrolpark.mc.destroy.Destroy.asResource("plugin_output_reaction_" + counter[0]++), r));
                     });
                 } else {

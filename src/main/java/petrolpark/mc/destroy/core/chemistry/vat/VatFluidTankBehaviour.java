@@ -215,26 +215,7 @@ public class VatFluidTankBehaviour extends GeniusFluidTankBehaviour {
                 amountScale = ((double) getLiquidHandler().getSpace() - 1d) / (double) phases.liquidVolume();
             }
 
-            // Sub-mB condensate mass-conservation guard.
-            //
-            // separatePhases hands back liquidVolume in mB (its math takes the resource amount
-            // as the unit basis). For dilute gases — typical 0.001 mol/L scale — the moles that
-            // condense fit into well under 1 mB of pure-liquid volume. Casting to int with the
-            // {@code + 0.5d} rounding discards anything under 0.5 mB, and the lost liquid
-            // never makes it into the liquid tank — its mass is gone.
-            //
-            // Next tick: gas tank reads as the only carrier → cachedMixture state[X]=1 →
-            // heat() tries to cool again → same lossy round → never accumulates. The visible
-            // symptom is "gas cools but never condenses".
-            //
-            // Fix: when the rounded liquid amount is 0 but phases.liquidVolume() > 0, merge the
-            // ghost liquid moles back into the gas-side combine instead of dropping them. The
-            // merged mass survives the next tick — once enough condensate accumulates across
-            // multiple ticks (or species concentration rises) the rounded amount eventually
-            // clears 0.5 mB and the proper phase split kicks in.
             int liquidFillAmount = (int) (phases.liquidVolume() * amountScale + 0.5d);
-            boolean ghostLiquid = liquidFillAmount == 0 && phases.liquidVolume() > 0
-                && !phases.liquidMixture().isEmpty();
 
             // Add liquid - GeniusFluidTank's fill handles existing-Mixture merging.
             if (liquidFillAmount > 0) {
@@ -245,7 +226,7 @@ public class VatFluidTankBehaviour extends GeniusFluidTankBehaviour {
             if (!simulate) {
                 Map<LegacyMixture, Double> mixtures = new HashMap<>(3);
                 double combinedVolume = 0d;
-                int freeSpace = vatCapacity - getLiquidHandler().getFluidAmount() + 1;
+                int freeSpace = vatCapacity - getLiquidHandler().getFluidAmount();
 
                 if (!getGasHandler().isEmpty()) {
                     FluidStack existingGas = getGasHandler().getFluid();
@@ -256,16 +237,6 @@ public class VatFluidTankBehaviour extends GeniusFluidTankBehaviour {
                 if (!phases.gasMixture().isEmpty()) {
                     mixtures.put(phases.gasMixture(), phases.gasVolume());
                     combinedVolume += phases.gasVolume();
-                }
-
-                // Mass-preserving rescue: fold the sub-mB ghost liquid back into the gas combine
-                // so the moles don't vanish. {@link LegacyMixture#mix} will normalise states to 0
-                // and {@code heat()} re-derives the actual phase split from the conserved total
-                // energy — the X stays in the system, just temporarily expressed as part of the
-                // gas mixture until enough accumulates for a real liquid-side commit.
-                if (ghostLiquid) {
-                    mixtures.put(phases.liquidMixture(), phases.liquidVolume());
-                    combinedVolume += phases.liquidVolume();
                 }
 
                 LegacyMixture combinedGasMixture = LegacyMixture.mix(mixtures);

@@ -229,12 +229,22 @@ public class PollutionHelper {
  * Release the given Fluids with a pollution-amount multiplier.
 */
     public static final void pollute(Level level, BlockPos pos, float multiplier, FluidStack... fluidStacks) {
+        pollute(level, pos, multiplier, true, fluidStacks);
+    };
+
+    /**
+ * As {@link #pollute(Level, BlockPos, float, FluidStack...)}, but lets a caller suppress the
+ * cosmetic evaporation particles while still applying the pollution. A continuous emitter (the
+ * Vat vent pollutes every tick) passes a throttled flag so the 6x-size smoke particles don't
+ * pile into a shader-crushing overdraw cloud.
+*/
+    public static final void pollute(Level level, BlockPos pos, float multiplier, boolean emitParticles, FluidStack... fluidStacks) {
         if (level.isClientSide()) return;
         for (FluidStack stack : fluidStacks) {
             polluteSingleFluid(level, pos, multiplier, stack);
             // emit visible evaporation particles to all clients tracking this position
             // (64-block range matches PollutingOpenEndedPipeEffectHandler).
-            if (!stack.isEmpty() && level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+            if (emitParticles && !stack.isEmpty() && level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
                 net.createmod.catnip.platform.CatnipServices.NETWORK.sendToClientsAround(
                     serverLevel, pos, 64d,
                     new petrolpark.mc.destroy.core.fluid.gasparticle.EvaporatingFluidS2CPacket(pos, stack));

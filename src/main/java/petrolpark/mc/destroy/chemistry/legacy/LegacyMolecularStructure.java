@@ -486,7 +486,8 @@ public class LegacyMolecularStructure implements Cloneable {
 
         if (topology == Topology.LINEAR) {
             Map<LegacyAtom, List<LegacyBond>> newStructure = stripHydrogens(structure);
-            body = getMaximumBranchWithHighestMass(newStructure).serialize();
+            Branch maxBranch = getMaximumBranchWithHighestMass(newStructure);
+            body = maxBranch == null ? "" : maxBranch.serialize();
         } else {
             updateSideChainStructures();
             List<Branch> identity = new ArrayList<>(topology.getConnections());
@@ -542,6 +543,13 @@ public class LegacyMolecularStructure implements Cloneable {
         List<LegacyAtom> terminalAtoms = new ArrayList<>();
         for (LegacyAtom atom : structure.keySet()) {
             if (structure.get(atom).size() == 1) terminalAtoms.add(atom);
+        }
+
+        if (terminalAtoms.isEmpty()) {
+            // No chain end (a bare ring, or a structure with no terminal atom) — anchor on any atom so
+            // the caller does not index an empty list.
+            if (structure.isEmpty()) return null;
+            return getMaximumBranch(structure.keySet().iterator().next(), structure);
         }
 
         terminalAtoms.sort((a1, a2) ->

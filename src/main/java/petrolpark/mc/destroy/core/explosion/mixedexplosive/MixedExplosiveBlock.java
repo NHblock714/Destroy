@@ -192,7 +192,13 @@ public class MixedExplosiveBlock extends PrimeableBombBlock<MixedExplosiveEntity
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
-        withBlockEntityDo(level, pos, be -> be.onPlace(stack, level.registryAccess()));
+        withBlockEntityDo(level, pos, be -> {
+            be.onPlace(stack, level.registryAccess());
+            // onPlace transfers the inventory + dye colour but not the anvil-set name — copy it so
+            // the placed block's BER label matches the item that was placed.
+            if (stack.has(net.minecraft.core.component.DataComponents.CUSTOM_NAME))
+                be.setCustomName(stack.get(net.minecraft.core.component.DataComponents.CUSTOM_NAME));
+        });
     }
 
     /**
@@ -203,7 +209,9 @@ public class MixedExplosiveBlock extends PrimeableBombBlock<MixedExplosiveEntity
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
         BlockEntity be = params.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         if (!(be instanceof MixedExplosiveBlockEntity ebe)) return Collections.emptyList();
-        return Collections.singletonList(ebe.getFilledItemStack(DestroyBlocks.CUSTOM_EXPLOSIVE_MIX.asStack(), ebe.getLevel().registryAccess()));
+        ItemStack drop = ebe.getFilledItemStack(DestroyBlocks.CUSTOM_EXPLOSIVE_MIX.asStack(), ebe.getLevel().registryAccess());
+        if (ebe.getCustomName() != null) drop.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, ebe.getCustomName());
+        return Collections.singletonList(drop);
     }
 
     /**
@@ -215,7 +223,9 @@ public class MixedExplosiveBlock extends PrimeableBombBlock<MixedExplosiveEntity
     public ItemStack getCloneItemStack(net.minecraft.world.level.LevelReader level, BlockPos pos, BlockState state) {
         BlockEntity be = level.getBlockEntity(pos);
         if (!(be instanceof MixedExplosiveBlockEntity ebe) || ebe.getLevel() == null) return DestroyBlocks.CUSTOM_EXPLOSIVE_MIX.asStack();
-        return ebe.getFilledItemStack(DestroyBlocks.CUSTOM_EXPLOSIVE_MIX.asStack(), ebe.getLevel().registryAccess());
+        ItemStack cloneStack = ebe.getFilledItemStack(DestroyBlocks.CUSTOM_EXPLOSIVE_MIX.asStack(), ebe.getLevel().registryAccess());
+        if (ebe.getCustomName() != null) cloneStack.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, ebe.getCustomName());
+        return cloneStack;
     }
 
     @Override

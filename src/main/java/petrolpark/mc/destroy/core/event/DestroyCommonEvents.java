@@ -85,6 +85,45 @@ public class DestroyCommonEvents {
         }
     }
 
+    /**
+     * Sync the world's generated circuit-board patterns to each joining player. A client joining a
+     * running server otherwise never receives the randomised 4×4 patterns, so its circuit-board
+     * crafting recipes render blank (or it generates a mismatched local pattern) until a
+     * {@code /reload} or the regenerate command re-broadcasts. {@code getAllPatterns()} forces any
+     * not-yet-generated pattern before sending; reload broadcasts are handled by
+     * {@link petrolpark.mc.destroy.content.processing.trypolithography.CircuitPatternHandler.Listener},
+     * so this only covers the per-player join case.
+     */
+    @SubscribeEvent
+    public static void syncCircuitPatternsOnJoin(net.neoforged.neoforge.event.OnDatapackSyncEvent event) {
+        net.minecraft.server.level.ServerPlayer player = event.getPlayer();
+        if (player == null) return;
+        net.createmod.catnip.platform.CatnipServices.NETWORK.sendToClient(player,
+            new petrolpark.mc.destroy.content.processing.trypolithography.CircuitPatternsS2CPacket(
+                Destroy.CIRCUIT_PATTERN_HANDLER.getAllPatterns()));
+    }
+
+    /**
+     * Sync the world's datapack-defined vat-shell materials to each joining player. Like the
+     * circuit patterns, {@code VatMaterialResourceListener} only broadcasts on reload, so a client
+     * joining a running server can't recognise datapack vat casings (or read their
+     * pressure/conductivity/transparency) until a {@code /reload}. Only the non-built-in (datapack)
+     * materials are sent — the client already registers the built-ins, and the packet clears its
+     * datapack set before applying.
+     */
+    @SubscribeEvent
+    public static void syncVatMaterialsOnJoin(net.neoforged.neoforge.event.OnDatapackSyncEvent event) {
+        net.minecraft.server.level.ServerPlayer player = event.getPlayer();
+        if (player == null) return;
+        java.util.HashMap<com.petrolpark.core.recipe.ingredient.BlockIngredient<?>,
+            petrolpark.mc.destroy.core.chemistry.vat.material.VatMaterial> datapackMaterials = new java.util.HashMap<>();
+        petrolpark.mc.destroy.core.chemistry.vat.material.VatMaterial.BLOCK_MATERIALS.forEach((ingredient, material) -> {
+            if (!material.builtIn()) datapackMaterials.put(ingredient, material);
+        });
+        net.createmod.catnip.platform.CatnipServices.NETWORK.sendToClient(player,
+            new petrolpark.mc.destroy.core.chemistry.vat.material.SyncVatMaterialsS2CPacket(datapackMaterials));
+    }
+
 
     /**
  *

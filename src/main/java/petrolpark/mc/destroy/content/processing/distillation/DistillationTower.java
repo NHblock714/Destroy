@@ -280,7 +280,8 @@ public class DistillationTower {
 
         List<LegacySpecies> liquids = new ArrayList<>();
 
-        float lowestBoilingPoint = roomTemperature;
+        // Seed each at the opposite extreme so Math.min/Math.max below converge on the true liquid BP range
+        float lowestBoilingPoint = maxTemperature;
         float highestBoilingPoint = roomTemperature;
 
         for (LegacySpecies molecule : mixture.getContents(false)) {

@@ -157,6 +157,16 @@ public class DestroyReactions {
         .addProduct(DestroyMolecules.HYDROGEN)
         .build(),
 
+    // Boric acid + methanol esterification to trimethyl borate; the borate-ester hydrolysis generic
+    // runs the reverse, so removing water drives the equilibrium toward the ester.
+    TRIMETHYL_BORATE_SYNTHESIS = builder()
+        .id("trimethyl_borate_synthesis")
+        .addReactant(DestroyMolecules.BORIC_ACID)
+        .addReactant(DestroyMolecules.METHANOL, 3, 1)
+        .addProduct(DestroyMolecules.TRIMETHYL_BORATE)
+        .addProduct(DestroyMolecules.WATER, 3)
+        .build(),
+
     BROWN_SCHLESINGER_PROCESS = builder()
         .id("brown_schlesinger_process")
         .addReactant(DestroyMolecules.TRIMETHYL_BORATE)

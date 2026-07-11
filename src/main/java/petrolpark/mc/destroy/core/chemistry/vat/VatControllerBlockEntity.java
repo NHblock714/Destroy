@@ -496,8 +496,13 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
                     vented.getAmount(), openVent.direction, getPressure());
             }
             if (openVent.direction != null && !vented.isEmpty()) {
+                // Pollute every tick, but only puff the cosmetic smoke ~1 tick in 4. The vent fires
+                // every tick while a reaction produces gas, and 5 six-times-size evaporation
+                // particles per tick pile into an overdraw cloud that tanks FPS for a player standing
+                // in it under shaders. Occasional puffs read the same but keep the live count low.
+                boolean emitSmoke = getLevel().getRandom().nextInt(4) == 0;
                 petrolpark.mc.destroy.core.pollution.PollutionHelper.pollute(
-                    getLevel(), openVent.getBlockPos().relative(openVent.direction), 10f, vented);
+                    getLevel(), openVent.getBlockPos().relative(openVent.direction), 10f, emitSmoke, vented);
             }
             updateCachedMixture();
         }
@@ -956,9 +961,10 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
         int capacity = fluidBehaviour.getLiquidHandler().getCapacity();
         if (capacity <= 0) return 0f;
         if (vat.isPresent()) {
-            return (float) vat.get().getInternalHeight() * (float) amount / (float) capacity;
+            float internalHeight = (float) vat.get().getInternalHeight();
+            return Math.max(0f, Math.min(internalHeight * (float) amount / (float) capacity, internalHeight));
         }
-        return (float) amount / (float) capacity;
+        return Math.max(0f, Math.min((float) amount / (float) capacity, 1f));
     }
 
     /** Uses the tank segment's
@@ -966,9 +972,16 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
 */
     public float getRenderedFluidLevel(float partialTicks) {
         if (vat.isEmpty() || fluidBehaviour == null) return 0f;
-        return (float) vat.get().getInternalHeight()
-            * fluidBehaviour.getLiquidTank().getTotalUnits(partialTicks)
-            / (float) getCapacity();
+        int capacity = getCapacity();
+        if (capacity <= 0) return 0f;
+        float internalHeight = (float) vat.get().getInternalHeight();
+        float level = internalHeight * fluidBehaviour.getLiquidTank().getTotalUnits(partialTicks) / (float) capacity;
+        // Clamp to the vat interior. A runaway reaction (or a corrupt tank amount) can push the
+        // liquid level far above the shell; VatRenderer would then draw a fluid box thousands of
+        // blocks tall and renderFluidBox tessellates it into enough quads to exhaust VRAM — a hard
+        // GPU crash / machine reboot with no log. The fluid must never render outside the vat.
+        if (!Float.isFinite(level)) return 0f;
+        return Math.max(0f, Math.min(level, internalHeight));
     }
 
     

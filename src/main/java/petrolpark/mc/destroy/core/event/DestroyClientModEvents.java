@@ -297,6 +297,10 @@ public class DestroyClientModEvents {
     public static final void onClientTick(ClientTickEvent.Post event) {
         SeismometerItemRenderer.tick();
         tickHoverHook();
+        // Draw the on-face value box for sided scroll-value blocks (Dynamite excavation radius).
+        // Create's ScrollValueRenderer only renders concrete ScrollValueBehaviour subclasses, so
+        // SidedScrollValueBehaviour needs its own hover dispatcher.
+        petrolpark.mc.destroy.core.bettervaluesettings.SidedScrollValueRenderer.tick();
         // Swiss Army Knife auto-tool-selection. Without this, the tool selection logic
         // (which reads mc.hitResult to detect what block the player is aiming at, sets the
         // Tool client-side, and sends a C2SPacket to update server-side ACTIVE_TOOL DataComponent)

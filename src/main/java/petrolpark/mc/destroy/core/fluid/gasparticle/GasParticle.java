@@ -49,7 +49,11 @@ public class GasParticle extends FluidStackParticle {
             yd += VERTICAL_SPEED + (double) (random.nextFloat() / 500.0F);
         } else {
             isDistillation = false;
-            lifetime = (int) Mth.lerp(fluid.getAmount() / 4000, 60, 300);
+            // Clamp the lerp factor to [0,1]: Mth.lerp does not clamp, and a busy vat vents a large
+            // FluidStack every tick, so an unbounded factor scales the particle lifetime to tens of
+            // thousands of ticks — the 6x-size evaporation particles then pile into a VRAM-exhausting
+            // overdraw cloud under shaders.
+            lifetime = (int) Mth.lerp(Mth.clamp(fluid.getAmount() / 4000f, 0f, 1f), 60, 300);
         }
 
         hasPhysics = !isDistillation;

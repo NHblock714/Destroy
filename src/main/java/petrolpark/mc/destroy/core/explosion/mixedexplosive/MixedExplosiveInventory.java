@@ -33,9 +33,25 @@ public class MixedExplosiveInventory extends ItemStackHandler {
 
     protected ExplosivePropertyCondition[] conditions;
 
+    /** Fired whenever a slot changes (menu edits). The owning BlockEntity wires this to
+     * mark itself dirty + re-sync, so the client copy stays current for pick-block and the
+     * contents are saved. Defaults to a no-op for item-side / detached inventories.*/
+    protected Runnable onChanged = () -> {};
+
     public MixedExplosiveInventory(int size, ExplosivePropertyCondition... conditions) {
         super(size);
         this.conditions = conditions;
+    }
+
+    public MixedExplosiveInventory withChangeCallback(Runnable onChanged) {
+        this.onChanged = onChanged;
+        return this;
+    }
+
+    @Override
+    protected void onContentsChanged(int slot) {
+        super.onContentsChanged(slot);
+        onChanged.run();
     }
 
     public static boolean canBeAdded(ItemStack stack) {

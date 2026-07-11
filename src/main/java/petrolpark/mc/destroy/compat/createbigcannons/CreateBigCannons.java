@@ -3,9 +3,12 @@ package petrolpark.mc.destroy.compat.createbigcannons;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
+import rbasamoyai.createbigcannons.equipment.gas_mask.GasMaskItem;
+
 import petrolpark.mc.destroy.compat.createbigcannons.block.CreateBigCannonsBlocks;
 import petrolpark.mc.destroy.compat.createbigcannons.block.entity.CreateBigCannonBlockEntityTypes;
 import petrolpark.mc.destroy.compat.createbigcannons.entity.CreateBigCannonsEntityTypes;
+import petrolpark.mc.destroy.core.chemistry.hazard.ChemistryHazardHelper.Protection;
 
 /**
  * Top-level init for the CBC compat module. Called from {@link petrolpark.mc.destroy.Destroy}
@@ -27,7 +30,14 @@ public class CreateBigCannons {
     }
 
     public static void onCommonSetup(FMLCommonSetupEvent event) {
-        event.enqueueWork(DestroyBlobEffects::registerBlobEffects);
+        event.enqueueWork(() -> {
+            DestroyBlobEffects.registerBlobEffects();
+            // A worn destroy:gas_mask (vanilla head slot or a Curios "head" slot) blocks CBC gas
+            // clouds, the same breathing protection that negates Destroy's own inhaled chemicals.
+            // CBC gates gas-cloud effects on GasMaskItem.isWearingWorkingMask, an open predicate list.
+            GasMaskItem.addIsWearingPredicate(e ->
+                Protection.NOSE.isProtected(e) && Protection.MOUTH.isProtected(e));
+        });
     }
 
     /**
