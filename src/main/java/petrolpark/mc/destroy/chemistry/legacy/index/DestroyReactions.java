@@ -853,7 +853,7 @@ public class DestroyReactions {
             .with(PrecipitateReactionResult.of(DestroyItems.POLYPROPENE::asStack))
             .with(DestroyAdvancementTrigger.ADDITION_POLYMER::asReactionResult)
         ).preexponentialFactor(10f)
-        .activationEnergy(10f)
+        .activationEnergy(50)
         .build(),
 
     SODIUM_AMALGAMIZATION = builder()
