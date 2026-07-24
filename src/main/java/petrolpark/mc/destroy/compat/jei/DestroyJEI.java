@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.petrolpark.compat.jei.category.builder.PetrolparkCategoryBuilder;
+import petrolpark.mc.library.compat.jei.category.builder.PetrolparkCategoryBuilder;
 import com.simibubi.create.compat.jei.category.CreateRecipeCategory;
 
 import mezz.jei.api.IModPlugin;
@@ -239,12 +239,8 @@ public class DestroyJEI implements IModPlugin {
             .emptyBackground(150, 100)
             .build("sieving", SievingCategory::new);
 
-        // FlameRetardantApplicationCategory: spout-applies fire-retardant fluid to items.
-        // name reverted from "flame_retardant_application" → "fireproofing" to match the
-        // The lang files (en_us / zh_cn /
-        // ja_jp / etc.) all carry the *fireproofing* key — using flame_retardant_application here
-        // would generate the unmapped key `destroy.recipe.flame_retardant_application` which JEI
-        // shows literally as the category title.
+        // FlameRetardantApplicationCategory: spout-applies fire-retardant fluid to items. The id
+        // "fireproofing" is the title key suffix: destroy.gui.jei.category.fireproofing.
         builder(FlameRetardantApplicationRecipe.class)
             .addTypedRecipes(DestroyRecipeTypes.FLAME_RETARDANT_APPLICATION)
             .catalyst(com.simibubi.create.AllBlocks.SPOUT::get)
@@ -439,18 +435,8 @@ public class DestroyJEI implements IModPlugin {
         loadCategories();
         registration.addRecipeCategories(allCategories.toArray(IRecipeCategory[]::new));
 
-        // Petrolpark library 1.4.31 ships PetrolparkJEI.registerAdvanced(...) which
-        // registers the petrolpark:item_contaminants recipe MANAGER PLUGIN, but its
-        // PetrolparkJEI.registerCategories(...) is empty (verified via javap on
-        // petrolpark-1.21.1-1.4.31.jar). Result: clicking a contaminated item in JEI ("show
-        // recipes") crashes with "There is no recipe category registered for: RecipeType[uid=
-        // petrolpark:item_contaminants]". Library expects downstream mods to register the
-        // ContaminantInfoCategory themselves. Destroy is the canonical consumer (everything
-        // contamination-related is for Destroy's chemistry mixtures), so it is registered here.
-        registration.addRecipeCategories(new com.petrolpark.compat.jei.category.ContaminantInfoCategory<>(
-            registration.getJeiHelpers().getGuiHelper(),
-            mezz.jei.api.constants.VanillaTypes.ITEM_STACK,
-            com.petrolpark.compat.jei.category.ContaminantInfoCategory.ITEM_RECIPE_TYPE));
+        // The Flag Info / Intrinsic Flags categories are registered by the library's own
+        // PetrolparkJEI; registering them here too would double-register and crash.
     }
 
     @Override

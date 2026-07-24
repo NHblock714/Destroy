@@ -12,8 +12,8 @@ import java.util.Optional;
 
 import org.joml.Vector2i;
 
-import com.petrolpark.client.rendering.PetrolparkGuiTexture;
-import com.petrolpark.compat.jei.JEITextureDrawable;
+import petrolpark.mc.library.core.client.rendering.PetrolparkGuiTexture;
+import petrolpark.mc.library.compat.jei.JEITextureDrawable;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;

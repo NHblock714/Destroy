@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.content.processing.centrifuge;
 
-import com.petrolpark.compat.create.core.recipe.AdvancedProcessingRecipeParams;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
 
 import net.neoforged.neoforge.fluids.FluidStack;
 

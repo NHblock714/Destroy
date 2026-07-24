@@ -3,7 +3,7 @@ package petrolpark.mc.destroy.core.chemistry;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.petrolpark.client.ponder.instruction.HighlightTagInstruction;
+import petrolpark.mc.library.core.client.ponder.instruction.HighlightTagInstruction;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.kinetics.mixer.MechanicalMixerBlockEntity;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
@@ -159,18 +159,6 @@ public class ChemistryPonderScenes {
  * blocks in its facing direction over 10 ticks), then "slide back" animation restoring
  * assembly. Text hint shows non-cubic (tall rectangular) vat is valid.</li>
  * </ol>
- *
- * <ul>
- * <li>Pure Ponder API (showSection / showOutline / showIndependentSection / moveSection /
- * hideSection / hideIndependentSection) preserved.</li>
- * <li>{@code Selection} composite operations (fromTo / position / substract / add / copy)
- * unchanged.</li>
- * <li>{@link HighlightTagInstruction} at {@code com.petrolpark.client.ponder.instruction.*}
- * — petrolpark library 1.21 preserves the Ponder instruction package path 1:1 (unlike
- * other petrolpark-lib classes using `core/` extra layer).</li>
- * <li>{@link DestroyPonderTags#VAT_SIDE_BLOCKS} constant available.</li>
- * <li>{@link PonderPalette#RED} / {@link PonderPalette#GREEN}.</li>
- * </ul>
 */
     public static void vatConstruction(SceneBuilder scene, SceneBuildingUtil util) {
         scene.title("vat.construction", "This text is defined in a language file.");

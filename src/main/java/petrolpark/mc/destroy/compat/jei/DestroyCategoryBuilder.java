@@ -2,7 +2,7 @@ package petrolpark.mc.destroy.compat.jei;
 
 import java.util.function.Consumer;
 
-import com.petrolpark.compat.jei.category.builder.PetrolparkCategoryBuilder;
+import petrolpark.mc.library.compat.jei.category.builder.PetrolparkCategoryBuilder;
 import com.simibubi.create.compat.jei.category.CreateRecipeCategory;
 
 import mezz.jei.api.recipe.RecipeType;

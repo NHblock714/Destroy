@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy.content.processing.treetap;
 
 import com.mojang.serialization.MapCodec;
-import com.petrolpark.compat.create.core.block.entity.behaviour.AbstractRememberPlacerBehaviour;
+import petrolpark.mc.library.compat.create.core.world.block.entity.behaviour.AbstractRememberPlacerBehaviour;
 import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;

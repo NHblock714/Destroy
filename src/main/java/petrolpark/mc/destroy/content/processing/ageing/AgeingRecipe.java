@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.content.processing.ageing;
 
-import com.petrolpark.compat.create.core.recipe.AdvancedProcessingRecipeParams;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
 
 import net.minecraft.resources.ResourceLocation;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
@@ -36,7 +36,7 @@ public class AgeingRecipe extends SingleFluidRecipe {
         return "aging";
     }
 
-    public static com.petrolpark.compat.create.core.recipe.AdvancedProcessingRecipe.Builder<AgeingRecipe> builder(ResourceLocation id) {
-        return new com.petrolpark.compat.create.core.recipe.AdvancedProcessingRecipe.Builder<>(AgeingRecipe::new, id);
+    public static petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipe.Builder<AgeingRecipe> builder(ResourceLocation id) {
+        return new petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipe.Builder<>(AgeingRecipe::new, id);
     }
 }

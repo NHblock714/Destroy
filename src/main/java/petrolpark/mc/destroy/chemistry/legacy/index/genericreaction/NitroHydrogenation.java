@@ -10,7 +10,7 @@ import petrolpark.mc.destroy.chemistry.legacy.genericreaction.SingleGroupGeneric
 import petrolpark.mc.destroy.chemistry.legacy.index.DestroyGroupTypes;
 import petrolpark.mc.destroy.chemistry.legacy.index.DestroyMolecules;
 import petrolpark.mc.destroy.chemistry.legacy.index.group.NitroGroup;
-import com.petrolpark.PetrolparkTags;
+import petrolpark.mc.library.PetrolparkTags;
 
 public class NitroHydrogenation extends SingleGroupGenericReaction<NitroGroup> {
 

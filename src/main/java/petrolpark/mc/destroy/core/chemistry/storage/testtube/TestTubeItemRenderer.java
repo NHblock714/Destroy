@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
-import com.petrolpark.client.rendering.item.TransparentItemRenderer;
+import petrolpark.mc.library.core.client.rendering.item.TransparentItemRenderer;
 import com.simibubi.create.foundation.item.render.CustomRenderedItemModel;
 import com.simibubi.create.foundation.item.render.CustomRenderedItemModelRenderer;
 import com.simibubi.create.foundation.item.render.PartialItemModelRenderer;

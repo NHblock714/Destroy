@@ -36,6 +36,6 @@ file="META-INF/accesstransformer.cfg"
 [[dependencies.${mod_id}]]
 	modId="petrolpark"
 	type="required"
-	versionRange="[1.4.25,1.5.0)"
+	versionRange="[1.5.0,1.6.0)"
 	ordering="AFTER"
 	side="BOTH"

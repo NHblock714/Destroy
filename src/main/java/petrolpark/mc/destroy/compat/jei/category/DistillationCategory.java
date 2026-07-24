@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy.compat.jei.category;
 
-import com.petrolpark.client.rendering.PetrolparkGuiTexture;
-import com.petrolpark.compat.jei.category.PetrolparkRecipeCategory;
+import petrolpark.mc.library.core.client.rendering.PetrolparkGuiTexture;
+import petrolpark.mc.library.compat.jei.category.PetrolparkRecipeCategory;
 import com.simibubi.create.content.processing.recipe.HeatCondition;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;

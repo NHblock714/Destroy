@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.hazard.mobeffect;
 
-import com.petrolpark.util.RayHelper;
+import petrolpark.mc.library.util.RayHelper;
 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectCategory;

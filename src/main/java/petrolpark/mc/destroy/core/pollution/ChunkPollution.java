@@ -7,8 +7,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.petrolpark.core.world.ChunkTickEvent;
-import com.petrolpark.util.RandomHelper;
+import petrolpark.mc.library.core.world.ChunkTickEvent;
+import petrolpark.mc.library.util.RandomHelper;
 
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.server.level.ServerLevel;

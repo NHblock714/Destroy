@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy.core.recipe;
 
-import com.petrolpark.compat.create.core.recipe.AdvancedProcessingRecipe;
-import com.petrolpark.compat.create.core.recipe.AdvancedProcessingRecipeParams;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipe;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 
 import net.minecraft.world.item.crafting.RecipeInput;

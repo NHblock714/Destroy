@@ -3,9 +3,9 @@ package petrolpark.mc.destroy.compat.jei.category;
 import java.util.Collections;
 import java.util.List;
 
-import com.petrolpark.client.rendering.PetrolparkGuiTexture;
-import com.petrolpark.compat.jei.category.PetrolparkRecipeCategory;
-import com.petrolpark.core.recipe.ingredient.BlockIngredient;
+import petrolpark.mc.library.core.client.rendering.PetrolparkGuiTexture;
+import petrolpark.mc.library.compat.jei.category.PetrolparkRecipeCategory;
+import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient;
 import com.simibubi.create.foundation.item.TooltipHelper;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;

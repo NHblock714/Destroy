@@ -170,25 +170,26 @@ public class PeriodicTableBlock extends HorizontalDirectionalBlock {
 */
     @SubscribeEvent
     public static void onEntityPlace(EntityPlaceEvent event) {
+        // getEntity() is nullable: blocks placed without a living placer (dispensers, and other
+        // mods' fabricated placement events — e.g. Ballistix's explosion overwrite check) fire this
+        // with a null entity. Only Players earn the advancement, so gate on that first.
+        if (!(event.getEntity() instanceof ServerPlayer serverPlayer)) return;
         BlockState state = event.getPlacedBlock();
-        Level level = event.getEntity().level();
+        if (!PeriodicTableBlock.isPeriodicTableBlock(state)) return;
+        Level level = serverPlayer.level();
 
-        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            if (PeriodicTableBlock.isPeriodicTableBlock(state)) {
-                int[] thisPos = PeriodicTableBlock.getXY(state.getBlock());
-                for (Direction direction : Iterate.horizontalDirections) {
-                    boolean allPresent = true;
-                    checkEachBlock: for (PeriodicTableEntry entry : PeriodicTableBlock.ELEMENTS) {
-                        if (!entry.blocks().contains(level.getBlockState(event.getPos().offset(PeriodicTableBlock.relative(thisPos, new int[]{entry.x(), entry.y()}, direction))).getBlock())) {
-                            allPresent = false;
-                            break checkEachBlock;
-                        }
-                    }
-                    if (allPresent) {
-                        DestroyAdvancementTrigger.PERIODIC_TABLE.award(level, serverPlayer);
-                        return;
-                    }
+        int[] thisPos = PeriodicTableBlock.getXY(state.getBlock());
+        for (Direction direction : Iterate.horizontalDirections) {
+            boolean allPresent = true;
+            checkEachBlock: for (PeriodicTableEntry entry : PeriodicTableBlock.ELEMENTS) {
+                if (!entry.blocks().contains(level.getBlockState(event.getPos().offset(PeriodicTableBlock.relative(thisPos, new int[]{entry.x(), entry.y()}, direction))).getBlock())) {
+                    allPresent = false;
+                    break checkEachBlock;
                 }
+            }
+            if (allPresent) {
+                DestroyAdvancementTrigger.PERIODIC_TABLE.award(level, serverPlayer);
+                return;
             }
         }
     }

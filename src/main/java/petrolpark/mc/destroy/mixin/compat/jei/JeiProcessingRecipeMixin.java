@@ -50,7 +50,7 @@ public abstract class JeiProcessingRecipeMixin {
         // → JEI absent → NoClassDefFoundError → every ProcessingRecipe instantiation crashes.
         // {@code Mods.JEI.isLoading()} short-circuits BEFORE the DestroyJEI reference; JVM lazy
         // class resolution means DestroyJEI never loads on JEI-less clients.
-        if (!com.petrolpark.compat.Mods.JEI.isLoading()) return;
+        if (!petrolpark.mc.library.compat.Mods.JEI.isLoading()) return;
         if (!DestroyJEI.MOLECULE_RECIPES_NEED_PROCESSING) return;
         // Cast safely: ProcessingRecipe extends Recipe<? extends RecipeInput> so this is always a Recipe<?>.
         Recipe<?> self = (Recipe<?>)(Object)this;

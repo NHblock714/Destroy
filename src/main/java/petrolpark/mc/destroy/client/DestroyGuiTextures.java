@@ -10,7 +10,7 @@ import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.petrolpark.client.rendering.IGuiTexture;
+import petrolpark.mc.library.core.client.rendering.IGuiTexture;
 
 import net.createmod.catnip.gui.UIRenderHelper;
 import net.createmod.catnip.theme.Color;

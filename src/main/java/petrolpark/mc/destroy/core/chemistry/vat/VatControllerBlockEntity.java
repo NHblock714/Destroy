@@ -5,7 +5,7 @@ import java.util.function.BiFunction;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.petrolpark.compat.create.PetrolparkCreateClient;
+import petrolpark.mc.library.compat.create.PetrolparkCreateClient;
 import com.simibubi.create.api.contraption.transformable.TransformableBlockEntity;
 import com.simibubi.create.content.contraptions.StructureTransform;
 import com.simibubi.create.content.redstone.thresholdSwitch.ThresholdSwitchObservable;

@@ -51,8 +51,8 @@ import petrolpark.mc.destroy.content.logistics.siphon.SiphonBlockEntity;
 import petrolpark.mc.destroy.content.processing.glassblowing.BlowpipeBlockEntity;
 
 import petrolpark.mc.destroy.client.DestroyPonderPlayer;
-import com.petrolpark.client.ponder.instruction.LivingEntitySwingInstruction;
-import com.petrolpark.client.ponder.instruction.OutlineAABBInstruction;
+import petrolpark.mc.library.core.client.ponder.instruction.LivingEntitySwingInstruction;
+import petrolpark.mc.library.core.client.ponder.instruction.OutlineAABBInstruction;
 import com.simibubi.create.content.fluids.spout.SpoutBlockEntity;
 import com.simibubi.create.content.kinetics.deployer.DeployerBlockEntity;
 import com.simibubi.create.content.processing.basin.BasinBlockEntity;

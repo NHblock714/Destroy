@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import com.petrolpark.util.BigItemStack;
+import petrolpark.mc.library.util.BigItemStack;
 import com.simibubi.create.content.processing.basin.BasinBlockEntity;
 import com.simibubi.create.content.processing.basin.BasinRecipe;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;

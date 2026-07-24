@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.vat;
 
-import static com.petrolpark.compat.create.PetrolparkCreateClient.OUTLINER;
+import static petrolpark.mc.library.compat.create.PetrolparkCreateClient.OUTLINER;
 
 import java.util.ArrayList;
 import java.util.Collection;

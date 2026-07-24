@@ -2,7 +2,7 @@ package petrolpark.mc.destroy;
 
 import static petrolpark.mc.destroy.Destroy.REGISTRATE;
 
-import com.petrolpark.PetrolparkTags;
+import petrolpark.mc.library.PetrolparkTags;
 import com.simibubi.create.AllTags.AllItemTags;
 import com.tterrag.registrate.util.entry.ItemEntry;
 
@@ -729,8 +729,8 @@ public class DestroyItems {
     LABORATORY_GOGGLES = REGISTRATE.item("laboratory_goggles", petrolpark.mc.destroy.core.chemistry.hazard.protection.ChemistryProtectionHeadwearItem::new)
         .properties(p -> p.stacksTo(1))
         .tag(DestroyTags.Items.CHEMICAL_PROTECTION_EYES.tag)
-        .transform(com.petrolpark.compat.curios.PetrolparkCuriosSetup.renderOnHead())
-        .transform(com.petrolpark.compat.curios.PetrolparkCuriosSetup.goggles())
+        .transform(petrolpark.mc.library.compat.curios.PetrolparkCuriosSetup.renderOnHead())
+        .transform(petrolpark.mc.library.compat.curios.PetrolparkCuriosSetup.goggles())
         .onRegister(petrolpark.mc.destroy.core.chemistry.hazard.protection.ChemistryProtectionHeadwearItem.goggles())
         .onRegister(petrolpark.mc.destroy.core.chemistry.hazard.protection.ChemistryProtectionHeadwearItem.durability(() -> petrolpark.mc.destroy.config.DestroyConfigs.server().equipment.laboratoryGogglesDurability))
         .onRegister(petrolpark.mc.destroy.core.chemistry.hazard.protection.ChemistryProtectionHeadwearItem.repairIngredient(() -> net.minecraft.world.item.crafting.Ingredient.of(DestroyTags.Items.TRANSPARENT_PLASTICS.tag)))
@@ -740,8 +740,8 @@ public class DestroyItems {
     GOLD_LABORATORY_GOGGLES = REGISTRATE.item("gold_laboratory_goggles", petrolpark.mc.destroy.core.chemistry.hazard.protection.ChemistryProtectionHeadwearItem::new)
         .properties(p -> p.stacksTo(1))
         .tag(DestroyTags.Items.CHEMICAL_PROTECTION_EYES.tag)
-        .transform(com.petrolpark.compat.curios.PetrolparkCuriosSetup.renderOnHead())
-        .transform(com.petrolpark.compat.curios.PetrolparkCuriosSetup.goggles())
+        .transform(petrolpark.mc.library.compat.curios.PetrolparkCuriosSetup.renderOnHead())
+        .transform(petrolpark.mc.library.compat.curios.PetrolparkCuriosSetup.goggles())
         .onRegister(petrolpark.mc.destroy.core.chemistry.hazard.protection.ChemistryProtectionHeadwearItem.goggles())
         .onRegister(petrolpark.mc.destroy.core.chemistry.hazard.protection.ChemistryProtectionHeadwearItem.durability(() -> petrolpark.mc.destroy.config.DestroyConfigs.server().equipment.goldLaboratoryGogglesDurability))
         .onRegister(petrolpark.mc.destroy.core.chemistry.hazard.protection.ChemistryProtectionHeadwearItem.repairIngredient(() -> net.minecraft.world.item.crafting.Ingredient.of(PetrolparkTags.commonItemTag("plates/gold"))))
@@ -752,7 +752,7 @@ public class DestroyItems {
     PAPER_MASK = REGISTRATE.item("paper_mask", petrolpark.mc.destroy.core.chemistry.hazard.protection.ChemistryProtectionHeadwearItem::new)
         .properties(p -> p.stacksTo(1))
         .tag(DestroyTags.Items.CHEMICAL_PROTECTION_NOSE.tag, DestroyTags.Items.CHEMICAL_PROTECTION_MOUTH.tag)
-        .transform(com.petrolpark.compat.curios.PetrolparkCuriosSetup.renderOnHead())
+        .transform(petrolpark.mc.library.compat.curios.PetrolparkCuriosSetup.renderOnHead())
         .onRegister(petrolpark.mc.destroy.core.chemistry.hazard.protection.ChemistryProtectionHeadwearItem.durability(() -> petrolpark.mc.destroy.config.DestroyConfigs.server().equipment.paperMaskDurability))
         .onRegister(petrolpark.mc.destroy.core.chemistry.hazard.protection.ChemistryProtectionHeadwearItem.repairIngredient(() -> net.minecraft.world.item.crafting.Ingredient.of(net.minecraft.world.item.Items.PAPER)))
         .onRegister(com.simibubi.create.foundation.data.CreateRegistrate.itemModel(() -> petrolpark.mc.destroy.core.chemistry.hazard.protection.PaperMaskModel::new))
@@ -762,7 +762,7 @@ public class DestroyItems {
     GAS_MASK = REGISTRATE.item("gas_mask", petrolpark.mc.destroy.core.chemistry.hazard.protection.ChemistryProtectionHeadwearItem::new)
         .properties(p -> p.stacksTo(1))
         .tag(DestroyTags.Items.CHEMICAL_PROTECTION_HEAD.tag, DestroyTags.Items.CHEMICAL_PROTECTION_EYES.tag, DestroyTags.Items.CHEMICAL_PROTECTION_NOSE.tag, DestroyTags.Items.CHEMICAL_PROTECTION_MOUTH.tag, DestroyTags.Items.CONTAMINABLE.tag)
-        .transform(com.petrolpark.compat.curios.PetrolparkCuriosSetup.renderOnHead())
+        .transform(petrolpark.mc.library.compat.curios.PetrolparkCuriosSetup.renderOnHead())
         .onRegister(petrolpark.mc.destroy.core.chemistry.hazard.protection.ChemistryProtectionHeadwearItem.goggles())
         .onRegister(petrolpark.mc.destroy.core.chemistry.hazard.protection.ChemistryProtectionHeadwearItem.durability(() -> petrolpark.mc.destroy.config.DestroyConfigs.server().equipment.gasMaskDurability))
         .onRegister(petrolpark.mc.destroy.core.chemistry.hazard.protection.ChemistryProtectionHeadwearItem.repairIngredient(() -> net.minecraft.world.item.crafting.Ingredient.of(DestroyTags.Items.TEXTILE_PLASTICS.tag)))

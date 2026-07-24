@@ -11,7 +11,7 @@ import petrolpark.mc.destroy.chemistry.legacy.reactionresult.ExplosionReactionRe
 import petrolpark.mc.destroy.chemistry.legacy.reactionresult.PrecipitateReactionResult;
 import petrolpark.mc.destroy.config.DestroySubstancesConfigs;
 import com.simibubi.create.AllItems;
-import com.petrolpark.PetrolparkTags;
+import petrolpark.mc.library.PetrolparkTags;
 
 import net.minecraft.world.item.Items;
 

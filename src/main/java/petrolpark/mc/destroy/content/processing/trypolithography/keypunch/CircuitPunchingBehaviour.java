@@ -3,7 +3,7 @@ package petrolpark.mc.destroy.content.processing.trypolithography.keypunch;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.petrolpark.compat.create.core.item.directional.DirectionalTransportedItemStack;
+import petrolpark.mc.library.compat.create.core.world.item.transported.DirectionalTransportedItemStack;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.kinetics.belt.behaviour.BeltProcessingBehaviour;
 import com.simibubi.create.content.kinetics.belt.behaviour.TransportedItemStackHandlerBehaviour;
@@ -25,7 +25,7 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * Create {@link BeltProcessingBehaviour} extension that runs the Keypunch's punching animation
- * whenever a {@link com.petrolpark.compat.create.core.item.directional.DirectionalTransportedItemStack
+ * whenever a {@link petrolpark.mc.library.compat.create.core.world.item.transported.DirectionalTransportedItemStack
  * DirectionalTransportedItemStack} enters the belt directly below the puncher. Delegates the
  * actual punch logic to its {@link CircuitPunchingSpecifics} host (usually
  * {@link KeypunchBlockEntity}). Modeled after Create's {@code PressingBehaviour}.

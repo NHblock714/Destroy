@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy.core.registrate;
 
 import com.mojang.datafixers.util.Function3;
-import com.petrolpark.AbstractPetrolparkRegistrate;
+import petrolpark.mc.library.core.registrate.AbstractPetrolparkRegistrate;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.tterrag.registrate.util.entry.RegistryEntry;
 

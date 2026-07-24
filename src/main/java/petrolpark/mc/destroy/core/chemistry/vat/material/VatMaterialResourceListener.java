@@ -9,8 +9,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import com.petrolpark.core.recipe.ingredient.BlockIngredient;
-import com.petrolpark.core.recipe.ingredient.BlockIngredient.BlockTagIngredient;
+import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient;
+import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient.BlockTagIngredient;
 
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.Holder;

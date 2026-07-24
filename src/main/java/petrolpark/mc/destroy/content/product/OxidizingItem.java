@@ -3,10 +3,10 @@ package petrolpark.mc.destroy.content.product;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
-import com.petrolpark.PetrolparkDataComponentTypes;
-import com.petrolpark.core.item.decay.DecayTime;
-import com.petrolpark.core.item.decay.ItemDecay;
-import com.petrolpark.core.item.decay.product.ChangeItemDecayProduct;
+import petrolpark.mc.library.registry.PetrolparkDataComponentTypes;
+import petrolpark.mc.library.core.world.item.decay.DecayTime;
+import petrolpark.mc.library.core.world.item.decay.ItemDecay;
+import petrolpark.mc.library.core.world.item.decay.product.ChangeItemDecayProduct;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;

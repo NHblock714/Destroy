@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy.core.pollution;
 
-import com.petrolpark.client.rendering.world.BlendedBlockColorEvent;
-import com.petrolpark.util.ColorHelper;
+import petrolpark.mc.library.core.client.rendering.world.BlendedBlockColorEvent;
+import petrolpark.mc.library.util.ColorHelper;
 
 import net.createmod.catnip.theme.Color;
 import net.minecraft.client.renderer.BiomeColors;

@@ -3,7 +3,7 @@ package petrolpark.mc.destroy.content.oil.pumpjack;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-import com.petrolpark.compat.create.core.block.entity.behaviour.AbstractRememberPlacerBehaviour;
+import petrolpark.mc.library.compat.create.core.world.block.entity.behaviour.AbstractRememberPlacerBehaviour;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;

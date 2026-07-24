@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
-import com.petrolpark.client.creativemodetab.CustomTab;
-import com.petrolpark.client.creativemodetab.CustomTab.ITabEntry;
+import petrolpark.mc.library.core.world.item.creativeModeTab.CustomTab;
+import petrolpark.mc.library.core.world.item.creativeModeTab.CustomTab.ITabEntry;
 import com.simibubi.create.AllCreativeModeTabs;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -142,8 +142,8 @@ public class DestroyCreativeModeTabs {
                 // CBC compat: shell + charge blocks only register when createbigcannons
                 // is loaded (Mods.BIG_CANNONS.executeIfInstalled guard in Destroy.java). Tab
                 // resolver silently skips null lookups, so entries degrade cleanly.
-                cond("custom_explosive_mix_charge", () -> com.petrolpark.compat.Mods.BIG_CANNONS.isLoaded()),
-                cond("custom_explosive_mix_shell", () -> com.petrolpark.compat.Mods.BIG_CANNONS.isLoaded()),
+                cond("custom_explosive_mix_charge", () -> petrolpark.mc.library.compat.Mods.BIG_CANNONS.isLoaded()),
+                cond("custom_explosive_mix_shell", () -> petrolpark.mc.library.compat.Mods.BIG_CANNONS.isLoaded()),
                 d("dynamite_block"),
                 d("cordite_block"), d("extruded_cordite_block"));
 

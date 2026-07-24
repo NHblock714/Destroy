@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import com.petrolpark.compat.create.core.recipe.AdvancedProcessingRecipe;
-import com.petrolpark.compat.create.core.recipe.AdvancedProcessingRecipeParams;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipe;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
 import com.simibubi.create.compat.jei.category.sequencedAssembly.SequencedAssemblySubCategory;
 import com.simibubi.create.content.processing.sequenced.IAssemblyRecipe;
 

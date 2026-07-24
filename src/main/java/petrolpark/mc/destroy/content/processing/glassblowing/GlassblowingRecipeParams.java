@@ -7,7 +7,7 @@ import java.util.function.Function;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.petrolpark.compat.create.core.recipe.AdvancedProcessingRecipeParams;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
 
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.Registries;

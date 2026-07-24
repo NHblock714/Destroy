@@ -332,7 +332,7 @@ public class DestroyClientModEvents {
             petrolpark.mc.destroy.client.DestroyPonderScenes.refreshPeriodicTableBlockScenes();
         }
         // JEI optional-dependency guard.
-        if (!com.petrolpark.compat.Mods.JEI.isLoading()) return;
+        if (!petrolpark.mc.library.compat.Mods.JEI.isLoading()) return;
         net.minecraft.world.item.crafting.RecipeManager rm = event.getRecipeManager();
         java.util.Set<net.minecraft.world.item.crafting.Recipe<?>> live = new java.util.HashSet<>();
         for (net.minecraft.world.item.crafting.RecipeHolder<?> holder : rm.getRecipes()) {

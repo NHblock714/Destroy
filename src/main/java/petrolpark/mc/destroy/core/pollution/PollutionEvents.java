@@ -6,9 +6,9 @@ import static petrolpark.mc.destroy.core.pollution.PollutionHelper.getPollutionP
 import static petrolpark.mc.destroy.core.pollution.PollutionHelper.getPollutionTypeProperties;
 import static petrolpark.mc.destroy.core.pollution.PollutionHelper.isPollutionEnabled;
 
-import com.petrolpark.core.world.block.HandlePrecipitationEvent;
-import com.petrolpark.core.world.entity.npc.VillagerUpdateSpecialPricesEvent;
-import com.petrolpark.event.CommonEvents;
+import petrolpark.mc.library.core.world.block.HandlePrecipitationEvent;
+import petrolpark.mc.library.core.world.entity.npc.VillagerUpdateSpecialPricesEvent;
+import petrolpark.mc.library.core.event.CommonEvents;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;

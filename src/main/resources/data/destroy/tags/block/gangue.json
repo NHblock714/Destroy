@@ -12,9 +12,9 @@
         "minecraft:snow_block",
         "minecraft:powder_snow",
         "#c:cobblestones",
-        {"id": "#c:sandstones", "required": false},
+        {"id": "#c:sandstone/blocks", "required": false},
         "#c:sands",
-        {"id": "#c:netherrack", "required": false},
+        {"id": "#c:netherracks", "required": false},
         "minecraft:netherrack"
     ]
 }

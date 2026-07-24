@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy.content.processing.trypolithography;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.petrolpark.util.BinaryMatrix4x4;
+import petrolpark.mc.library.util.BinaryMatrix4x4;
 
 import net.createmod.catnip.gui.element.ScreenElement;
 import net.minecraft.client.gui.Font;

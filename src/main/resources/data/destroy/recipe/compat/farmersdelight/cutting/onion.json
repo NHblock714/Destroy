@@ -13,7 +13,9 @@
   ],
   "result": [
     {
-      "item": "minecraft:air"
+      "item": {
+        "id": "minecraft:air"
+      }
     }
   ],
   "tool": {

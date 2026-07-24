@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy.content.processing.trypolithography.keypunch;
 
 import com.mojang.serialization.MapCodec;
-import com.petrolpark.compat.create.core.block.entity.behaviour.AbstractRememberPlacerBehaviour;
+import petrolpark.mc.library.compat.create.core.world.block.entity.behaviour.AbstractRememberPlacerBehaviour;
 import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
 import com.simibubi.create.content.kinetics.simpleRelays.ICogWheel;
 import com.simibubi.create.foundation.block.IBE;

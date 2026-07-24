@@ -1,6 +1,8 @@
 package petrolpark.mc.destroy.content.processing.trypolithography;
 
-import com.petrolpark.compat.create.core.item.directional.IDirectionalOnBelt;
+import petrolpark.mc.library.compat.create.core.world.item.transported.DirectionalTransportedItemStack;
+import petrolpark.mc.library.compat.create.core.world.item.transported.IDirectionalBeltItem;
+import com.simibubi.create.content.kinetics.belt.transport.TransportedItemStack;
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem;
 
 import net.minecraft.world.item.Item;
@@ -15,10 +17,15 @@ import petrolpark.mc.destroy.DestroyDataComponents;
  * the {@link #getPattern}/{@link #putPattern} static methods accept both item types and only
  * read/write on valid carriers.
 */
-public class CircuitPatternItem extends Item implements IDirectionalOnBelt {
+public class CircuitPatternItem extends Item implements IDirectionalBeltItem<DirectionalTransportedItemStack> {
 
     public CircuitPatternItem(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    public DirectionalTransportedItemStack makeTransportedItemStack(TransportedItemStack transported) {
+        return DirectionalTransportedItemStack.copyFully(transported);
     }
 
     /**

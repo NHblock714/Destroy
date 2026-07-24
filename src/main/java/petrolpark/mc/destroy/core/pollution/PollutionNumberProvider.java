@@ -7,8 +7,8 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.petrolpark.core.data.loot.numberprovider.IEstimableNumberProvider;
-import com.petrolpark.core.data.loot.numberprovider.NumberEstimate;
+import petrolpark.mc.library.core.data.numberProvider.IEstimableNumberProvider;
+import petrolpark.mc.library.core.data.numberProvider.NumberEstimate;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;

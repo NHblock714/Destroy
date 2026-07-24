@@ -1,7 +1,6 @@
 package petrolpark.mc.destroy.content.oil.pumpjack;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
 
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
@@ -35,8 +34,10 @@ public class PumpjackRenderer extends SafeBlockEntityRenderer<PumpjackBlockEntit
 
         BlockState blockState = pumpjack.getBlockState();
         Direction facing = PumpjackBlock.getFacing(blockState);
-        VertexConsumer vbSolid = bufferSource.getBuffer(RenderType.solid());
-        VertexConsumer vbCutout = bufferSource.getBuffer(RenderType.cutout());
+        // Grab the buffer just before each renderInto. RenderType.solid() and cutout() aren't among
+        // the BufferSource's fixed buffers, so they share one ByteBufferBuilder and only one can be
+        // building at a time — asking for the second ends the first, leaving any VertexConsumer held
+        // for it stale, and writing to a stale one throws "Not building!".
 
         transformed(DestroyPartials.PUMPJACK_CAM, blockState, facing)
             .translate(0d, 0d, 1d)
@@ -47,7 +48,7 @@ public class PumpjackRenderer extends SafeBlockEntityRenderer<PumpjackBlockEntit
             .uncenter()
             .uncenter()
             .light(light)
-            .renderInto(ms, vbSolid);
+            .renderInto(ms, bufferSource.getBuffer(RenderType.solid()));
 
         transformed(DestroyPartials.PUMPJACK_LINKAGE, blockState, facing)
             .translate(0d, -4.5 / 16d, 1d)
@@ -59,7 +60,7 @@ public class PumpjackRenderer extends SafeBlockEntityRenderer<PumpjackBlockEntit
             .uncenter()
             .uncenter()
             .light(light)
-            .renderInto(ms, vbSolid);
+            .renderInto(ms, bufferSource.getBuffer(RenderType.solid()));
 
         transformed(DestroyPartials.PUMPJACK_BEAM, blockState, facing)
             .translate(0d, 1d, 0d)
@@ -70,12 +71,12 @@ public class PumpjackRenderer extends SafeBlockEntityRenderer<PumpjackBlockEntit
             .uncenter()
             .uncenter()
             .light(light)
-            .renderInto(ms, vbCutout);
+            .renderInto(ms, bufferSource.getBuffer(RenderType.cutout()));
 
         transformed(DestroyPartials.PUMPJACK_PUMP, blockState, facing)
             .translate(0d, -Mth.sin(angle) * 3 / 16d, 0d)
             .light(light)
-            .renderInto(ms, vbSolid);
+            .renderInto(ms, bufferSource.getBuffer(RenderType.solid()));
     }
 
     private SuperByteBuffer transformed(PartialModel model, BlockState blockState, Direction facing) {

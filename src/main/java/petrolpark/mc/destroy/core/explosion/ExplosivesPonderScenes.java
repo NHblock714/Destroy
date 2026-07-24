@@ -3,8 +3,8 @@ package petrolpark.mc.destroy.core.explosion;
 import java.util.List;
 import java.util.function.Supplier;
 
-import com.petrolpark.client.ponder.particle.PetrolparkEmitters;
-import com.petrolpark.compat.Mods;
+import petrolpark.mc.library.core.client.ponder.particle.PetrolparkEmitters;
+import petrolpark.mc.library.compat.Mods;
 import com.simibubi.create.AllBlocks;
 
 import net.createmod.catnip.math.Pointing;

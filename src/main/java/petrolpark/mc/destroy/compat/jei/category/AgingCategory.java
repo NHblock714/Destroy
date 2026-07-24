@@ -6,8 +6,8 @@ import java.util.List;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.petrolpark.client.rendering.PetrolparkGuiTexture;
-import com.petrolpark.compat.jei.category.PetrolparkRecipeCategory;
+import petrolpark.mc.library.core.client.rendering.PetrolparkGuiTexture;
+import petrolpark.mc.library.compat.jei.category.PetrolparkRecipeCategory;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.item.ItemHelper;
 

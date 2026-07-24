@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.MapCodec;
-import com.petrolpark.util.RayHelper;
+import petrolpark.mc.library.util.RayHelper;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.item.ItemHelper;

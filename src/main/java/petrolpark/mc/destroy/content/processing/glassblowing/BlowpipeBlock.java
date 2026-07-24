@@ -7,7 +7,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import com.mojang.serialization.MapCodec;
-import com.petrolpark.compat.create.core.block.entity.behaviour.AbstractRememberPlacerBehaviour;
+import petrolpark.mc.library.compat.create.core.world.block.entity.behaviour.AbstractRememberPlacerBehaviour;
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.kinetics.deployer.DeployerBlockEntity;

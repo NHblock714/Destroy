@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.petrolpark.compat.jei.category.ITickableCategory;
-import com.petrolpark.compat.jei.category.PetrolparkRecipeCategory;
+import petrolpark.mc.library.compat.jei.category.ITickableCategory;
+import petrolpark.mc.library.compat.jei.category.PetrolparkRecipeCategory;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;

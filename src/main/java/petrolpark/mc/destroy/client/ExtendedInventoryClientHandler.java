@@ -29,6 +29,7 @@ import net.minecraft.world.level.GameType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
@@ -116,6 +117,13 @@ public class ExtendedInventoryClientHandler {
             boolean firstInit = (settings == null);
             settings = currentSettings;
             if (!firstInit) refreshClientInventoryMenu(inv);
+        }
+
+        // The menu can also fall behind the Inventory itself — a size change that lands after the
+        // LocalPlayer was rebuilt, or anything else handing the Player a fresh menu. Never swap it
+        // under an open Screen: Screens keep the menu they were opened with.
+        if (mc.screen == null && !inv.hasExtraInventorySlots(mc.player.inventoryMenu)) {
+            refreshClientInventoryMenu(inv);
         }
 
         // Initialize Key Mappings (deferred: vanilla mc.options is null until client setup
@@ -396,6 +404,23 @@ public class ExtendedInventoryClientHandler {
             invX + INVENTORY_PADDING, invY + INVENTORY_PADDING,
             DestroyClientConfigs.getLeftSlots(inv.getExtraHotbarSlots()),
             leftX, leftY, rightX, rightY);
+    }
+
+    /**
+ * Respawning and every dimension change replace the LocalPlayer, and the new one carries a fresh
+ * InventoryMenu with none of the extra Slots. Re-add them here, while the server's inventory
+ * contents are still in flight: that packet is applied to every slot index it carries, so a menu
+ * short of Slots throws when it arrives. The attributes have already been copied over to the new
+ * Player by this point, so the Inventory knows how many extra slots to expect.*/
+    @SubscribeEvent
+    public static void onLocalPlayerReplaced(ClientPlayerNetworkEvent.Clone event) {
+        Player player = event.getNewPlayer();
+        ExtendedInventory inv;
+        try {
+            inv = ExtendedInventory.get(player);
+        } catch (ClassCastException ex) { return; }
+        inv.updateSize();
+        if (!inv.hasExtraInventorySlots(player.inventoryMenu)) refreshClientInventoryMenu(inv);
     }
 
     /** Apply server-side size change packet to client inventory + request a full state resync.*/

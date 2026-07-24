@@ -2,7 +2,7 @@
   "values": [
     "destroy:gas_mask",
     {
-      "id": "#createbigcannons:gas_mask",
+      "id": "#createbigcannons:gas_masks",
       "required": false
     }
   ]

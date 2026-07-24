@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import com.petrolpark.core.recipe.ingredient.BlockIngredient;
+import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;

@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.mixin.plugin;
 
-import com.petrolpark.mixin.plugin.PetrolparkMixinPlugin;
+import petrolpark.mc.library.mixin.plugin.PetrolparkMixinPlugin;
 
 public class DestroyMixinPlugin extends PetrolparkMixinPlugin {
     

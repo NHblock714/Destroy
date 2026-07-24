@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.content.processing.distillation;
 
-import com.petrolpark.compat.create.core.recipe.AdvancedProcessingRecipeParams;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
 
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import petrolpark.mc.destroy.core.recipe.SingleFluidRecipe;

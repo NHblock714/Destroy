@@ -2,7 +2,7 @@ package petrolpark.mc.destroy.compat.jei.category;
 
 import java.util.List;
 
-import com.petrolpark.compat.jei.category.PetrolparkRecipeCategory;
+import petrolpark.mc.library.compat.jei.category.PetrolparkRecipeCategory;
 import com.simibubi.create.content.processing.recipe.ProcessingOutput;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 

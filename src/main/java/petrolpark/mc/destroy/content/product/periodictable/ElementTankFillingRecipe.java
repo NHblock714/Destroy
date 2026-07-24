@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy.content.product.periodictable;
 
 import com.google.gson.JsonSyntaxException;
-import com.petrolpark.compat.create.core.recipe.AdvancedProcessingRecipeParams;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;

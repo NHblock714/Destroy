@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
-import com.petrolpark.util.BinaryMatrix4x4;
+import petrolpark.mc.library.util.BinaryMatrix4x4;
 
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.HolderLookup;

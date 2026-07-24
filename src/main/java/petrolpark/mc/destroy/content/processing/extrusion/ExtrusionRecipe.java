@@ -3,8 +3,8 @@ package petrolpark.mc.destroy.content.processing.extrusion;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.petrolpark.compat.create.core.recipe.AdvancedProcessingRecipe;
-import com.petrolpark.compat.create.core.recipe.AdvancedProcessingRecipeParams;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipe;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
 
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;

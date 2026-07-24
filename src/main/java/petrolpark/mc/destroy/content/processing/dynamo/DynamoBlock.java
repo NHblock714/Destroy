@@ -3,9 +3,9 @@ package petrolpark.mc.destroy.content.processing.dynamo;
 import javax.annotation.Nullable;
 
 import com.mojang.serialization.MapCodec;
-import com.petrolpark.compat.create.core.block.entity.behaviour.AbstractRememberPlacerBehaviour;
-import com.petrolpark.core.recipe.ingredient.BlockIngredient;
-import com.petrolpark.core.recipe.ingredient.BlockIngredient.BlockTagIngredient;
+import petrolpark.mc.library.compat.create.core.world.block.entity.behaviour.AbstractRememberPlacerBehaviour;
+import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient;
+import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient.BlockTagIngredient;
 import com.simibubi.create.api.contraption.BlockMovementChecks;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.content.kinetics.base.KineticBlock;

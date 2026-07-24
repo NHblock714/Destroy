@@ -1,9 +1,9 @@
 package petrolpark.mc.destroy.core.pollution;
 
 import petrolpark.mc.destroy.client.DestroyPonderPlayer;
-import com.petrolpark.client.ponder.instruction.AdvanceTimeOfDayInstruction;
-import com.petrolpark.client.ponder.instruction.CreateFishingHookInstruction;
-import com.petrolpark.client.ponder.particle.PetrolparkEmitters;
+import petrolpark.mc.library.core.client.ponder.instruction.AdvanceTimeOfDayInstruction;
+import petrolpark.mc.library.core.client.ponder.instruction.CreateFishingHookInstruction;
+import petrolpark.mc.library.core.client.ponder.particle.PetrolparkEmitters;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.kinetics.mixer.MechanicalMixerBlockEntity;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.petrolpark.compat.create.core.item.directional.DirectionalTransportedItemStack;
+import petrolpark.mc.library.compat.create.core.world.item.transported.DirectionalTransportedItemStack;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -75,7 +75,7 @@ public class CircuitMaskItem extends CircuitPatternItem {
     }
 
     @Override
-    public void launch(DirectionalTransportedItemStack stack, Direction launchDirection) {
+    public void onLaunchedByWeightedEjector(DirectionalTransportedItemStack stack, Direction launchDirection) {
         // If it is 'flipped', the Item has been rotated around 180° the north-south axis before
         // being rotated around the up-down axis.
         boolean alreadyFlipped = stack.stack.has(DestroyDataComponents.FLIPPED);
@@ -88,7 +88,7 @@ public class CircuitMaskItem extends CircuitPatternItem {
         }
 
         if (!alreadyFlipped) stack.stack.set(DestroyDataComponents.FLIPPED, true);
-        super.launch(stack, launchDirection);
+        super.onLaunchedByWeightedEjector(stack, launchDirection);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class CircuitMaskItem extends CircuitPatternItem {
         super.inventoryTick(stack, level, entity, slotId, isSelected);
         // Clear the in-flight orientation state when the mask lands back in an inventory.
         stack.remove(DestroyDataComponents.FLIPPED);
-        stack.remove(com.petrolpark.PetrolparkDataComponentTypes.ROTATION_WHILE_FLYING);
+        stack.remove(petrolpark.mc.library.registry.PetrolparkDataComponentTypes.ROTATION_WHILE_FLYING);
 
         if (level.isClientSide() && isSelected && entity instanceof Player player && player.isCrouching()) {
             Direction direction = player.getDirection();

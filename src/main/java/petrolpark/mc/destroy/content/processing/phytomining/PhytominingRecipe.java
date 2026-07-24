@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy.content.processing.phytomining;
 
-import com.petrolpark.compat.create.core.recipe.AdvancedProcessingRecipe;
-import com.petrolpark.compat.create.core.recipe.AdvancedProcessingRecipeParams;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipe;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
 import com.simibubi.create.content.processing.recipe.ProcessingOutput;
 
 import net.minecraft.world.item.ItemStack;

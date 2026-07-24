@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy;
 
-import com.petrolpark.util.Lang;
+import petrolpark.mc.library.util.Lang;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -16,12 +16,12 @@ import net.minecraft.world.level.material.Fluid;
 /**
  * 1.21.1 notes:
  * <ul>
- * <li>{@code net.createmod.catnip.lang.Lang} → {@link com.petrolpark.util.Lang} (Petrolpark's copy in Create-Library).</li>
+ * <li>{@code net.createmod.catnip.lang.Lang} → {@link petrolpark.mc.library.util.Lang} (Petrolpark's copy in Create-Library).</li>
  * <li>{@code ItemTags.create(id)} / {@code BlockTags.create(id)} still exist but wrap
  * {@code TagKey.create(Registries.ITEM, id)} / {@code TagKey.create(Registries.BLOCK, id)}.</li>
  * <li>{@code ForgeRegistries.MOB_EFFECTS} removed — MobEffects enum would now go through
  * {@code BuiltInRegistries.MOB_EFFECT} or a {@code Holder<MobEffect>} directly. Not needed
- * for this migration batch: CAUSES_INFERTILITY MobEffect tag can live on {@link com.petrolpark.PetrolparkTags.MobEffects#CAUSES_INFERTILITY}.</li>
+ * for this migration batch: CAUSES_INFERTILITY MobEffect tag can live on {@link petrolpark.mc.library.PetrolparkTags.MobEffects#CAUSES_INFERTILITY}.</li>
  * </ul>
 */
 public class DestroyTags {

@@ -115,7 +115,7 @@ public class DestroyCommonEvents {
     public static void syncVatMaterialsOnJoin(net.neoforged.neoforge.event.OnDatapackSyncEvent event) {
         net.minecraft.server.level.ServerPlayer player = event.getPlayer();
         if (player == null) return;
-        java.util.HashMap<com.petrolpark.core.recipe.ingredient.BlockIngredient<?>,
+        java.util.HashMap<petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient<?>,
             petrolpark.mc.destroy.core.chemistry.vat.material.VatMaterial> datapackMaterials = new java.util.HashMap<>();
         petrolpark.mc.destroy.core.chemistry.vat.material.VatMaterial.BLOCK_MATERIALS.forEach((ingredient, material) -> {
             if (!material.builtIn()) datapackMaterials.put(ingredient, material);

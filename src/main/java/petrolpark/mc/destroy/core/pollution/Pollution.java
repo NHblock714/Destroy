@@ -6,8 +6,8 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
-import com.petrolpark.core.codec.ContextualCodec;
-import com.petrolpark.core.codec.RecordContextualCodecBuilder;
+import petrolpark.mc.library.util.codec.ContextualCodec;
+import petrolpark.mc.library.util.codec.RecordContextualCodecBuilder;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;

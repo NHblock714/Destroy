@@ -5,7 +5,7 @@ import static petrolpark.mc.destroy.Destroy.REGISTRATE;
 import static com.simibubi.create.foundation.data.CreateRegistrate.casingConnectivity;
 import static com.simibubi.create.foundation.data.CreateRegistrate.connectedTextures;
 
-import com.petrolpark.PetrolparkTags;
+import petrolpark.mc.library.PetrolparkTags;
 import com.simibubi.create.content.decoration.encasing.CasingBlock;
 import com.simibubi.create.content.decoration.encasing.EncasedCTBehaviour;
 import com.simibubi.create.foundation.block.connected.SimpleCTBehaviour;

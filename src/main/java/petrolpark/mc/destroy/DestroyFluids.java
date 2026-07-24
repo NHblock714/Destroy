@@ -3,8 +3,8 @@ package petrolpark.mc.destroy;
 import static petrolpark.mc.destroy.Destroy.REGISTRATE;
 
 import petrolpark.mc.destroy.core.registrate.DestroyRegistrate;
-import com.petrolpark.PetrolparkTags;
-import com.petrolpark.core.fluid.ColoredFluidType;
+import petrolpark.mc.library.PetrolparkTags;
+import petrolpark.mc.library.core.world.fluid.ColoredFluidType;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.fluids.VirtualFluid;
 import com.simibubi.create.foundation.data.CreateRegistrate;

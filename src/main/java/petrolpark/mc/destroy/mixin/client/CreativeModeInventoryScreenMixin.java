@@ -119,8 +119,15 @@ public abstract class CreativeModeInventoryScreenMixin extends EffectRenderingIn
         ExtendedInventoryClientHandler.setCurrentScreen(this);
         ExtendedInventoryClientHandler.refreshExtraInventoryAreas(inv);
         ExtendedInventoryClientHandler.addSlotsToClientMenu(inv, menu::addSlot,
-            (container, index, x, y) -> new CreativeModeInventoryScreen.SlotWrapper(
-                extendedInventorySlots.get(index), index, x, y));
+            (container, index, x, y) -> {
+                Slot target = extendedInventorySlots.get(index);
+                // SlotWrapper reads the wrapped Slot's container in its super() call, so it can't be
+                // handed a null. The inventoryMenu it comes from is rebuilt whenever the Player is,
+                // and this Screen can't rebuild it here — the Creative menu already claimed
+                // containerMenu. Back the wrapper with an equivalent Slot over the same container.
+                if (target == null) target = new Slot(container, index, x, y);
+                return new CreativeModeInventoryScreen.SlotWrapper(target, index, x, y);
+            });
     }
 
     /** Quick-move on destroyItemSlot (the trash icon) → also clear all extra-inventory slots.*/

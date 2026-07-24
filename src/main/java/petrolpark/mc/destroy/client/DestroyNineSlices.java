@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.client;
 
-import com.petrolpark.client.rendering.PetrolparkNineSlice;
+import petrolpark.mc.library.core.client.rendering.PetrolparkNineSlice;
 
 /**
  * Catalog of {@link PetrolparkNineSlice 9-slice} render helpers built from {@link DestroyGuiTextures}

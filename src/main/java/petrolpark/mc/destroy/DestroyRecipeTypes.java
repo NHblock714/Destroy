@@ -5,9 +5,9 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
-import com.petrolpark.compat.create.core.recipe.AdvancedProcessingRecipe;
-import com.petrolpark.compat.create.core.recipe.AdvancedProcessingRecipeParams;
-import com.petrolpark.util.Lang;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipe;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
+import petrolpark.mc.library.util.Lang;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
 import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
@@ -153,6 +153,12 @@ public enum DestroyRecipeTypes implements IRecipeTypeInfo {
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<petrolpark.mc.destroy.core.explosion.ExtendedDurationFireworkRocketRecipe>>
         DURATION_5_FIREWORK_ROCKET = Registers.SERIALIZERS.register("duration_5_firework_rocket_crafting",
             () -> petrolpark.mc.destroy.core.explosion.ExtendedDurationFireworkRocketRecipe.DURATION_5_FIREWORK_ROCKET);
+
+    // FillMixedExplosiveItemRecipe holds its serializer DeferredHolder on itself; touch it here so
+    // the class loads and registers the serializer alongside these, before registerDeferred.
+    @SuppressWarnings("unused")
+    private static final Object FILL_MIXED_EXPLOSIVE_SERIALIZER_LOAD =
+        petrolpark.mc.destroy.core.explosion.mixedexplosive.FillMixedExplosiveItemRecipe.SERIALIZER;
 
     /** Hook the nested {@link Registers} DeferredRegisters onto the mod bus.*/
     public static void registerDeferred(IEventBus modEventBus) {

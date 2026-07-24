@@ -3,7 +3,7 @@ package petrolpark.mc.destroy.core.chemistry.vat.material;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.petrolpark.core.recipe.ingredient.BlockIngredient;
+import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient;
 
 import net.createmod.catnip.net.base.BasePacketPayload;
 import net.createmod.catnip.net.base.ClientboundPacketPayload;

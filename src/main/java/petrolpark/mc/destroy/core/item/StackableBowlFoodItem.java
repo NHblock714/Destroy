@@ -2,7 +2,7 @@ package petrolpark.mc.destroy.core.item;
 
 import java.util.stream.Stream;
 
-import com.petrolpark.util.ItemHelper;
+import petrolpark.mc.library.util.ItemHelper;
 
 import petrolpark.mc.destroy.MoveToPetrolparkLibrary;
 

@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
-import com.petrolpark.PetrolparkTags;
+import petrolpark.mc.library.PetrolparkTags;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;

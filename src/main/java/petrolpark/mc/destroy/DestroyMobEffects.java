@@ -2,7 +2,7 @@ package petrolpark.mc.destroy;
 
 import static petrolpark.mc.destroy.Destroy.REGISTRATE;
 
-import com.petrolpark.core.registrate.MobEffectEntry;
+import petrolpark.mc.library.core.registrate.MobEffectEntry;
 
 import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;

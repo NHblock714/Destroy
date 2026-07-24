@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy.compat.jei.category;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.petrolpark.compat.jei.category.PetrolparkRecipeCategory;
+import petrolpark.mc.library.compat.jei.category.PetrolparkRecipeCategory;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;

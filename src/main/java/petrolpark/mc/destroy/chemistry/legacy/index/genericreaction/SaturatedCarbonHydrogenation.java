@@ -6,7 +6,7 @@ import petrolpark.mc.destroy.chemistry.legacy.LegacyMolecularStructure;
 import petrolpark.mc.destroy.chemistry.legacy.LegacyReaction.ReactionBuilder;
 import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
 import petrolpark.mc.destroy.chemistry.legacy.index.DestroyMolecules;
-import com.petrolpark.PetrolparkTags;
+import petrolpark.mc.library.PetrolparkTags;
 
 public class SaturatedCarbonHydrogenation extends ElectrophilicAddition {
 

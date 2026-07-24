@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import com.petrolpark.PetrolparkTags;
+import petrolpark.mc.library.PetrolparkTags;
 
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
@@ -142,19 +142,52 @@ public class ExtendedInventory extends Inventory {
 
     @SubscribeEvent
     public static void onPlayerJoinsWorld(PlayerEvent.PlayerLoggedInEvent event) {
-        ExtendedInventory inv = get(event.getEntity());
+        restoreExtraInventorySlots(event.getEntity());
+    }
+
+    /** Respawning hands out a brand new Player whose InventoryMenu holds only the vanilla Slots,
+ * even though {@link #replaceWith} has already restored the extra ItemStacks.*/
+    @SubscribeEvent
+    public static void onPlayerRespawns(PlayerEvent.PlayerRespawnEvent event) {
+        restoreExtraInventorySlots(event.getEntity());
+    }
+
+    /** Changing dimension keeps the ServerPlayer, but the client rebuilds its LocalPlayer from
+ * scratch — so the client's menu loses the extra Slots and has to be told to re-add them.*/
+    @SubscribeEvent
+    public static void onPlayerChangesDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        restoreExtraInventorySlots(event.getEntity());
+    }
+
+    /**
+ * Re-attach the extra Slots to the Player's inventoryMenu and re-sync the client. Server uses
+ * default zero coords (it doesn't render); the client rebuilds with proper coords when it
+ * handles the packet.
+ *
+ * <p>{@code requestFullState} makes the client round-trip a
+ * {@link RequestInventoryFullStateC2SPacket} back, forcing a full inventory re-broadcast so the
+ * re-attached slot indexes get their contents.</p>
+*/
+    private static void restoreExtraInventorySlots(Player player) {
+        ExtendedInventory inv = get(player);
         inv.updateSize();
-        // rebuild server-side inventoryMenu so it has the extra slots from the start.
-        // Without this, the first inventory open shows the vanilla 36-slot menu and extras are
-        // invisible. Server uses default zero coords (no rendering).
-        if (inv.extraItems.size() > 0) refreshPlayerInventoryMenu(event.getEntity());
-        // initial-state sync to client w/ requestFullState=true so the client
-        // round-trips a RequestInventoryFullStateC2SPacket back, forcing a full inventory
-        // re-broadcast with the newly-allocated slot indexes populated.
-        if (event.getEntity() instanceof net.minecraft.server.level.ServerPlayer sp) {
+        // Rebuilding also reassigns containerMenu, so only do it when the menu is actually stale.
+        if (!inv.hasExtraInventorySlots(player.inventoryMenu)) refreshPlayerInventoryMenu(player);
+        if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
             net.createmod.catnip.platform.CatnipServices.NETWORK.sendToClient(sp,
                 new ExtraInventorySizeChangeS2CPacket(inv.extraItems.size(), inv.extraHotbarSlots, true));
         }
+    }
+
+    /** @return whether the Menu already holds one Slot per extra inventory slot. No vanilla Menu
+ * Slot has a container index this high, so counting them is enough to tell.*/
+    public boolean hasExtraInventorySlots(AbstractContainerMenu menu) {
+        int extraInventoryStart = getExtraInventoryStartSlotIndex();
+        int found = 0;
+        for (Slot slot : menu.slots) {
+            if (slot.getSlotIndex() >= extraInventoryStart) found++;
+        }
+        return found == extraItems.size();
     }
 
     @SubscribeEvent

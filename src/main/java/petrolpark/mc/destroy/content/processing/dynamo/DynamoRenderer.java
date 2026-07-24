@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy.content.processing.dynamo;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.petrolpark.compat.create.PetrolparkCreateClient;
+import petrolpark.mc.library.compat.create.PetrolparkCreateClient;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 
 import net.createmod.catnip.data.Iterate;

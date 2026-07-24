@@ -93,7 +93,7 @@ public record SyncReactionsS2CPacket(Map<ResourceLocation, ReactionDefinition> r
 
         // Refresh JEI's ReactionCategory recipe map + push new entries to JEI runtime so the
         // category page picks them up without a /jei reload.
-        if (com.petrolpark.compat.Mods.JEI.isLoading()) {
+        if (petrolpark.mc.library.compat.Mods.JEI.isLoading()) {
             petrolpark.mc.destroy.compat.jei.DestroyJEI.refreshDatapackReactionsClientSide();
         }
     }

@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.vat;
 
-import com.petrolpark.core.recipe.ingredient.BlockIngredient;
+import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient;
 
 /**
  * Material configuration for a Vat — defines pressure rating, thermal conductivity, transparency,

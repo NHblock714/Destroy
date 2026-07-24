@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import com.petrolpark.compat.create.core.recipe.firsttimelucky.FTLRecipesBehaviour;
-import com.petrolpark.core.recipe.RecipeHelper;
+import petrolpark.mc.library.compat.create.core.data.recipe.firstTimeLucky.FTLRecipesBehaviour;
+import petrolpark.mc.library.util.RecipeHelper;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.belt.behaviour.DirectBeltInputBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;

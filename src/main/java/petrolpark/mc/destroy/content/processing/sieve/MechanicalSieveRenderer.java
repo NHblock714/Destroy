@@ -1,7 +1,6 @@
 package petrolpark.mc.destroy.content.processing.sieve;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 
 import dev.engine_room.flywheel.lib.transform.TransformStack;
@@ -34,8 +33,10 @@ public class MechanicalSieveRenderer extends KineticBlockEntityRenderer<Mechanic
 
         BlockState state = be.getBlockState();
         boolean x = state.getValue(MechanicalSieveBlock.X);
-        VertexConsumer vbSolid = buffer.getBuffer(RenderType.solid());
-        VertexConsumer vbCutout = buffer.getBuffer(RenderType.cutout());
+        // Grab the buffer just before each renderInto. RenderType.solid() and cutout() aren't among
+        // the BufferSource's fixed buffers, so they share one ByteBufferBuilder and only one can be
+        // building at a time — asking for the second ends the first, leaving any VertexConsumer held
+        // for it stale, and writing to a stale one throws "Not building!".
         float angle = getAngleForBe(be, be.getBlockPos(), x ? Axis.X : Axis.Z);
 
         ms.pushPose();
@@ -45,7 +46,7 @@ public class MechanicalSieveRenderer extends KineticBlockEntityRenderer<Mechanic
         ms.translate(Mth.sin(angle) * 2 / 16d + (x ? -1d : 0d), 0d, 0d);
         CachedBuffers.partial(DestroyPartials.MECHANICAL_SIEVE, state)
             .light(light)
-            .renderInto(ms, vbCutout);
+            .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
 
         ms.pushPose();
         TransformStack.of(ms)
@@ -54,7 +55,7 @@ public class MechanicalSieveRenderer extends KineticBlockEntityRenderer<Mechanic
             .uncenter();
         CachedBuffers.partial(DestroyPartials.MECHANICAL_SIEVE_LINKAGES, state)
             .light(light)
-            .renderInto(ms, vbSolid);
+            .renderInto(ms, buffer.getBuffer(RenderType.solid()));
         ms.popPose();
 
         ms.popPose();

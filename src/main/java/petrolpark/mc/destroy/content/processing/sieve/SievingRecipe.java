@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy.content.processing.sieve;
 
-import com.petrolpark.compat.create.core.recipe.AdvancedProcessingRecipe;
-import com.petrolpark.compat.create.core.recipe.AdvancedProcessingRecipeParams;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipe;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
 
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.level.Level;

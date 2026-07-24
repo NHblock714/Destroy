@@ -5,8 +5,8 @@ import java.util.Map;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
-import com.petrolpark.PetrolparkItemDisplayContexts;
-import com.petrolpark.util.BinaryMatrix4x4;
+import petrolpark.mc.library.registry.PetrolparkItemDisplayContexts;
+import petrolpark.mc.library.util.BinaryMatrix4x4;
 import com.simibubi.create.foundation.item.render.CustomRenderedItemModel;
 import com.simibubi.create.foundation.item.render.CustomRenderedItemModelRenderer;
 import com.simibubi.create.foundation.item.render.PartialItemModelRenderer;
