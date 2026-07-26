@@ -177,6 +177,23 @@ Beyond that there are no extra rules — no payment, no permission request, no n
 
 All Rights Reserved (mirrors the upstream Destroy license).
 
+"All Rights Reserved" does **not** mean modpacks are off-limits — upstream grants modpack permission
+explicitly. Quoting the [Destroy Modrinth page](https://modrinth.com/mod/destroy/), which is
+Petrolpark's authoritative statement on this:
+
+> **Use In Modpacks:**
+>
+> Destroy can be used in any modpack as long as credit is given. Destroy is designed as a mid-game
+> pathway to more advanced technology mods. It is recommended that, as the Plastics which Destroy
+> introduces intentionally have limited applications within Destroy itself, that modpack creators
+> change recipes for items from later-game mods to include Plastics. It is also recommended that the
+> generation of ore blocks of rare minerals featured in Destroy (i.e. Platinum, Palladium, and
+> Rhodium) are disabled or reduced in other mods, for balancing reasons.
+
+That permission covers this fork too. See [Modpack usage](#modpack-usage) above for the one thing
+this port asks on top of it: a link back to this repository, so port-specific bugs reach me instead
+of Petrolpark.
+
 ---
 
 **Maintainer**: [NHblock714](https://github.com/NHblock714)  
