@@ -74,7 +74,14 @@ public class ChunkPollution extends Pollution<ChunkAccess> {
             final List<ChunkPos> adjacentPositions = new ArrayList<>(List.of(new ChunkPos(holder.getPos().x - 1, holder.getPos().z), new ChunkPos(holder.getPos().x + 1, holder.getPos().z), new ChunkPos(holder.getPos().x, holder.getPos().z - 1), new ChunkPos(holder.getPos().x, holder.getPos().z + 1)));
             RandomHelper.shuffle(adjacentPositions, random);
             for (ChunkPos otherPos : adjacentPositions) {
-                final ChunkAccess otherChunk = level.getChunk(otherPos.x, otherPos.z, ChunkStatus.FULL, false);
+                final ChunkAccess otherChunk;
+                try {
+                    // Some chunk sources throw instead of returning null for a position they don't
+                    // own — Sable's ship levels do — so the null check below isn't enough on its own.
+                    otherChunk = level.getChunk(otherPos.x, otherPos.z, ChunkStatus.FULL, false);
+                } catch (RuntimeException e) {
+                    continue;
+                }
                 if (otherChunk == null) continue;
                 final ChunkPollution otherPollution = otherChunk.getData(DestroyAttachmentTypes.CHUNK_POLLUTION);
                 if (random.nextFloat() > spreadingProperties.chance()) continue;

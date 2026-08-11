@@ -743,10 +743,12 @@ public class DestroyBlocks {
     // EXTRUSION_DIE — RotatedPillarBlock that extrudes blocks pushed through its axis
     // by a contraption. ExtrudableMovementBehaviour (registered via BlockExtrusion.register) handles
     // the block-substitution logic; entities caught inside take damage (SweetBerryBush-style).
+    // noCollission: the contraption has to move the block being extruded into the die's own
+    // position, and entityInside only fires for entities that can enter the block.
     public static final BlockEntry<ExtrusionDieBlock> EXTRUSION_DIE =
         REGISTRATE.block("extrusion_die", ExtrusionDieBlock::new)
             .initialProperties(() -> Blocks.IRON_BLOCK)
-            .properties(p -> p.mapColor(MapColor.METAL).noOcclusion())
+            .properties(p -> p.mapColor(MapColor.METAL).noOcclusion().noCollission())
             .simpleItem()
             .register();
 

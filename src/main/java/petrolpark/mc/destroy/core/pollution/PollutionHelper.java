@@ -100,6 +100,19 @@ public class PollutionHelper {
         return chunk.getData(DestroyAttachmentTypes.CHUNK_POLLUTION).changePollution(pollutionType, change);
     };
 
+    /**
+ * The chunk backing a per-chunk pollution operation, or null if it can't be reached. Some chunk
+ * sources throw rather than return null for a position they don't own (Sable's ship levels do).
+ * Chunk pollution is a best-effort world effect, so callers just skip it when this is null.
+*/
+    private static ChunkAccess getPollutionChunk(Level level, BlockPos pos) {
+        try {
+            return level.getChunk(pos);
+        } catch (RuntimeException e) {
+            return null;
+        }
+    };
+
     @SuppressWarnings("unchecked")
     public static final int getPollution(Level level, BlockPos pos, PollutionType<?> pollutionType) {
         if (!pollutionType.chunk) try {
@@ -108,7 +121,8 @@ public class PollutionHelper {
         } catch (ClassCastException e) {};
         try {
             final PollutionType<ChunkAccess> chunkPollutionType = (PollutionType<ChunkAccess>)pollutionType;
-            return getPollution(level.getChunk(pos), chunkPollutionType);
+            final ChunkAccess chunk = getPollutionChunk(level, pos);
+            return chunk == null ? 0 : getPollution(chunk, chunkPollutionType);
         } catch (ClassCastException e) {
             throw new IllegalArgumentException("PollutionType must be of Level or Chunk");
         }
@@ -122,7 +136,8 @@ public class PollutionHelper {
         } catch (ClassCastException e) {};
         try {
             final PollutionType<ChunkAccess> chunkPollutionType = (PollutionType<ChunkAccess>)pollutionType;
-            return getPollutionProportion(level.getChunk(pos), chunkPollutionType);
+            final ChunkAccess chunk = getPollutionChunk(level, pos);
+            return chunk == null ? 0f : getPollutionProportion(chunk, chunkPollutionType);
         } catch (ClassCastException e) {
             throw new IllegalArgumentException("PollutionType must be of Level or Chunk");
         }
@@ -137,7 +152,8 @@ public class PollutionHelper {
         } catch (ClassCastException e) {};
         try {
             final PollutionType<ChunkAccess> chunkPollutionType = (PollutionType<ChunkAccess>)pollutionType;
-            return setPollution(level.getChunk(pos), chunkPollutionType, value);
+            final ChunkAccess chunk = getPollutionChunk(level, pos);
+            return chunk == null ? 0 : setPollution(chunk, chunkPollutionType, value);
         } catch (ClassCastException e) {
             throw new IllegalArgumentException("PollutionType must be of Level or Chunk");
         }
@@ -151,7 +167,8 @@ public class PollutionHelper {
         } catch (ClassCastException e) {};
         try {
             final PollutionType<ChunkAccess> chunkPollutionType = (PollutionType<ChunkAccess>)pollutionType;
-            return changePollution(level.getChunk(pos), chunkPollutionType, change);
+            final ChunkAccess chunk = getPollutionChunk(level, pos);
+            return chunk == null ? 0 : changePollution(chunk, chunkPollutionType, change);
         } catch (ClassCastException e) {
             throw new IllegalArgumentException("PollutionType must be of Level or Chunk");
         }
