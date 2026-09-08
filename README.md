@@ -125,7 +125,7 @@ Tweaks to existing mechanics. Most are user-visible.
   - Custom 3D atom textures via resource pack `assets/<ns>/models/chemistry/atom/<id>.json`.
   - S2C sync to clients on reload + per-player resync on join via `OnDatapackSyncEvent`.
   - Load order is fixed elements → molecules → reactions, so cross-datapack references resolve cleanly.
-  - Tutorial packs at `datapack_en/` and `datapack_zh/` cover all three layers + a matching resource pack.
+  - Worked tutorial packs (one datapack + matching resource pack per layer) are attached to the [GitHub releases](https://github.com/NHblock714/Destroy/releases) as `destroy_*_tutorial_*_en.zip`; each ships a README with the JSON schema and debugging tips.
 - **Reversible reactions in the datapack** — `ReactionDefinition.reverse` field accepts an optional kinetics block + optional result; auto-derives Hess-Law-consistent activation energy / enthalpy when omitted.
 - **JEI molecule drill-down** — "which recipes consume molecule X" / "which recipes produce a Mixture containing X" via `MixtureFluidIngredient.getReferencedMolecules`.
 - **Display Link → Pollutometer**.

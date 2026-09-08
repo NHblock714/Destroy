@@ -15,6 +15,7 @@ import petrolpark.mc.destroy.DestroyFluidIngredientTypes;
 import petrolpark.mc.destroy.chemistry.legacy.LegacyMixture;
 import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
 import petrolpark.mc.destroy.chemistry.legacy.ReadOnlyMixture;
+import petrolpark.mc.destroy.chemistry.legacy.index.DestroyMolecules;
 
 /**
  * Matches a Mixture fluid containing a specific ionic molecule at concentration in
@@ -79,9 +80,14 @@ public class IonFluidIngredient extends MixtureFluidIngredient {
     public List<ReadOnlyMixture> getExampleMixtures() {
         LegacySpecies ion = LegacySpecies.getMolecule(ionId);
         if (ion == null) return List.of();
+        float conc = Math.max((minConcentration + Math.min(maxConcentration, 1000f)) / 2f, 0.01f);
+        // Show a solution the recipe would actually accept: the ion in water with a counter-ion
+        // balancing its charge (ions are taken to displace no water).
         LegacyMixture m = new LegacyMixture();
-        float conc = (minConcentration + Math.min(maxConcentration, 1000f)) / 2f;
-        m.addMolecule(ion, Math.max(conc, 0.01f));
+        m.addMolecule(DestroyMolecules.WATER, DestroyMolecules.WATER.getPureConcentration());
+        m.addMolecule(ion, conc);
+        m.addMolecule(ion.getCharge() > 0 ? DestroyMolecules.CHLORIDE : DestroyMolecules.SODIUM_ION,
+            conc * Math.abs(ion.getCharge()));
         return List.of(m);
     }
 

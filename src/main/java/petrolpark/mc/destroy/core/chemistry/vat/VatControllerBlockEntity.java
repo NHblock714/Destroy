@@ -1347,17 +1347,13 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
             double concentration = mixture.getTotalConcentration();
             if (concentration <= 0d) return FluidStack.EMPTY;
 
-            // To hand out `amount` mB of gas at `molarDensity` the recipe must pull
+            // Handing out `amount` mB at `molarDensity` means pulling
             // `amount * molarDensity / concentration` mB out of the tank, whose gas sits at
-            // `concentration` — so the moles removed equal the moles delivered. The original drained
-            // the INVERSE (`amount * concentration / molarDensity`, capped at `amount`): for a gas
-            // thinner than air (concentration < molarDensity) it removed fewer moles than it returned,
-            // so extracting through a pipe and pumping the result back minted gas from nothing.
+            // `concentration`, so the moles removed equal the moles delivered.
             int tankAmountToDrain = (int) Math.ceil(amount * molarDensity / concentration);
 
             // Size the delivery off what the tank can actually give (peek, no mutation), then floor +
-            // cap at the request so the delivered moles can never exceed the moles removed — this is
-            // what closes the duplication even under a tank-limited drain or integer rounding.
+            // cap at the request so the delivered moles can never exceed the moles removed.
             int lostAmount = drainGasTank(tankAmountToDrain, FluidAction.SIMULATE).getAmount();
             int deliveredAmount = Math.min(amount, (int) Math.floor((double) lostAmount * concentration / molarDensity));
             if (deliveredAmount <= 0) return FluidStack.EMPTY;
@@ -1366,9 +1362,10 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
             if (action.execute()) {
                 lostAmount = drainGasTank(tankAmountToDrain, FluidAction.EXECUTE).getAmount();
                 if (lostAmount <= 0) return FluidStack.EMPTY;
-                // Spread exactly the removed moles (concentration * lostAmount) across deliveredAmount
-                // mB, so moles-out == moles-removed with no drift in either direction.
-                mixture.scale((float) lostAmount / deliveredAmount);
+                // The mixture describes `lostAmount` mB of tank gas and is now packed into
+                // `deliveredAmount` mB. scale() takes the volume ratio and divides the
+                // concentrations by it, so the moles in the delivered stack equal the moles removed.
+                mixture.scale((float) deliveredAmount / lostAmount);
             }
 
             return petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid.of(deliveredAmount, mixture);

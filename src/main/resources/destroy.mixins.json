@@ -17,6 +17,7 @@
         "compat.create.ItemDrainBlockEntityAddBehavioursMixin",
         "compat.create.HeatLevelMixin",
         "compat.create.HeatConditionMixin",
+        "compat.create.BlockCapabilityCacheProviderMixin",
         "compat.create.FluidNetworkMixin",
         "compat.create.PipeConnectionMixin",
         "compat.create.FluidTransportBehaviourMixin",
