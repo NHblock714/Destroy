@@ -33,16 +33,13 @@ import petrolpark.mc.destroy.content.sandcastle.SandCastleBlockEntity;
 import petrolpark.mc.destroy.core.pollution.catalyticconverter.CatalyticConverterBlockEntity;
 
 /**
- * Destroy 的 BlockEntityType 清单。
+ * Every {@code BlockEntityType} Destroy registers, through the Registrate
+ * {@code .blockEntity(name, factory).validBlocks(...).renderer(...).register()} pipeline.
  *
- * <p>1.21.1 要点：
- * <ul>
- * <li>Registrate {@code .blockEntity(name, factory).validBlocks(...).renderer(() -> R::new).register()} 与
- * Create 的 {@code AllBlockEntityTypes} 同款流水线。</li>
- * <li>Capability 在 BE 类上声明静态 {@code registerCapabilities(RegisterCapabilitiesEvent)}，由
- * {@link Destroy#Destroy} 里 {@code modEventBus.addListener} 挂。</li>
- * </ul>
-*/
+ * <p>Capabilities are not declared here: a block entity that exposes one declares a static
+ * {@code registerCapabilities(RegisterCapabilitiesEvent)} of its own, subscribed from
+ * {@link Destroy#Destroy}.</p>
+ */
 public class DestroyBlockEntityTypes {
 
     public static final BlockEntityEntry<AgeingBarrelBlockEntity> AGING_BARREL =

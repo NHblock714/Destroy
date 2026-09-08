@@ -37,12 +37,11 @@ import petrolpark.mc.destroy.util.GuiHelper;
  * columns = tick), with scrollable note area, draggable add/remove, playhead animation, and
  * quantization controls (ticks-per-beat / beats-per-line / lines-per-bar).
  *
- * <p><b>继承链</b>: {@link AbstractSimiContainerScreen} →
- * {@link net.minecraft.client.gui.screens.inventory.AbstractContainerScreen} → Screen。Screen-side
- * {@code program} 字段即 {@code menu.contentHolder}（Client → {@link RedstoneProgrammerMenu.DummyRedstoneProgram}；
- * Server 侧 contentHolder 为真正的 {@link RedstoneProgram}）—— 编辑通过 C2S packet 同步到
- * authoritative server instance。</p>
-*/
+ * <p>The {@code program} field is the menu's {@code contentHolder}: a
+ * {@link RedstoneProgrammerMenu.DummyRedstoneProgram} on the client, the real
+ * {@link RedstoneProgram} on the server. Edits made here are sent to the authoritative server-side
+ * instance with C2S packets.</p>
+ */
 public class RedstoneProgrammerScreen extends AbstractSimiContainerScreen<RedstoneProgrammerMenu> {
 
     protected final RedstoneProgrammerMenu menu;

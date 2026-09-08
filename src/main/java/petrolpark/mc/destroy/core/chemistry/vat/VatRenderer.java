@@ -50,18 +50,11 @@ public class VatRenderer extends SafeBlockEntityRenderer<VatControllerBlockEntit
         if (!controller.hasLevel() || !controller.getVatOptional().isPresent()) return;
         Vat vat = controller.getVatOptional().get();
         BlockState state = controller.getBlockState();
-        // DON'T cache `vbSolid` / `vbCutout` at the top.
-        // renderSafe and reused them throughout — but 1.21 vanilla {@link MultiBufferSource.BufferSource}
-        // tightened batch lifecycle: calling {@code getBuffer(RenderType.cutout())} after
-        // {@code getBuffer(RenderType.solid())} immediately calls {@code endBatch(solid)}, **invalidating
-        // the previously-cached `vbSolid` reference**. Any subsequent write to the stale `vbSolid`
-        // (e.g. PIPE / BAROMETER / VENT case below) crashes with
-        // {@code IllegalStateException: Not building!} (BufferBuilder.ensureBuilding line 76).
-        // User crash trace (D:\QQ记录\文件\crash-2026-04-27_19.50.31-client.txt) hit this on
-        // a vat side in OPEN_VENT mode with line 143 = first VAT_SIDE_VENT renderInto.
-        // 1.21 fix: get the buffer **just-in-time** in each case branch, so the buffer is always
-        // freshly-`building`. {@link CachedBuffers.partial(...).renderInto(ms, buffer)} consumes
-        // the buffer immediately, so a fresh `getBuffer` call right before each renderInto is safe.
+        // Don't hoist the solid and cutout VertexConsumers out of the loop below. Asking a
+        // BufferSource for one RenderType ends the batch it is currently building, so a cached
+        // consumer goes stale as soon as a different RenderType is requested and writing to it
+        // throws IllegalStateException("Not building!"). Fetch the buffer inside each branch
+        // instead — renderInto consumes it immediately, so it is always freshly building.
         net.neoforged.neoforge.items.IItemHandler inv = controller.inventory;
 
         Vec3 relativeInternalLowerCorner = Vec3.atLowerCornerOf(vat.getInternalLowerCorner().subtract(controller.getBlockPos()));

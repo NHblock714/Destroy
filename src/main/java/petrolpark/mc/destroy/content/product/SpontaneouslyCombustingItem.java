@@ -10,11 +10,7 @@ import net.minecraft.world.level.block.BaseFireBlock;
 
 /**
  * Base class for items that spontaneously combust in the player's inventory / on the ground.
-
- *
- * <p>1.21 迁移要点：{@code entity.setSecondsOnFire(n)} 重命名 → {@link Entity#igniteForSeconds(float)}
- * （float 参数，精度升级）。行为不变。</p>
-*/
+ */
 public class SpontaneouslyCombustingItem extends Item {
 
     public SpontaneouslyCombustingItem(Properties properties) {

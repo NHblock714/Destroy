@@ -13,8 +13,8 @@ import petrolpark.mc.destroy.core.explosion.mixedexplosive.MixedExplosiveEntity;
 import petrolpark.mc.destroy.core.explosion.mixedexplosive.MixedExplosiveEntityRenderer;
 
 /**
- * Destroy 的 EntityType 注册表。
-*/
+ * Destroy's {@link EntityType}s.
+ */
 public class DestroyEntityTypes {
 
     // Legacy explosives

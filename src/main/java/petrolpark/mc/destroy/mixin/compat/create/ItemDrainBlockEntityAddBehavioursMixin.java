@@ -17,8 +17,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import petrolpark.mc.destroy.core.pollution.PollutingBehaviour;
 
 /**
- * 给 Create Item Drain 挂 PollutingBehaviour。
-*/
+ * Attaches a {@link PollutingBehaviour} to Create's Item Drain.
+ */
 @Mixin(ItemDrainBlockEntity.class)
 public abstract class ItemDrainBlockEntityAddBehavioursMixin extends SmartBlockEntity {
 

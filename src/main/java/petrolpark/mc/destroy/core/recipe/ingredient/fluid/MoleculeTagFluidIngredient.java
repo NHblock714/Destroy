@@ -21,9 +21,10 @@ import petrolpark.mc.destroy.chemistry.legacy.ReadOnlyMixture;
  * Matches a Mixture fluid containing ANY molecule tagged with {@code moleculeTag} at total
  * concentration in [minConcentration, maxConcentration]. Tag format: {@code namespace:path}.
  *
- * <p>1.21 JSON: {@code {"type": "destroy:mixture_with_molecule_tag", "molecule_tag":
- * "destroy:refrigerant", "concentration_min": 0.9, "concentration_max": 1.1}}.</p>
-*/
+ * <p>JSON is {@code "type": "destroy:mixture_with_molecule_tag"} plus {@code "molecule_tag"} and
+ * either {@code "concentration"} (widened to a ±0.1 window, floored at 0) or an explicit
+ * {@code "min_concentration"} / {@code "max_concentration"} pair.</p>
+ */
 public class MoleculeTagFluidIngredient extends MixtureFluidIngredient {
 
     public static final MapCodec<MoleculeTagFluidIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -56,18 +57,16 @@ public class MoleculeTagFluidIngredient extends MixtureFluidIngredient {
     }
 
     /**
- *
- * <p><b>Why</b>: {@link LegacySpeciesTag} doesn't override {@code equals/hashCode}, so map
- * lookup is identity-based. Every {@code new LegacySpeciesTag(...)} is a different object →
- * {@link LegacySpeciesTag#MOLECULES_WITH_TAGS}{@code .get(freshInstance)} returns null even
- * if a singleton with the same {@code ns:id} is in the map. The only way to get the actual
- * singleton is via {@code MOLECULE_TAGS.get("ns:id")} which the singleton constructor
- * inserts itself into at class-load.</p>
- *
- * <p>Was the real cause of "perfume 配方中间槽空气" + "perfume 配方匹配 mixture 永远不通过"
- * — both {@link #testMixture} and {@link #getExampleMixtures} previously created fresh
- * instances and failed silently.</p>
-*/
+     * Resolves the singleton tag registered under {@link #moleculeTagId}.
+     *
+     * <p>{@link LegacySpeciesTag} doesn't override {@code equals/hashCode}, so map lookup is
+     * identity-based: every {@code new LegacySpeciesTag(...)} is a different object, and
+     * {@link LegacySpeciesTag#MOLECULES_WITH_TAGS}{@code .get(freshInstance)} returns null even
+     * when a singleton with the same {@code ns:id} sits in the map. The actual singleton is only
+     * reachable through {@code MOLECULE_TAGS.get("ns:id")}, which its constructor populates at
+     * class-load. Constructing a fresh tag here rather than looking that one up would make both
+     * {@link #testMixture} and {@link #getExampleMixtures} fail silently.</p>
+     */
     private LegacySpeciesTag resolveTag() {
         return LegacySpeciesTag.MOLECULE_TAGS.get(moleculeTagId);
     }

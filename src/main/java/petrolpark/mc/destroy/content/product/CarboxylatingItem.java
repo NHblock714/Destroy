@@ -15,10 +15,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 /**
- * 吸收空气中 CO₂ 缓慢碳化 —— 用于 QUICKLIME（生石灰）→ CHALK_DUST（石灰粉）的默认衰变。与
- * {@link OxidizingItem} 共享懒初始化 + petrolpark {@code ItemStackMixin.copy} 驱动的 checkDecay 架构，
- * 唯一区别是没有 water 瞬变分支（quicklime 遇水反应是另一条产出路径，不属本 item 的衰变语义）。
-*/
+ * An Item which slowly carbonates by absorbing CO₂ from the air, used for the decay of quicklime
+ * into chalk dust. Decay components are lazily initialised and checkDecay is driven by
+ * {@code ItemStackMixin.copy}, as in {@link OxidizingItem}; the only difference is that there is no
+ * instant water branch — slaking quicklime is a separate route, not part of this Item's decay.
+ */
 public class CarboxylatingItem extends Item {
 
     private final Supplier<ItemStack> decayProduct;

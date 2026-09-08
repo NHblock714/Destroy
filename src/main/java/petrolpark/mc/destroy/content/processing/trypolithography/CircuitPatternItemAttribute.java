@@ -44,7 +44,6 @@ public record CircuitPatternItemAttribute(int position, boolean punched) impleme
 
     @Override
     public ItemAttributeType getType() {
-        // IS_CIRCUIT_PATTERN_PUNCHED 从 direct field 改为 Supplier (DeferredRegister)
         return DestroyItemAttributeTypes.IS_CIRCUIT_PATTERN_PUNCHED.get();
     }
 

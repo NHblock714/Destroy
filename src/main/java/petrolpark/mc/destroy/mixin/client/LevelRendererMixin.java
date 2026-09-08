@@ -30,29 +30,34 @@ import petrolpark.mc.destroy.DestroyPollutionTypes;
  * </pre>
  *
  * <ol>
- * <li><b>{@code @Inject} 标记 rain section 进入/退出</b>：在 {@code setShaderTexture(RAIN_LOCATION)}
- * 前置 boolean = true，在 {@code setShaderTexture(SNOW_LOCATION)} 前置 = false。</li>
- * <li><b>{@code @Redirect} 拦截 {@link VertexConsumer#setColor}</b>：只在 rain section 内替换
- * (r, g, b) 为污染计算色，alpha 不动。</li>
- * <li><b>额外保留 setShaderColor 调用</b>：兼容 shader pack 走 shader-color 路径的情况。</li>
+ * <li>{@code @Inject} brackets the rain section: the flag goes true before
+ * {@code setShaderTexture(RAIN_LOCATION)} and false again before
+ * {@code setShaderTexture(SNOW_LOCATION)}.</li>
+ * <li>{@code @Redirect} on {@link VertexConsumer#setColor} swaps (r, g, b) for the pollution
+ * colour inside the rain section only, leaving alpha alone.</li>
+ * <li>The global {@code setShaderColor} is set as well, for shader packs which read that
+ * instead of the per-vertex colour.</li>
  * </ol>
-*/
+ */
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {
 
-    /** Mixin {@code @Unique} 字段：渲染当前是否处于 rain 分支（true = rain，false = snow / off）.*/
+    /** Whether rendering is currently in the rain branch (true = rain, false = snow / off). */
     @Unique
     private boolean destroy$inRainSection = false;
 
-    /** True when this mixin actively modified shader color in the current rain section.
- * Tracked separately from {@link #destroy$inRainSection} so we only RESET shader color when
- * we ourselves DIRTIED it — preventing 0% pollution rain from losing the implicit shader color
- * set by upstream vanilla rendering (fog / sky tint).*/
+    /**
+     * True when this mixin set the shader colour in the current rain section. Tracked separately
+     * from {@link #destroy$inRainSection} so the shader colour is only restored if we changed it,
+     * which keeps rain at 0% pollution from losing the implicit colour set by upstream vanilla
+     * rendering (fog / sky tint).
+     */
     @Unique
     private boolean destroy$shaderColorDirtied = false;
 
-    /** Inject — vanilla 加载 rain 纹理前：标 rain section。**只在 ratio > 0 时**才碰 shader color；
- * 0% 污染时完全不动 shader 全局状态，保留 vanilla 隐式色调（雾、大气蓝灰等）。*/
+    /**
+     * Marks the start of the rain section, just before vanilla binds the rain texture.
+     */
     @Inject(
         method = "renderSnowAndRain(Lnet/minecraft/client/renderer/LightTexture;FDDD)V",
         at = @At(
@@ -64,10 +69,10 @@ public class LevelRendererMixin {
     public void destroy$beginRain(LightTexture lightTexture, float partialTick,
                                   double camX, double camY, double camZ, CallbackInfo ci) {
         destroy$inRainSection = true;
-        // 只在 ratio > 0 才设 shader color。0% 时 vanilla 走 (1,1,1,alpha) per-vertex
-        // 但 GLOBAL shader color 可能已被 vanilla 上游 rendering（fog / sky / lightTexture 等）
-        // 设成蓝灰雾调；如果我们这里强制 reset 成 (1,1,1,1) 会把那层隐式色洗掉，rain 变纯白。
-        // 隐式状态——0% 时不动是更安全的"无害默认"。
+        // The global shader colour may already carry a blue-grey fog tint set further up the
+        // rendering pipeline (fog / sky / light texture). Forcing it to (1, 1, 1, 1) here would
+        // wash that out and leave the rain pure white, so only set a shader colour once the ratio
+        // is above zero.
         if (destroy$rainColorAffected()) {
             float ratio = destroy$getAcidRainRatio();
             if (ratio > 0f) {
@@ -79,8 +84,11 @@ public class LevelRendererMixin {
         }
     }
 
-    /** Inject — vanilla 加载 snow 纹理前：清 rain section + **仅在我们污染态 dirty 过 shader color
- * 时**重置；如果当前帧 ratio=0 没动过 shader color，则不 reset，让 vanilla 隐式状态继续生效。*/
+    /**
+     * Ends the rain section just before vanilla binds the snow texture, restoring the shader colour
+     * only if this mixin set one; if the ratio was zero this frame, vanilla's implicit state is
+     * left in place.
+     */
     @Inject(
         method = "renderSnowAndRain(Lnet/minecraft/client/renderer/LightTexture;FDDD)V",
         at = @At(
@@ -98,7 +106,7 @@ public class LevelRendererMixin {
         }
     }
 
-    /** Defensive cleanup — 方法 RETURN 时清 flag；同样**只在 dirty 时** reset shader color。*/
+    /** Clears the flag on return, again restoring the shader colour only if this mixin set one. */
     @Inject(
         method = "renderSnowAndRain(Lnet/minecraft/client/renderer/LightTexture;FDDD)V",
         at = @At("RETURN")
@@ -113,22 +121,16 @@ public class LevelRendererMixin {
     }
 
     /**
- * Redirect — vanilla 在 rain quad emission 里 4 个顶点都调
- * {@code vc.setColor(1f, 1f, 1f, fadeAlpha)}（bytecode 727-732 / 800-805 等）。
- *
- * <ul>
- * <li>无 Destroy 雨：白蓝半透明（vanilla {@code (1, 1, 1, fadeAlpha)} 撞 rain.png 自然色）</li>
- * <li>装 Destroy 雨：深蓝不透明（旧逻辑 0% 时硬塞 {@code 0xFF3E5EB8} = RGB(62, 94, 184)
- * → 把白色顶点染成深蓝 → 整个 rain texture 颜色乘法变暗）</li>
- * </ul>
- *
- * <p>结果：</p>
- * <ul>
- * <li>{@code ratio = 0}：返回 {@code (r, g, b, a)} = vanilla 完全一致</li>
- * <li>{@code ratio = 1}：返回 {@code (0, 1, 0, a)} = 满酸绿</li>
- * <li>中间值：线性 lerp 从 vanilla 到酸绿，alpha 保留</li>
- * </ul>
-*/
+     * Vanilla emits {@code vc.setColor(1f, 1f, 1f, fadeAlpha)} for all four vertices of every rain
+     * quad, letting rain.png supply the colour itself. This lerps those vertices towards acid
+     * green:
+     *
+     * <ul>
+     * <li>{@code ratio = 0}: returns {@code (r, g, b, a)} untouched, identical to vanilla</li>
+     * <li>{@code ratio = 1}: returns {@code (0, 1, 0, a)}, fully acidic</li>
+     * <li>in between: linear lerp from vanilla towards acid green, alpha preserved</li>
+     * </ul>
+     */
     @Redirect(
         method = "renderSnowAndRain(Lnet/minecraft/client/renderer/LightTexture;FDDD)V",
         at = @At(
@@ -141,7 +143,7 @@ public class LevelRendererMixin {
             return vc.setColor(r, g, b, a);
         }
         float ratio = destroy$getAcidRainRatio();
-        // 0% 时直接 pass-through vanilla 输入色（避免任何浮点偏移导致渲染差别）。
+        // Pass vanilla's colour straight through at 0%, so no floating-point drift is visible.
         if (ratio <= 0f) return vc.setColor(r, g, b, a);
         // Lerp from vanilla (r, g, b) toward (0, 1, 0) acid green by ratio.
         float nr = r + (0f - r) * ratio;
@@ -168,15 +170,13 @@ public class LevelRendererMixin {
     @Unique
     private Color destroy$getRainColor() {
         float ratio = destroy$getAcidRainRatio();
-        // 0xFFFFFFFF = vanilla white, 0xFF00FF00 = acid green. Anchor at white (not blue) so
-        // shader-color fallback at 0% still matches vanilla.
+        // 0xFFFFFFFF = vanilla white, 0xFF00FF00 = acid green, so ratio 0 gives vanilla white.
         return new Color(Color.mixColors(0xFFFFFFFF, 0xFF00FF00, ratio));
     }
 
     @Unique
     private static boolean destroy$rainColorAffected() {
-        // 1.21: PollutionHelper.pollutionEnabled → isPollutionEnabled (1.21 rename).
-        // rainColorChanges lives on the CLIENT pollution config — visual / cosmetic gate.
+        // rainColorChanges lives on the client pollution config — purely a cosmetic gate.
         return PollutionHelper.isPollutionEnabled()
             && DestroyConfigs.client().pollution.rainColorChanges.get();
     }

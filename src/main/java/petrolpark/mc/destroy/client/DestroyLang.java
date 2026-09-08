@@ -22,9 +22,9 @@ import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import petrolpark.mc.destroy.Destroy;
 
 /**
- * Destroy 的 {@code Component}/tooltip 辅助工具：提供 goggle tooltip、数字/温度格式化，以及化学相关的
- * tooltip 方法（vatMaterialTooltip / preexponentialFactor / quantity 等）。
-*/
+ * {@code Component} and tooltip helpers: goggle tooltips, number and temperature formatting, and
+ * the chemistry-specific tooltips (Vat material stats, pre-exponential factors, quantities).
+ */
 public class DestroyLang {
 
     public static final Palette WHITE_AND_WHITE = Palette.ofColors(ChatFormatting.WHITE, ChatFormatting.WHITE);
@@ -207,8 +207,8 @@ public class DestroyLang {
     }
 
     /**
- * @param value 只传数字 / {@code +} / {@code -} 字符。
-*/
+     * @param value digits and {@code +} / {@code -} characters only
+     */
     public static String toSuperscript(String value) {
         StringBuilder sb = new StringBuilder();
         for (char c : value.toCharArray()) {

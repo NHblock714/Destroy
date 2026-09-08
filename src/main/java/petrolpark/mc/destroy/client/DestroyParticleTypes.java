@@ -19,22 +19,21 @@ import petrolpark.mc.destroy.content.confetti.ConfettoParticleData;
 import petrolpark.mc.destroy.core.chemistry.hazard.mobeffect.TearParticle;
 
 /**
- * Destroy 的 {@link ParticleType} 注册表。模板参照 {@code com.simibubi.create.AllParticleTypes}——
- * enum 驱动 + 内嵌 {@code ParticleEntry} 用 NeoForge 1.21 的 {@code DeferredRegister} + {@code DeferredHolder}。
- *
- * <p>本 session 只注册 {@code CONFETTO / WHITE_CONFETTO}；将来 DISTILLATION / EVAPORATION / RAIN / TEAR /
- * TINTED_SPLASH / BOILING_FLUID_BUBBLE 加一行 enum 常量即可。</p>
-*/
+ * Registry of Destroy's {@link ParticleType}s, following the enum-driven pattern of
+ * {@code com.simibubi.create.AllParticleTypes}: each constant supplies a {@link Supplier} of its
+ * own {@link ICustomParticleData}, and the nested {@code ParticleEntry} takes care of the
+ * {@code DeferredRegister} entry and the client-side factory.
+ */
 public enum DestroyParticleTypes {
 
     CONFETTO(ConfettoParticleData::new),
     WHITE_CONFETTO(ConfettoParticleData.White::new),
     TEAR(TearParticle.Data::new),
-    // gasparticle subdir port. 3 new particle types.
+    // Fluid-tinted gas particles: distillation column vapour, evaporation, boiling bubbles.
     DISTILLATION(petrolpark.mc.destroy.core.fluid.gasparticle.GasParticleData::new),
     EVAPORATION(petrolpark.mc.destroy.core.fluid.gasparticle.GasParticleData::new),
     BOILING_FLUID_BUBBLE(petrolpark.mc.destroy.core.fluid.gasparticle.BoilingFluidBubbleParticleData::new),
-    // core/fluid tinted rain particle pair. Unblocks PollutionPonderScenes.acidRain.
+    // Tinted drop particles, used by the pollution Ponder scenes for coloured precipitation.
     TINTED_SPLASH(petrolpark.mc.destroy.core.fluid.TintedSplashParticle.Data::new),
     RAIN(petrolpark.mc.destroy.core.fluid.RainParticle.Data::new),
     ;

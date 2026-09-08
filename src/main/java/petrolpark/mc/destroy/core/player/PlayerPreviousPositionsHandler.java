@@ -8,10 +8,9 @@ import petrolpark.mc.destroy.DestroyAttachmentTypes;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 
 /**
- *
- * <p>NeoForge 1.21 的 {@code TickEvent.PlayerTickEvent} 已拆成 {@code PlayerTickEvent.Pre / Post}，装饰到
- * {@code net.neoforged.neoforge.event.tick} 包。{@link EventBusSubscriber} 无参默认 game bus。</p>
-*/
+ * Samples each Player's position once a second into their {@link PlayerPreviousPositions}, server
+ * side only, keeping the trail Chorus Wine teleports back along.
+ */
 @EventBusSubscriber
 public class PlayerPreviousPositionsHandler {
 

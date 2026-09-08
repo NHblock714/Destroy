@@ -125,15 +125,12 @@ public class Destroy {
         // Without this, recipes using "type": "destroy:circuit_pattern_item" (Colorimeter,
         // Pollutometer, Redstone Programmer) silently fail to load.
         DestroyIngredientTypes.register(modEventBus);
-        // register IFluidHandlerItem capability for TEST_TUBE + BALLOON.
-        // also register for BEAKER / FLASK / JAR / MEASURING_CYLINDER / ROUND_BOTTOMED_FLASK
-        // placeable-tank items.
-        // to return `new ItemMixtureTank(stack, ...)` for ALL its subclasses; the 1.21 port migrated
-        // initCapabilities → RegisterCapabilitiesEvent but only TEST_TUBE + BALLOON were
-        // re-registered, dropping cap on the 5 placeable container items. Without ITEM-cap, Create's
-        // Spout (注液器) cannot fill these items on a depot/belt — the user's reported symptom.
-        // Capacity is taken at runtime from the BlockItem's `getCapacity(stack)` (which delegates
-        // to the underlying block's getMixtureCapacity()).
+        // register the IFluidHandlerItem capability for TEST_TUBE + BALLOON and for the BEAKER /
+        // FLASK / JAR / MEASURING_CYLINDER / ROUND_BOTTOMED_FLASK placeable-tank items. Without the
+        // ITEM capability, Create's Spout cannot fill them on a depot or belt. TEST_TUBE and BALLOON
+        // take their fixed CAPACITY constant; the placeable tanks are read at runtime through
+        // IMixtureStorageItem's `getCapacity(stack)`, which PlaceableMixtureTankItem answers with
+        // the underlying block's getMixtureCapacity().
         modEventBus.addListener((net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent event) -> {
             event.registerItem(
                 net.neoforged.neoforge.capabilities.Capabilities.FluidHandler.ITEM,
@@ -146,8 +143,8 @@ public class Destroy {
                     petrolpark.mc.destroy.core.chemistry.storage.BalloonItem.CAPACITY),
                 DestroyItems.BALLOON.get());
             // placeable-tank items: capacity from item.getCapacity(stack) per-instance.
-            // Item resolves via `(BlockItem) stack.getItem()` cast; getCapacity is on the
-            // PlaceableMixtureTankItem / IMixtureStorageItem interface chain.
+            // The stack's item is matched against IMixtureStorageItem, which
+            // PlaceableMixtureTankItem implements; anything else gets no capability.
             net.minecraft.world.level.ItemLike[] placeableTanks = {
                 DestroyBlocks.BEAKER.asItem(),
                 DestroyBlocks.FLASK.asItem(),

@@ -27,8 +27,8 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyTags;
 
-/**
- * 熟化桶的方块实体渲染器。1.21.1 要点：
+/** Draws the barrel's contents only while it is open: the fluid box, then the items ringed around
+ * the axis and bobbing at the fluid surface, and a yeast film as a tiled face just above it.
 */
 public class AgeingBarrelRenderer extends SmartBlockEntityRenderer<AgeingBarrelBlockEntity> {
 

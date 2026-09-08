@@ -7,16 +7,15 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.ComposterBlock;
 
 /**
- * 堆肥桶注册。
- *
- * <p>1.21.1 移植要点：
-*/
+ * Composting chances for Destroy's items, added to {@link ComposterBlock#COMPOSTABLES}.
+ */
 public class DestroyCompostables {
 
     private static Map<ItemLike, Float> DESTROY_COMPOSTABLES;
 
-    // 不要在类加载时就跑——DestroyItems.* 的 RegistryEntry 未完成注册前 .get() 会抛。
-    // 走懒初始化 + 在 common-setup 同步段调用 register()。
+    // The static block only allocates the map. DestroyItems.* entries throw from .get() until
+    // their registry has been populated, so the contents come from buildMap(), which register()
+    // calls during common setup.
     static {
         DESTROY_COMPOSTABLES = new HashMap<>();
     }

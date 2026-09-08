@@ -39,22 +39,13 @@ import petrolpark.mc.destroy.client.DestroyLang;
 import petrolpark.mc.destroy.core.pollution.PollutingBehaviour;
 
 /**
- * 熟化桶 BlockEntity。1.21.1 移植核心：
- * <ul>
- * <li><b>Capability 重构</b>：删除 {@code LazyOptional<IItemHandlerModifiable>} 字段与 {@code getCapability(...)}
- * override；改为 {@link #registerCapabilities(RegisterCapabilitiesEvent)} 静态方法，把
- * {@code itemCapability}（= {@link #inventory}）与 {@code tank.getCapability()} 注册到
- * {@code Capabilities.{ItemHandler, FluidHandler}.BLOCK}。参照 {@code BasinBlockEntity}。</li>
- * <li><b>read/write 签名加 {@code HolderLookup.Provider} 参数</b>：{@code super.saveAdditional / loadAdditional}
- * 都已走 Provider 化路径；{@code SmartInventory.serializeNBT(Provider)} / {@code deserializeNBT(Provider, Tag)}
- * 新签名。{@code SmartFluidTankBehaviour} 自动处理 Tank 持久化，无需手写。</li>
- * <li><b>RecipeFinder 返回 {@code List<RecipeHolder<? extends Recipe<?>>>}</b>：提取 Recipe 要 {@code .value()}。</li>
- * <li><b>{@code FluidIngredient → SizedFluidIngredient}</b>：{@code getFluidIngredients().get(0)} 是
- * {@code SizedFluidIngredient}，测试流体用 {@code .ingredient().test(fluidStack)}。</li>
- * <li><b>{@code PollutingBehaviour} 附着方式</b>：直接挂 behaviour 即可——Mixin 给 Basin/Spout/ItemDrain 挂的是
- * Create 官方 BE；本类是 Destroy 自己的 BE，直接在 {@link #addBehaviours} 加。</li>
- * </ul>
-*/
+ * Aging Barrel block entity. Holds one fluid tank plus up to two item ingredients; once an
+ * {@link AgeingRecipe} matches, the barrel consumes them, fills the tank with the result fluid and
+ * seals itself (tank insertion and extraction forbidden) until the timer runs out. The seal lifts
+ * as soon as the timer hits 0; {@link #tryOpen} only pops the lid so the fluid is rendered.
+ *
+ * <p>Capabilities are exposed through {@link #registerCapabilities(RegisterCapabilitiesEvent)}.</p>
+ */
 public class AgeingBarrelBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation {
 
     private static final Object agingRecipeKey = new Object();

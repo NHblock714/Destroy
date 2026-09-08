@@ -151,16 +151,12 @@ public class Vat {
                     } else {
                         allAir = false;
                         Block block = state.getBlock();
-                        // accept VAT_SIDE blocks as valid walls. When a player re-
-                        // attempts vat formation (right-click the controller after a partial
-                        // success / world reload / the BE's vat-Optional was cleared for any
-                        // reason), the surrounding walls have already been converted to
-                        // {@code destroy:vat_side}. Pre , VAT_SIDE didn't satisfy
-                        // {@code VatMaterial.isValid} (it's not a registered vat material), so
-                        // re-attempts always failed with "无法正确形成反应釜" — diagnostic
-                        // log confirmed: {@code [VatMaterial.isValid] FAIL
-                        // state.block=destroy:vat_side}. Accepting VAT_SIDE here makes the
-                        // formation idempotent.
+                        // Accept vat sides as valid walls. When formation is re-attempted (the
+                        // Controller is clicked again after a partial success, a world reload, or
+                        // the BE's Vat Optional being cleared) the surrounding walls have already
+                        // been converted to destroy:vat_side, which is not a registered Vat
+                        // material and so fails VatMaterial.isValid. Accepting it here makes
+                        // formation idempotent instead of failing every attempt after the first.
                         boolean isVatSide = state.is(petrolpark.mc.destroy.DestroyBlocks.VAT_SIDE.get());
                         boolean isController = block instanceof VatControllerBlock;
                         if (isController && !blockPos.equals(controllerPos)) {

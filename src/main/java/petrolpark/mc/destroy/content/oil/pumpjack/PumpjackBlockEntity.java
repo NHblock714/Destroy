@@ -130,11 +130,10 @@ public class PumpjackBlockEntity extends SmartBlockEntity implements IHaveGoggle
         advancementBehaviour.awardDestroyAdvancement(DestroyAdvancementTrigger.USE_PUMPJACK);
         // Add the oil to the Pumpjack's internal tank
         tank.allowInsertion();
-        // 上游 0.1.3-i+1 修复 "Fixed pumpjacks outputting flowing crude oil instead of the
-        // correct fluid (this broke a few recipes, notably ANFO)"。Registrate FluidEntry.get() 返回
-        // FLOWING 变体，必须用 .getSource() 拿 SOURCE 变体才能与 ANFO 等 recipe 的 fluid 输入匹配。
-        // 显式 cast 到 Fluid 消歧义 — getSource() 是 <S extends BaseFlowingFluid> S，否则编译器在
-        // FluidStack(Fluid, int) 与 FluidStack(Holder<Fluid>, int) 两个 ctor 之间不能选。
+        // FluidEntry#get() hands back the flowing variant, which no Recipe matches — pump the
+        // source variant or Crude Oil silently stops working as an ingredient (notably for ANFO).
+        // The local is typed as Fluid because getSource() is generic, leaving the
+        // FluidStack(Fluid, int) and FluidStack(Holder<Fluid>, int) constructors ambiguous.
         net.minecraft.world.level.material.Fluid sourceFluid = DestroyFluids.CRUDE_OIL.getSource();
         int amountPumped = tank.getPrimaryHandler().fill(
             new FluidStack(sourceFluid,

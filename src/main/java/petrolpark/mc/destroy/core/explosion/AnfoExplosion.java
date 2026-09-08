@@ -12,9 +12,9 @@ import net.neoforged.neoforge.common.Tags;
 import petrolpark.mc.destroy.DestroyTags;
 
 /**
- * 仅破坏空气、流体、"gangue"（杂矿石）——不影响玩家 ore 方块；knockback/damage 对 entity 降至 30%。
- * 矿工用的受控爆破。
-*/
+ * A controlled blast for miners: it breaks only fluids and gangue, leaving Ores intact, and hits
+ * Entities with 30% of the usual knockback and damage.
+ */
 public class AnfoExplosion extends SmartExplosion {
 
     public static class NaturalBlockOnlyDamageCalculator extends ExplosionDamageCalculator {

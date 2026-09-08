@@ -28,47 +28,19 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * Creative Pump BE — infinite-source pump whose speed is player-settable via a scroll-value
- * behaviour (vs. the vanilla Pump where speed is driven by a Kinetic network).这条路径依赖 KineticBlockEntity 的 speed 字段从 0 变到非零（玩家挂上轴 / 启动主轴）。</p>
+ * behaviour, rather than by a kinetic network.
  *
- * <p>Creative Pump 通过 {@link #getSpeed()} 返回 {@link #simulatedSpeed}（默认 16，玩家可滚轮调）覆盖
- * 速度查询，但 KineticBlockEntity 内部的 speed 字段始终是 0（无动力源）。因此
- * {@code onSpeedChanged} 从未触发 → {@code updatePressureChange} 从未自动运行 → 相邻管道拿不到压力
- * → 无法建立 flow → 泵摆设无效。</p>
+ * <p>{@link #getSpeed()} reports {@link #simulatedSpeed}, but the inherited KineticBlockEntity
+ * speed field stays at 0 because there is no kinetic source. Nothing ever fires
+ * {@code onSpeedChanged}, and that is the hook a vanilla pump relies on to run
+ * {@code updatePressureChange} and push pressure into the adjacent pipes — so without help this
+ * pump never establishes a flow at all.</p>
  *
- * <p>玩家通过滚轮调速度时，{@link ScrollValueBehaviour} 的 callback 会调一次
- * {@code updatePressureChange}（这是为什么"调过速度"的泵能传输），但放置后默认值 16 是构造时
- * {@code setValue(16)} 设的，那时 {@code level == null}（BE 还没 attach），callback 内的
- * {@code updatePressureChange} 被 if 跳过了。</p>
- *
- * <p>第二个症状（放管道后泵还往老位置丢流体）是同一根因的衍生：泵从未"重新分发压力"过——一旦初始
- * 状态确定（OpenEndedPipe target），就缺乏 wipePressure + sidesToUpdate=true 的二次触发机制。
- * Vanilla pump 每次速度脉冲（启停）都触发；creative pump 速度恒定不脉冲，所以网络一旦快照就停留
- * 在那一刻——即便 {@link com.simibubi.create.content.fluids.FluidPropagator#propagateChangedPipe}
- * 因为 pipe.onPlace 触发了 wipePressure，泵后续的 IDLE-phase manageFlows 重建 source 时没有
- * 重新分发压力 → 相邻管道还是没压力，BFS 在 pipe 那站住。</p>
- *
- * <h3>修复</h3>
- *
- * <p>覆盖 {@link com.simibubi.create.foundation.blockEntity.SmartBlockEntity#initialize()}
- * （BE attach 到 level 后第一次 tick 调用，level 已就绪，{@link ScrollValueBehaviour#setValue}
- * 时机的限制不再适用）：</p>
- *
- * <ul>
- * <li>调 {@link PumpBlockEntity#updatePressureChange()}：BFS 走相邻管道分发压力 + 自身
- * wipePressure + 两侧 {@code sidesToUpdate=true} → 下 tick 必定执行
- * {@code distributePressureTo} 给相邻管道压力。这是 vanilla pump 在 onSpeedChanged 干的事情，
- * creative pump 在 initialize 自己干。</li>
- * </ul>
- *
- * <p>这一条同时治两个症状：</p>
- * <ol>
- * <li>放置后立即 transfer：initialize 触发 updatePressureChange → 压力到管道 → flow 建立。</li>
- * <li>topology 变化时正常重建：当玩家放管道时，{@code FluidPropagator.propagateChangedPipe} →
- * {@code updatePipesOnSide(pump)} → {@code wipePressure} 已经会清空 network targets。但
- * creative pump 缺乏定期"刷新分发"，所以一旦 wipePressure 后无 kinetic 脉冲来再触发一次完整
- * updatePressureChange——其实 updatePipesOnSide 单方向 setTrue 也够了，但稳妥起见 initialize
- * 打底。</li>
- * </ol>
+ * <p>Scrolling the speed does reach {@code updatePressureChange} through the behaviour's callback,
+ * which is why a pump whose speed has been touched works. The default value, though, is set during
+ * construction while {@code level} is still null, and the callback skips the refresh in that case.
+ * The pressure refresh is therefore driven from {@link #initialize()} for placement, and from the
+ * neighbour watch in {@link #tick()} for later topology changes.</p>
 */
 public class CreativePumpBlockEntity extends PumpBlockEntity {
 
@@ -150,20 +122,20 @@ public class CreativePumpBlockEntity extends PumpBlockEntity {
     }
 
     /**
+ * Watches the two adjacent positions along the pump's axis and calls {@link #updatePressureChange}
+ * whenever either BlockState changes. A vanilla pump reaches that path through the speed pulse in
+ * {@code onSpeedChanged}; this pump runs at a constant simulated speed and never pulses, so the
+ * refresh has to be driven from here instead.
  *
- * <p><b>修复策略</b>: 由 creative pump 自己每 tick 监测前后两侧相邻 BlockState 是否变化，变化时
- * 主动调 {@link #updatePressureChange()}——这条路径在 vanilla pump 通过 onSpeedChanged 速度脉冲
- * 触发；creative pump 速度恒定无脉冲，缺这一环。</p>
+ * <p>{@code updatePressureChange} does what a vanilla pump does on a speed change:
+ * {@code propagateChangedPipe} on both sides, {@code wipePressure} on this pump's behaviour, and
+ * both {@code sidesToUpdate} flags set. That clears the network's targets — including any stale
+ * OpenEndedPipe references — redistributes pressure to the new neighbours, and lets the next tick
+ * rebuild the topology from scratch.</p>
  *
- * <p>{@code updatePressureChange()} 等同于 vanilla pump 在速度变化时干的事：propagateChangedPipe
- * 双侧 + behaviour.wipePressure + sidesToUpdate 双侧 setTrue。这会清空 network targets（包括
- * 任何 stale OpenEndedPipe 引用）+ 重新分发压力到新的相邻管道+ 下 tick BFS 从头建立新拓扑。</p>
- *
- * <p>BlockState 实例在 Minecraft 中是 interned 的（同一 state value 共享同一引用），所以引用
- * 不等（!=）是可靠的状态变化检测——比 {@code .equals(...)} 还便宜。</p>
- *
- * <p><b>性能</b>: 每 tick 两个 {@code level.getBlockState(adjacentPos)} 调用 + 引用比较，几乎零
- * 开销。{@code updatePressureChange()} 只在变化时触发，正常情况下完全静默。</p>
+ * <p>BlockStates are interned, so reference inequality is a sound change test and cheaper than
+ * {@code equals}. The cost is two {@code getBlockState} calls per tick; the refresh itself only
+ * runs when something actually changed.</p>
 */
     @Override
     public void tick() {
@@ -215,16 +187,10 @@ public class CreativePumpBlockEntity extends PumpBlockEntity {
 
         @Override
         protected Vec3 getSouthLocation() {
-            // push z from 12.5 → 13.5 (just 1 voxel out from model's z=13 edge).
-            // The pump's voxel shape is (3,0,3,13,16,13) so the visible model body extends
-            // to z=13; the original z=12.5 placed the value box center INSIDE the model and
-            // got occluded by the model faces. First attempt at z=15.5 (matching
-            // DynamiteBlockEntity / SpeedControllerBlockEntity) caused the box to look
-            // "浮空" (floating/detached) — those blocks have full-block 16x16 voxel shapes,
-            // but the pump body is narrower (10x16x10). 13.5 puts the box flush against the
-            // model surface, neither buried nor floating. Reported bugs:
-            // "鼠标移上去显示转速的选择框被模型盖住了", then ' regression
-            // "动力泵的这个选择框变成浮空的了，实际上移动大约一个像素就够了".
+            // The pump body is (3,0,3,13,16,13), so its visible surface sits at z=13. The
+            // inherited 12.5 puts the value box inside the model and the faces occlude it, while
+            // the 15.5 used by full-block machines leaves it visibly floating off the narrower
+            // pump. 13.5 sits flush against the surface.
             return VecHelper.voxelSpace(8d, 8d, 13.5d);
         }
     }

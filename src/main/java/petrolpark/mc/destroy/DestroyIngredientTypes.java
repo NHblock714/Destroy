@@ -31,10 +31,9 @@ public class DestroyIngredientTypes {
         INGREDIENT_TYPES.register("circuit_pattern_item",
             () -> new IngredientType<>(CircuitPatternIngredient.CODEC, CircuitPatternIngredient.STREAM_CODEC));
 
-    // MaskIngredient registration rolled back (user审计 deemed JEI punched-mask display
-    // not worth the ICustomIngredient infrastructure complexity). Recipe slots now show plain
-    // blank masks via vanilla {@code Ingredient.of(maskItem)} — minor visual concession,
-    // functionally identical for actual crafting.
+    // There is no ingredient type for punched masks: Recipes take them as a plain vanilla
+    // Ingredient.of(maskItem), so JEI draws an unpunched mask in the slot. Cosmetic only —
+    // crafting matches the same stacks either way.
 
     public static void register(IEventBus modEventBus) {
         INGREDIENT_TYPES.register(modEventBus);

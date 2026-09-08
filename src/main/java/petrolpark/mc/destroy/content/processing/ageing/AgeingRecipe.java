@@ -7,9 +7,10 @@ import petrolpark.mc.destroy.DestroyRecipeTypes;
 import petrolpark.mc.destroy.core.recipe.SingleFluidRecipe;
 
 /**
- * 熟化桶（Aging Barrel）配方：吃 1 fluid ingredient + 最多 2 item ingredient，输出 1 fluid。
- * 匹配逻辑仍手写在 {@link AgeingBarrelBlockEntity#checkRecipe()}，本类 {@code matches(...) = false}。
-*/
+ * Aging Barrel recipe: one fluid ingredient plus up to two item ingredients, yielding one fluid.
+ * Matched by hand in {@link AgeingBarrelBlockEntity#checkRecipe()} rather than through
+ * {@code matches}, which always returns {@code false}.
+ */
 public class AgeingRecipe extends SingleFluidRecipe {
 
     public AgeingRecipe(AdvancedProcessingRecipeParams params) {

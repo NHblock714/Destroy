@@ -8,8 +8,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import petrolpark.mc.destroy.core.explosion.ObliterationCondition;
 
 /**
- * Destroy 的 {@link LootItemConditionType} 注册表。
-*/
+ * Destroy's {@link LootItemConditionType}s.
+ */
 public class DestroyLootConditions {
 
     public static final DeferredRegister<LootItemConditionType> LOOT_CONDITIONS =

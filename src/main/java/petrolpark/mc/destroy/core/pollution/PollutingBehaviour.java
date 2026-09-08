@@ -25,7 +25,7 @@ public class PollutingBehaviour extends BlockEntityBehaviour {
 
     @Override
     public void destroy() {
-        // BE 已经从 level 拆除的情形要稳健。level/pos 从基类暴露的 getter 取，避免私有字段泄漏。
+        // Can be called once the BlockEntity has already left the Level, so tolerate a null one.
         var level = getWorld();
         var pos = getPos();
         if (level == null || level.isClientSide()) { super.destroy(); return; };

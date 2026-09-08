@@ -18,12 +18,12 @@ import petrolpark.mc.destroy.core.data.advancement.DestroyAdvancementBehaviour;
 import petrolpark.mc.destroy.core.pollution.PollutingBehaviour;
 
 /**
- * 给 Create Basin 挂 PollutingBehaviour。
+ * Attaches Destroy's pollution and Advancement Behaviours to Create's Basin.
  *
- * <p>注意类名带 {@code AddBehavioursMixin} 前缀——避开与 {@code Create-Library} 库
- * 可能存在的同目标 mixin 类名冲突（虽然 mixin 框架允许多个 mixin 共打同一目标，
- * 命名区分便于调试 / remap 输出）。</p>
-*/
+ * <p>The class name is qualified with {@code AddBehaviours} so it does not collide with other
+ * mixins into the same target — several may share one target, but distinct names keep debug and
+ * remap output readable.</p>
+ */
 @Mixin(BasinBlockEntity.class)
 public abstract class BasinBlockEntityAddBehavioursMixin extends SmartBlockEntity {
 

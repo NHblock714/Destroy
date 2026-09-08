@@ -8,10 +8,11 @@ import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 /**
- * Item 实现此接口表示它拥有动态 tooltip（description 在 runtime 根据配置重新算），与普通 Create item 的
- * 固定 lang-key-based tooltip 不同。Modifier 在每次 locale 变化时调用 {@link #getItemDescription()} 重建
- * tooltip，允许基于 {@code DestroyAllConfigs.SERVER.substances.*.get()} 等配置值插入数据。
-*/
+ * Implemented by Items whose description is built at runtime instead of coming from fixed lang
+ * keys like an ordinary Create Item's. The Modifier calls {@link #getItemDescription()} again
+ * whenever the locale changes, so config values such as
+ * {@code DestroyAllConfigs.SERVER.substances.*.get()} can be written into the tooltip.
+ */
 public interface IDynamicItemDescription {
 
     /** Returns a TooltipModifier that wraps this dynamic description, or null if item doesn't implement.*/

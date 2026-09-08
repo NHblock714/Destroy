@@ -29,10 +29,11 @@ public class CropMutation {
     private boolean successful;
 
     /**
- * 无 ore gating 的变异。
- * @param startCrop 原作物 Block
- * @param endCrop 变异后状态
-*/
+     * A mutation with no ore gating. {@link #getMutation} still prefers an ore-specific mutation
+     * for the same start crop whenever that ore is the block beneath the Farmland.
+     * @param startCrop the crop which mutates
+     * @param endCrop the state it becomes
+     */
     public CropMutation(Supplier<Block> startCrop, Supplier<BlockState> endCrop) {
         this.startCrop = startCrop;
         this.endCrop = endCrop;
@@ -43,8 +44,8 @@ public class CropMutation {
     }
 
     /**
- * 需要 farmland 下方第二格有特定 ore 才触发的变异。
-*/
+     * A mutation which only happens if the given ore is the block beneath the Farmland.
+     */
     public CropMutation(Supplier<Block> startCrop, Supplier<BlockState> endCrop, Supplier<Block> ore) {
         this.startCrop = startCrop;
         this.endCrop = endCrop;

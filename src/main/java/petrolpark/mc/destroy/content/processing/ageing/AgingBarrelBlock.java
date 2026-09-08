@@ -46,12 +46,16 @@ import petrolpark.mc.destroy.DestroySoundEvents;
 import petrolpark.mc.destroy.DestroyVoxelShapes;
 
 /**
- * 熟化桶（Aging Barrel）主方块。1.21.1 核心变化：
-*/
+ * The Ageing Barrel. Both {@link #useWithoutItem} and {@link #useItemOn} try
+ * {@link AgeingBarrelBlockEntity#tryOpen} first, which only succeeds once the ageing timer has run
+ * out; failing that they fall through to taking the contents out (empty hand) or fluid transfer
+ * (held item). {@link #PROGRESS} doubles as the comparator output, and Item Entities collide
+ * against the interior shape only, so they land inside and get inserted.
+ */
 public class AgingBarrelBlock extends HorizontalDirectionalBlock implements IBE<AgeingBarrelBlockEntity>, IWrenchable, TransformableBlock {
 
     public static final BooleanProperty IS_OPEN = BooleanProperty.create("open");
-    /** 0 = 最小气球, … 4 = 熟化完成（最大气球）。*/
+    /** How far the balloon on the lid has inflated: 0 = smallest, 4 = ageing complete. */
     public static final IntegerProperty PROGRESS = IntegerProperty.create("progress", 0, 4);
 
     public static final com.mojang.serialization.MapCodec<AgingBarrelBlock> CODEC = simpleCodec(AgingBarrelBlock::new);

@@ -8,9 +8,9 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 
 /**
- * 绑定到某个 {@link PollutionType} 的 DataMap 值：声明「哪条 fluid tag 命中此污染」
- * 及「每 250mB 相对基线贡献多少」系数。
-*/
+ * DataMap value attached to a {@link PollutionType}: which Fluid tag counts towards that type of
+ * pollution, and how much a Fluid so tagged contributes per 250mB relative to the baseline.
+ */
 public record FluidPollutionEntry(TagKey<Fluid> fluidTag, float multiplier) {
 
     public static final Codec<FluidPollutionEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(

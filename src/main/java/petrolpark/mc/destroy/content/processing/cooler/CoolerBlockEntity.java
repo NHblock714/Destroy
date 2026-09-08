@@ -84,13 +84,11 @@ public class CoolerBlockEntity extends SmartBlockEntity implements IHaveGoggleIn
 
     private void consumeFluid() {
         if (!hasLevel()) return;
-        // guard against running fluid-consumption side effects when this BE is virtual
-        // (i.e., inside a Mechanical Bearing contraption). Without this, the contraption-side
-        // BE could call setColdnessOfBlock / PollutionHelper.pollute / setBlockAndUpdate which
-        // mutate the WORLD at the BE's pre-assembly worldPosition (the original anchor pos)
-        // — placing a phantom cooler block, leaking pollution, and disturbing the vat below
-        // that thinks the cooler "came back". User-reported symptom: "凭空出现了液态空气" in
-        // the vat after using bearing to capture-and-cancel the cooler. See class javadoc.
+        // A virtual BE (one inside a Mechanical Bearing contraption) must not run any of the
+        // fluid consumption side effects: setColdnessOfBlock, PollutionHelper.pollute and
+        // setBlockAndUpdate all mutate the world at the pre-assembly worldPosition, placing a
+        // phantom Cooler, leaking pollution, and convincing the Vat below that the Cooler is
+        // still there, which condenses liquid air out of nowhere.
         if (isVirtual()) return;
 
         float coolingPower = 0f;
@@ -194,12 +192,10 @@ public class CoolerBlockEntity extends SmartBlockEntity implements IHaveGoggleIn
 */
     public void updateHeatLevel(ColdnessLevel coldnessLevel) {
         if (!hasLevel()) return;
-        // virtual (contraption) BE must NEVER setBlockAndUpdate at its worldPosition;
-        // that pos points to the original anchor (now AIR after bearing captured this BE), and
-        // calling setBlockAndUpdate there would resurrect a phantom cooler block with FROSTING
-        // HEAT_LEVEL, which the vat below interprets as "cooler is back" → vat re-cools → if
-        // any path then refills vat with air → liquid air condenses → user-reported bug
-        // "凭空出现了液态空气".
+        // A virtual (contraption) BE must not setBlockAndUpdate at its worldPosition: that pos is
+        // the original anchor, left as air once the Bearing captured this BE, and writing there
+        // resurrects a phantom Cooler with the FROSTING heat level. The Vat below reads that as
+        // the Cooler still being present, keeps cooling, and condenses liquid air.
         if (isVirtual()) return;
         HeatLevel targetHeat = coldnessLevel == ColdnessLevel.FROSTING
             ? HeatLevel.valueOf("FROSTING")

@@ -48,21 +48,15 @@ public class DiscStamperItem extends WithSecondaryItem {
     }
 
     /**
- * 1.21 vanilla refactor: music discs are plain {@link Item}s with song metadata in
- * {@link DataComponents#JUKEBOX_PLAYABLE} — a {@link JukeboxPlayable} record that **already**
- * has {@link JukeboxPlayable#addToTooltip(Item.TooltipContext, java.util.function.Consumer, TooltipFlag)}
- * which formats the song description line vanilla-style. Just delegate to it + show the disc's
- * own display name first.
- *
- * <p>User-visible behavior in JEI / inventory hover:</p>
- * <ul>
- * <li>line 1: "Music Disc" (or the disc's localized name) in gray</li>
- * <li>line 2 (via JukeboxPlayable.addToTooltip): "C418 - Cat" / "Lena Raine - Pigstep" / etc.</li>
- * </ul>
- *
- * <p>Without this, JEI hover on disc_stamper just showed item name + "destroy:disc_stamper" id
- * with no hint of which disc is encoded — user complaint "压模没有显示它复制的是哪种唱片".</p>
-*/
+     * Names the stamped disc in the tooltip. The song description line is left to
+     * {@link JukeboxPlayable#addToTooltip(Item.TooltipContext, java.util.function.Consumer, TooltipFlag)},
+     * so it reads exactly as it does on the disc itself.
+     *
+     * <ul>
+     * <li>line 1: the disc's name ("Music Disc") in gray</li>
+     * <li>line 2: "C418 - Cat" / "Lena Raine - Pigstep" / etc.</li>
+     * </ul>
+     */
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag isAdvanced) {
         ItemStack disc = getDisc(stack);

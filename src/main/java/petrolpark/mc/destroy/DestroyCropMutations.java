@@ -6,11 +6,13 @@ import net.minecraft.world.level.block.Blocks;
 import petrolpark.mc.destroy.content.processing.phytomining.CropMutation;
 
 /**
- * Destroy 的 Hyperaccumulating Fertilizer 变异表。</li>
- * <li>所有 startCrop 都是原版 {@code Blocks.X}（vanilla），class-load 期间可直接 {@code .get()}。
- * endCrop / ore 的 DestroyBlocks 或 AllBlocks entry 只在运行时用 fertilizer 时才解引用。</li>
- * </ul>
-*/
+ * The {@link CropMutation} table used by the Hyperaccumulating Fertilizer.
+ *
+ * <p>Every argument is a supplier, but {@link CropMutation}'s constructor immediately keys
+ * {@link CropMutation#MUTATIONS} on {@code startCrop.get()}, so start crops have to resolve as the
+ * constants are built; all of them are vanilla {@link Blocks}. The resulting crop and the ore
+ * beneath it are only read when a mutation is looked up or applied.</p>
+ */
 public class DestroyCropMutations {
 
     public static final CropMutation

@@ -225,14 +225,11 @@ public class PollutionHelper {
     };
 
     // =============================================================
-    // fluid-driven pollution (non-mixture path).
-    // 1) fluid 是 mixture → polluteMixture(...) — 依赖 chemistry engine（本仓尚缺）
-    // 2) 普通 fluid → for (PollutionType t : enum.values()) 比对 fluidTag
-    // 新架构下 PollutionType 已是 Registry + DataMap，
-    // 这里实现分支 2（非 mixture 路径）。mixture 分支先 no-op，
-    // 等 chemistry engine 批到位后在方法顶部加一个 `if (DestroyFluids.isMixture(stack))`
-    // 路由即可，**调用者签名永久稳定**。
-    // <1 时按概率 changePollution(+1)，>=1 时取整加。
+    // Fluid-driven pollution (non-Mixture path).
+    // Mixtures are handed off to polluteMixture; any other Fluid is tested against the
+    // fluid tag each PollutionType declares in its DataMap entry.
+    // A fractional pollution amount below 1 is applied as a chance of a single point;
+    // 1 and above is truncated to an integer.
     // =============================================================
 
     /**
@@ -308,17 +305,13 @@ public class PollutionHelper {
     };
 
     // =============================================================
-    // mixture-driven pollution.
-    // 分配到对应 PollutionType：
-    // Tags.GREENHOUSE → GREENHOUSE (level)
-    // Tags.OZONE_DEPLETER → OZONE_DEPLETION (level)
-    // Tags.ACID_RAIN → ACID_RAIN (level)
-    // Tags.SMOG → SMOG (chunk)
-    // 污染强度 = molecule 的 concentration × stack.getAmount() / 250f × multiplier
-    // 即 250 mB × 1M 浓度 × 1 打 tag 的 molecule = 1 点污染
-    // 迁移点：
-    // - Mixture 来自 DestroyDataComponents.MIXTURE 而非 `stack.getOrCreateChildTag("Mixture")`
-    // - PollutionType 引用改为 Registry-backed DestroyPollutionTypes.X.get()
+    // Mixture-driven pollution. Each Molecule is routed by tag:
+    // Tags.GREENHOUSE     -> GREENHOUSE      (Level)
+    // Tags.OZONE_DEPLETER -> OZONE_DEPLETION (Level)
+    // Tags.ACID_RAIN      -> ACID_RAIN       (Level)
+    // Tags.SMOG           -> SMOG            (Chunk)
+    // moleculePollutionUnits = concentration * stack.getAmount() / 250f * multiplier,
+    // i.e. 250mB of a 1M solution of one tagged Molecule is one point of pollution.
     // =============================================================
 
     /**

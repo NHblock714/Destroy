@@ -19,12 +19,13 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
  *
  * <p>The chain:
  * <ul>
- * <li>base {@link ItemDescription.Modifier}（Create 的 lang-key-driven tooltip 解析：shift = summary + behaviours, ctrl = actions）</li>
+ * <li>base {@link ItemDescription.Modifier} — Create's lang-key-driven tooltip parsing: Shift for
+ * the summary and behaviours, Ctrl for the actions</li>
  * <li>{@link KineticStats} — Create kinetic stats for items that carry rotation metadata</li>
  * <li>{@link IDynamicItemDescription} — Destroy items that override tooltip based on live config</li>
  * <li>{@link TempramentalItemDescription} — red "subject to change" notice for LIABLE_TO_CHANGE tagged items</li>
  * </ul>
-*/
+ */
 @EventBusSubscriber
 public class DestroyItemTooltipHandler {
 

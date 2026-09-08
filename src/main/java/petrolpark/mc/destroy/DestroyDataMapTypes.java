@@ -47,11 +47,10 @@ public class DestroyDataMapTypes {
         .build()
     ); 
 
-    // --- : PollutingBehaviour migration ----
-    // 1.21.1 neo 架构下 PollutionType 已成 Registry，tag 绑定改为数据驱动：
-    // 每个 PollutionType 在此 DataMap 挂一条 FluidPollutionEntry，
-    // PollutionHelper.pollute(...) 通过 holder.getData(...) 取回命中判断。
-    // 未挂条目的污染类型默认不因流体污染（等价老 enum 中 tag 未命中）。
+    // Attaches one FluidPollutionEntry (a Fluid tag plus a multiplier) to a PollutionType.
+    // PollutionHelper.polluteSingleFluid walks every registered type, reads its entry back through
+    // holder.getData(...), and pollutes only if the released Fluid carries that entry's tag.
+    // A type with no entry here accrues no pollution from fluids at all.
     public static final DataMapType<PollutionType<Level>, FluidPollutionEntry> LEVEL_POLLUTION_FLUID_TAG = register(DataMapType
         .builder(
             Destroy.asResource("fluid_tag"),

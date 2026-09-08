@@ -17,21 +17,14 @@ import petrolpark.mc.destroy.DestroyAttributes;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 
 /**
- * CREATINE — 吃下后永久增加 EXTRA_INVENTORY_SIZE / EXTRA_HOTBAR_SLOTS 属性（值由 server 配置读）。
+ * Eating this permanently raises {@link DestroyAttributes#EXTRA_INVENTORY_SIZE} and
+ * {@link DestroyAttributes#EXTRA_HOTBAR_SLOTS} by the amounts in the server config.
  *
- * <ul>
- * <li><b>{@link AttributeModifier} 构造签名改</b>：{@code (UUID, String, double, Operation)} →
- * {@code (ResourceLocation, double, Operation)}。name 字段并入 ResourceLocation。两个
- * modifier 的 UUID 改为 {@code destroy:extra_inventory_size_modifier} /
- * {@code destroy:extra_hotbar_slots_modifier}——人读、稳定、与 modifier 所修改的 attribute 一致命名。</li>
- * <li><b>{@code Operation.ADDITION} → {@code Operation.ADD_VALUE}</b>（枚举名 rename）。</li>
- * <li><b>{@link AttributeInstance#removeModifier removeModifier(UUID)} → {@code removeModifier(ResourceLocation)}</b>：
- * key 从 UUID 换到 ResourceLocation；两个方法签名都存在，只是 UUID 版已废弃。</li>
- * <li><b>{@code addPermanentModifier(AttributeModifier)}</b> 仍可用，sync 逻辑 1:1 保留
- * （{@link ClientboundUpdateAttributesPacket} + {@code AttributeMap.getSyncableAttributes()}）。</li>
- * <li>{@code use()} / {@code finishUsingItem()} 签名未变。</li>
- * </ul>
-*/
+ * <p>Each {@link AttributeModifier} is keyed by a fixed {@link ResourceLocation} named after the
+ * attribute it alters, and the old one is removed first, so a second helping replaces the previous
+ * bonus rather than stacking with it. The changed attributes are then pushed to the client with a
+ * {@link ClientboundUpdateAttributesPacket}.</p>
+ */
 public class CreatineItem extends Item {
 
     public static final ResourceLocation EXTRA_INVENTORY_MODIFIER_ID = Destroy.asResource("extra_inventory_size_modifier");

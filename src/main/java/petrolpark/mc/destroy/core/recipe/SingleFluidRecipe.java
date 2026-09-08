@@ -12,20 +12,19 @@ import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
  * Destroy-side abstract base for recipe types that consume exactly one fluid ingredient
  * and use Create's ProcessingRecipe pipeline (aging, distillation, mixture conversion,
  * flame retardant application, element tank filling). Shared constraint: exactly one
- * fluid input slot.
+ * fluid input slot, enforced by the {@code final} {@link #getMaxFluidInputCount()}.
  *
  * <ul>
- * <li><b>基类从 {@code ProcessingRecipe<RecipeWrapper>} 换为 {@code AdvancedProcessingRecipe<RecipeInput>}</b>——
- * Create 6.0.8 的 {@code ProcessingRecipe} 现在是泛型双参数 {@code <I extends RecipeInput, P extends ProcessingRecipeParams>}，
- * 我们继承 petrolpark-Library 的 {@code AdvancedProcessingRecipe} 以一次拿到 {@code bookRequired / allowedBiomes /
- * firstTimeLuckyKey} 三个扩展字段。子类具体实现（如 AgeingRecipe）无需关心 params codec。</li>
- * <li><b>{@code FluidIngredient → SizedFluidIngredient}</b>：Create 6.0.8 的 {@code fluidIngredients} 列表元素类型已改。
- * {@code getRequiredFluid()} 返回 {@code SizedFluidIngredient}，调用方用 {@code .ingredient().test(fluidStack)}。</li>
- * <li><b>{@code matches(...)} 默认返 {@code false}</b>：SingleFluid 系列的匹配都是手写（见各 BE 的 checkRecipe），
- * 不走 RecipeManager 的 {@code matches} 路径。参照 petrolpark 的 {@code CentrifugationRecipe}。</li>
- * <li>{@code getMaxFluidInputCount()} 是 {@code final 1} —— 这就是"single fluid"的本质约束。</li>
+ * <li>Extending the Library's {@code AdvancedProcessingRecipe} gives subclasses the
+ * {@code bookRequired}, {@code allowedBiomes} and {@code firstTimeLuckyKey} fields without
+ * touching the params codec.</li>
+ * <li>{@code getRequiredFluid()} returns a {@code SizedFluidIngredient}; callers test a
+ * stack against it with {@code .ingredient().test(fluidStack)}.</li>
+ * <li>{@code matches(...)} always returns {@code false}: these recipes are matched by hand
+ * in the Block Entities which use them (see their {@code checkRecipe}) rather than through
+ * the RecipeManager.</li>
  * </ul>
-*/
+ */
 public abstract class SingleFluidRecipe extends AdvancedProcessingRecipe<RecipeInput> {
 
     public SingleFluidRecipe(IRecipeTypeInfo typeInfo, AdvancedProcessingRecipeParams params) {

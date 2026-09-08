@@ -17,8 +17,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import petrolpark.mc.destroy.core.pollution.PollutingBehaviour;
 
 /**
- * 给 Create Spout 挂 PollutingBehaviour。
-*/
+ * Attaches a {@link PollutingBehaviour} to Create's Spout.
+ */
 @Mixin(SpoutBlockEntity.class)
 public abstract class SpoutBlockEntityAddBehavioursMixin extends SmartBlockEntity {
 

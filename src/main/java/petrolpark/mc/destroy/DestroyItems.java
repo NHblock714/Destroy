@@ -350,8 +350,8 @@ public class DestroyItems {
             .tag(Tags.Items.DUSTS)
             .register();
 
-    // HYPERACCUMULATING_FERTILIZER BoneMeal 增强品：右键作物触发 CropMutation，
-    // 否则 fallback 到原版 BoneMeal 行为。详见 HyperaccumulatingFertilizerItem javadoc /
+    // HYPERACCUMULATING_FERTILIZER: bone meal upgrade. Right-clicking a crop tries a CropMutation
+    // first, and falls back to vanilla bone meal behaviour when no mutation applies.
 
     public static final ItemEntry<petrolpark.mc.destroy.content.processing.phytomining.HyperaccumulatingFertilizerItem> HYPERACCUMULATING_FERTILIZER =
         REGISTRATE.item("hyperaccumulating_fertilizer", petrolpark.mc.destroy.content.processing.phytomining.HyperaccumulatingFertilizerItem::new)
@@ -373,11 +373,11 @@ public class DestroyItems {
         REGISTRATE.item("balloon", petrolpark.mc.destroy.core.chemistry.storage.BalloonItem::new)
             .register();
 
-    // SODIUM_INGOT / QUICKLIME petrolpark-Library 1.21 的 data-component Decay 系统：
-    // Item 定义产物 Supplier + 寿命，在第一次 inventoryTick 把 DECAY_PRODUCT / DECAY_TIME 组件 set
-    // 到 stack；ItemStackMixin.copy() 钩子自动驱动 checkDecay；DecayingItemDecorator 渲染进度条。
-    // SODIUM_HYDRIDE 依赖 SmartExplosion，留待 Explosion 批。详见 OxidizingItem / CarboxylatingItem
-    // javadoc 与
+    // SODIUM_INGOT / QUICKLIME decay via petrolpark-Library's data-component decay system: the Item
+    // supplies the decay product and the lifetime, and stamps the DECAY_TIME / DECAY_PRODUCT /
+    // DECAY_START_TIME components onto the stack the first time it ticks, whether that is in an
+    // inventory or as a dropped ItemEntity. ItemStackMixin.copy() drives checkDecay;
+    // DecayingItemDecorator draws the progress bar. See OxidizingItem / CarboxylatingItem.
 
     public static final ItemEntry<petrolpark.mc.destroy.content.product.OxidizingItem> SODIUM_INGOT =
         REGISTRATE.item("sodium_ingot", p -> new petrolpark.mc.destroy.content.product.OxidizingItem(
@@ -399,9 +399,8 @@ public class DestroyItems {
                 DestroyTags.Items.FLUXES.tag)
             .register();
 
-    // SODIUM_HYDRIDE 水/雨遇水即爆。依赖 SmartExplosion 本体— 已 port 基础
-    // 爆炸（entity damage + block destroy 生效） 粒子/音效 sync 留 ，此期间爆炸
-    // 客户端看不到粒子但伤害仍处理。详见 WaterSensitiveSpontaneouslyCombustingItem /
+    // SODIUM_HYDRIDE detonates a SmartExplosion on contact with water or rain and consumes the
+    // stack. See WaterSensitiveSpontaneouslyCombustingItem.
 
     public static final ItemEntry<petrolpark.mc.destroy.content.product.WaterSensitiveSpontaneouslyCombustingItem> SODIUM_HYDRIDE =
         REGISTRATE.item("sodium_hydride",
@@ -409,9 +408,10 @@ public class DestroyItems {
             .tag(Tags.Items.DUSTS)
             .register();
 
-    // CONFETTI / WHITE_CONFETTI (Confetti mini-batch). Dispenser-driven item emits
-    // ISpecialEffectExplosiveItem
-    // (炸药混合特效) 留给 PrimedBomb 批。
+    // CONFETTI / WHITE_CONFETTI: fired from a Dispenser to spray a burst of confetti particles.
+    // explosive_items.json makes both legal ingredients of a Mixed Explosive (energy -0.1), but
+    // neither implements ISpecialEffectExplosiveItem — MixedExplosiveInventory.getSpecialItems
+    // passes them over, so a mix carrying confetti detonates without throwing any.
 
     public static final ItemEntry<petrolpark.mc.destroy.content.confetti.ConfettiItem>
 
@@ -647,9 +647,8 @@ public class DestroyItems {
         ).tag(DestroyTags.Items.ALCOHOLIC_DRINKS.tag, AllItemTags.UPRIGHT_ON_BELT.tag)
         .register();
 
-    // CHORUS_WINE_BOTTLE Capability→AttachmentType 批：瞬移玩家到 N 秒前的位置。
-    // 依赖 PlayerPreviousPositions attachment + PlayerPreviousPositionsHandler PlayerTickEvent.Post。
-    // IDynamicItemDescription tooltip 留给 tooltip 批。
+    // CHORUS_WINE_BOTTLE teleports the drinker back to where they were N seconds ago, reading the
+    // PlayerPreviousPositions attachment sampled by PlayerPreviousPositionsHandler.
 
     public static final ItemEntry<petrolpark.mc.destroy.content.product.alcohol.ChorusWineItem> CHORUS_WINE_BOTTLE =
         REGISTRATE.item("chorus_wine_bottle", p -> new petrolpark.mc.destroy.content.product.alcohol.ChorusWineItem(p, 1))

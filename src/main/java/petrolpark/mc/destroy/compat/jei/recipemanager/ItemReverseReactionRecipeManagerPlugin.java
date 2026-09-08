@@ -97,9 +97,9 @@ public class ItemReverseReactionRecipeManagerPlugin implements IRecipeManagerPlu
                     // Wrap each ReactionRecipe in a synthetic RecipeHolder — Create's
                     // CreateRecipeCategory<R> implements IRecipeCategory<RecipeHolder<R>>, so
                     // JEI's setRecipe(Object) bridge does `checkcast RecipeHolder` on every
-                    // recipe the plugin returns. A bare ReactionRecipe here crashes the layout
-                    // build with the in-game "该配方已崩溃 / destroy:reaction" overlay because
-                    // the cast fails. Holder id only needs to be unique within this list.
+                    // recipe the plugin returns. A bare ReactionRecipe fails that cast and the
+                    // layout build collapses into JEI's "recipe has crashed" overlay. The holder
+                    // id only needs to be unique within this list.
                     recipes.add((T) new RecipeHolder<>(
                         Destroy.asResource(holderIdPrefix + counter[0]++), r));
                 });

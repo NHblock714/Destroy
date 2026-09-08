@@ -18,9 +18,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import petrolpark.mc.destroy.DestroyAdvancementTrigger;
 
 /**
- * 基于 BoneMealItem 的扩展工具：右键作物先尝试 {@link CropMutation} 路径（消耗一份），否则 fallback
- * 到原版 BoneMeal 的 growCrop / growWaterPlant 路径。
-*/
+ * Bone meal which first tries the {@link CropMutation} path on the clicked crop, consuming one
+ * item if a mutation fires, and otherwise falls back to vanilla's growCrop / growWaterPlant.
+ */
 public class HyperaccumulatingFertilizerItem extends BoneMealItem {
 
     public HyperaccumulatingFertilizerItem(Properties properties) {
@@ -56,7 +56,7 @@ public class HyperaccumulatingFertilizerItem extends BoneMealItem {
     }
 
     @Override
-    @SuppressWarnings("deprecation") // BoneMealItem.growCrop 仍工作，NeoForge deprecation 只是 prefer 新签名
+    @SuppressWarnings("deprecation") // growCrop is the deprecated shorthand for applyBonemeal with a null Player
     public InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();

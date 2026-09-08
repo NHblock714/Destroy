@@ -13,10 +13,11 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * 流体不作阻挡——爆炸直接穿过水/岩浆。不影响 entity 且不掉落方块物品。Cordite 专用。
+ * An Explosion, used by Cordite, which passes straight through fluids rather than being blocked by
+ * them. It affects no Entities and drops no Block items.
  *
- * <p>Nested {@link FluidDestroyingDamageCalculator} 供 {@link UnderwaterExplosion} 继承复用。</p>
-*/
+ * <p>The nested {@link FluidDestroyingDamageCalculator} is shared with {@link UnderwaterExplosion}.</p>
+ */
 public class DebrisMiningExplosion extends SmartExplosion {
 
     public static class FluidDestroyingDamageCalculator extends ExplosionDamageCalculator {

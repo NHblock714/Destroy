@@ -41,24 +41,24 @@ import petrolpark.mc.destroy.client.DestroyLang;
 import petrolpark.mc.destroy.compat.jei.DestroyJEI;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 
-/** 这些分子的组合浓度必须在 0.1M 与 0.3M 间"). The spec data is
+/**
+ * Teaches JEI's Create recipe categories about Mixtures:
+ *
+ * <ol>
+ * <li>Records which Create categories can hold Mixtures, and the Recipe class each one displays,
+ * in {@link DestroyJEI#MIXTURE_APPLICABLE_RECIPE_TYPES}.</li>
+ * <li>Rewrites the Fluid tooltip of Mixture FluidStacks:
+ * <ul>
+ * <li>Output slots list the contents of the actual Mixture.</li>
+ * <li>Input and Catalyst slots list the requirements of the ingredient instead (for example "the
+ * combined concentration of these Molecules must be between 0.1M and 0.3M"). The spec data is
  * attached to each example FluidStack as a {@link DestroyDataComponents#MIXTURE_INGREDIENT_INFO}
  * component by the ingredient subtype's {@code ingredientInfoTag()} — see
  * {@link petrolpark.mc.destroy.core.recipe.ingredient.fluid.MixtureFluidIngredient#generateStacks}.</li>
  * </ul>
  * </li>
  * </ol>
- *
- * <ol>
- * <li><b>Lost JEI's auto-centered fluid-name styling</b> — JEI auto-centers tooltip[0] when
- * it's a fluid display name. Replacing tooltip[0] preserves the centering; clearing and
- * re-adding from scratch loses it (the line is treated as plain body text).</li>
- * <li><b>"50 mB" amount displaced</b> — the amount line is added by JEI's
- * {@code setFluidRenderer} pipeline at a fixed position after the name. {@code clear()}
- * drops it; manual re-add at top puts it BETWEEN title and body, not BELOW body where
- * it belongs.</li>
- * </ol>
-*/
+ */
 @Mixin(value = CreateRecipeCategory.class, remap = false)
 public abstract class CreateRecipeCategoryMixin<T extends Recipe<?>> {
 
@@ -111,7 +111,7 @@ public abstract class CreateRecipeCategoryMixin<T extends Recipe<?>> {
         boolean isOutput = view.getRole() == RecipeIngredientRole.OUTPUT;
 
         // Determine the title (1st line). For output: actual mixture's translated name. For
-        // input/spec: generic "混合物".
+        // input/spec: the generic "Mixture" name.
         Component title = DestroyLang.translate("mixture.mixture").component();
         List<Component> body = new ArrayList<>();
 
@@ -139,21 +139,10 @@ public abstract class CreateRecipeCategoryMixin<T extends Recipe<?>> {
             }
         }
 
-        // 尝试
-        // clear+rebuild + 显式 preserve amount/modFooter 引入了三连回归:
-        // 1. 50 mB 显示两遍 — JEI 19 的 setFluidRenderer pipeline 在 callback 完成后会
-        // *再次*追加 amount 行;我们捕获的 amount + JEI 自动追加的 amount = 两份
-        // 2. modFooter 颜色/斜体丢失 — "最后一行带颜色 = modFooter" 启发式不可靠
-        // (amount 行在某些 locale 下也可能带颜色)
-        // 3. 标题没居中 — 这其实是误判,vanilla MC tooltip *不会* auto-center 任何行,
-        // 之前 "看着居中" 只是 tooltip 框被正文撑宽、标题短显得居中
-        // + modFooter,我们只换标题、插正文。
-        // insert body at index 1, and let JEI's normal pipeline keep the trailing amount + mod
-        // footer lines.
-        // ModIdHelperMixin 强制 BLUE+ITALIC。后来用户发现这个白色 mod 名其实是 **Jade 模组**
-        // 的设计行为(Jade hover overlay 把流体的 mod 名显示成白色与 vanilla item tooltip 区分
-        // 开),不是 Destroy 的 bug 已删除 ModIdHelperMixin,本注释保留作历史索引;
-        // 此处只做标题+正文替换,样式完全交给 JEI / Jade 各自的 pipeline。
+        // Overwrite the title in place and insert the body after it, rather than clearing the
+        // list and rebuilding it: JEI appends the amount line and the mod footer once this
+        // callback has returned, so a rebuilt tooltip carries the amount twice. Their styling is
+        // left to whichever pipeline drew them.
         if (tooltip.isEmpty()) {
             tooltip.add(0, title);
         } else {

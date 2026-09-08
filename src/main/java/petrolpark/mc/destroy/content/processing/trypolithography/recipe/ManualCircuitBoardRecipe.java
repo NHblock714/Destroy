@@ -69,9 +69,8 @@ public class ManualCircuitBoardRecipe implements CraftingRecipe {
         this.width = w;
 
         Map<String, Ingredient> fullKey = new HashMap<>(rawKey);
-        // back to plain {@code Ingredient.of(maskItem)}. The MaskIngredient
-        // ICustomIngredient was rolled back per user审计 (JEI showing blank-white mask in recipe
-        // slot is acceptable visual concession; not worth the IngredientType infrastructure).
+        // The mask slot is a plain Ingredient, so JEI draws a blank white mask in it rather than a
+        // patterned one. That cosmetic loss is not worth a custom IngredientType.
         fullKey.put("#", Ingredient.of(maskItem));
         fullKey.put(" ", Ingredient.EMPTY);
 
@@ -162,7 +161,6 @@ public class ManualCircuitBoardRecipe implements CraftingRecipe {
                 if (isMaskSlot) {
                     if (!stack.is(maskItem)) return false;
                     int p = CircuitPatternItem.getPattern(stack);
-                    // removed `if (p == 0) return false`.
                     if (commonPattern == -1) commonPattern = p;
                     else if (commonPattern != p) return false;
                 } else {
@@ -199,9 +197,8 @@ public class ManualCircuitBoardRecipe implements CraftingRecipe {
 
     @Override
     public ItemStack getResultItem(HolderLookup.Provider registries) {
-        // was injecting EXAMPLE_PATTERN for JEI display, rolled back per user审计.
-        // JEI shows blank board in result slot now; actual {@link #assemble} still propagates the
-        // mask's real pattern when the player crafts.
+        // JEI shows a blank board in the result slot; only assemble() propagates the mask's real
+        // pattern, and only when the player actually crafts.
         return result;
     }
 

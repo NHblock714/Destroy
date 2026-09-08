@@ -39,22 +39,18 @@ import petrolpark.mc.destroy.content.product.fireretardant.FlameRetardantApplica
 import petrolpark.mc.destroy.core.chemistry.recipe.MixtureConversionRecipe;
 
 /**
- * Destroy 的 RecipeType / RecipeSerializer 清单 —— 1.21.1 改造后照抄 petrolpark-Library
- * {@code PetrolparkCreateRecipeTypes} 的 enum + {@link IRecipeTypeInfo} 模式。
+ * Every {@link RecipeType} and {@link RecipeSerializer} Destroy adds, as an {@link IRecipeTypeInfo}
+ * enum. Each constant holds its own serializer and type registration, and constant order is the
+ * order those registrations happen in, so the list is kept broadly alphabetical; adding a new one
+ * is a single extra line.
  *
- * <p>每一项自带自己的 serializer/type 注册句柄；条目顺序决定类加载顺序，所以保持按字母排序。
- * 新增条目时只需追加一行 enum 常量 + 构造参数。</p>
+ * <p>Constants given a {@code ProcessingRecipe.Factory<AdvancedProcessingRecipeParams, R>} are
+ * wrapped in an {@link AdvancedProcessingRecipe.Serializer} around
+ * {@link AdvancedProcessingRecipeParams#CODEC}; anything else supplies its serializer directly.</p>
  *
- * <p>1.21.1 核心要点：
- * <ul>
- * <li>RecipeSerializer 不再是 {@code IRecipeSerializer}，改纯 {@code MapCodec} + {@code StreamCodec}；
- * {@link AdvancedProcessingRecipe.Serializer} 自动 wrap factory + {@link AdvancedProcessingRecipeParams#CODEC}，
- * 子类只需给 {@code ProcessingRecipe.Factory<AdvancedProcessingRecipeParams, R>}。</li>
- * <li>{@link IRecipeTypeInfo#getType()} 现在泛型形参 {@code <I extends RecipeInput, R extends Recipe<I>>}。</li>
- * <li>静态 init 由 {@link #register()} 触发类加载，随后在 {@link Destroy} 构造函数里调
- * {@link #registerDeferred(IEventBus)} 挂 DeferredRegister。</li>
- * </ul>
-*/
+ * <p>{@link #register()} class-loads the enum so the constants build their holders;
+ * {@link #registerDeferred(IEventBus)} then attaches the DeferredRegisters to the mod bus.</p>
+ */
 public enum DestroyRecipeTypes implements IRecipeTypeInfo {
 
     AGING(AgeingRecipe::new),

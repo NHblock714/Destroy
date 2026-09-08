@@ -172,12 +172,14 @@ public class ReadOnlyMixture {
         }
     }
 
-    /** Defaults to 1 for
- * missing entries (e.g., species not yet tracked). Used by external code (e.g.
- * {@code VatControllerBlockEntity.tick}) to detect phase transitions across reaction-tick
- * boundaries so {@code setMixture} writeback can re-route condensed species from gas tank
- * into liquid tank, fixing "在绝对零度时反应釜 UI 中 N₂/O₂ 仍在气体罐而不在液体罐".
-*/
+    /**
+     * The gaseous fraction of the given Molecule (1 = entirely gas, 0 = entirely liquid),
+     * defaulting to 1 for Molecules which are not being tracked yet. {@code VatControllerBlockEntity}
+     * snapshots this for every Molecule immediately before its heat loop and re-reads it later in
+     * the same tick, because it is {@code heat()} which boils and condenses species; any difference
+     * forces the {@code setMixture} writeback that redistributes the contents between the liquid
+     * and gas tanks.
+     */
     public float getState(LegacySpecies molecule) {
         Float s = states.get(molecule);
         return s == null ? 1f : s;

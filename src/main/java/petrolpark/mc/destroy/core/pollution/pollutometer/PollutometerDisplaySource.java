@@ -55,12 +55,9 @@ public class PollutometerDisplaySource extends PercentOrProgressBarDisplaySource
         return (float) current / (float) max;
     }
 
-    // formatNumeric override removed. Default
-    // PercentOrProgressBarDisplaySource.formatNumeric outputs "X%" (clamp(progress*100, 0, 100)),
-    // which is what the player wants for the percentage mode (per their feedback —
-    // "百分比的选项应该是x%而不是X/Y"). Earlier custom override displayed raw
-    // "current / max" — useful but visually cluttered; standard % matches the "Stockpile Switch"
-    // FillLevelDisplaySource convention.
+    // Percentage mode is left to PercentOrProgressBarDisplaySource.formatNumeric, which prints
+    // clamp(progress * 100, 0, 100) followed by "%" — the same rendering as the Stockpile
+    // Switch's Fill Level source, which extends the same class.
 
     /**
  * Reads the "Mode" config widget added in {@link #initConfigurationWidgets}: 0=percentage,

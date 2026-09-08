@@ -20,10 +20,11 @@ import petrolpark.mc.destroy.core.item.tooltip.IDynamicItemDescription;
 import petrolpark.mc.destroy.core.player.PlayerPreviousPositions;
 
 /**
- * 吃下后瞬移玩家到 N 秒前（config: {@code chorusWineTeleportTime}）的位置。N 秒前位置由
- * {@link PlayerPreviousPositions} attachment 记录（每秒取样），{@link petrolpark.mc.destroy.core.player.PlayerPreviousPositionsHandler}
- * 在 PlayerTickEvent.Post 更新。
-*/
+ * Teleports the drinker to where they were {@code chorusWineTeleportTime} seconds ago. That
+ * position comes from the {@link PlayerPreviousPositions} attachment, which
+ * {@link petrolpark.mc.destroy.core.player.PlayerPreviousPositionsHandler} samples once a
+ * second on {@code PlayerTickEvent.Post}.
+ */
 public class ChorusWineItem extends AlcoholicDrinkItem implements IDynamicItemDescription {
 
     public ChorusWineItem(Properties properties, int strength) {

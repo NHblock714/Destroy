@@ -8,9 +8,10 @@ import net.minecraft.world.level.Level;
 import petrolpark.mc.destroy.core.explosion.SmartExplosion;
 
 /**
- * 水/雨遇水即爆的活泼金属。用于 SODIUM_HYDRIDE（氢化钠）。入水 → {@link SmartExplosion} radius=2
- * irregularity=0.7 + 销毁 stack。
-*/
+ * A substance reactive enough to explode on contact with water or rain, used for Sodium Hydride.
+ * Contact sets off a {@link SmartExplosion} of radius 2 and irregularity 0.7 and destroys the
+ * Stack.
+ */
 public class WaterSensitiveSpontaneouslyCombustingItem extends SpontaneouslyCombustingItem {
 
     public WaterSensitiveSpontaneouslyCombustingItem(Properties properties) {

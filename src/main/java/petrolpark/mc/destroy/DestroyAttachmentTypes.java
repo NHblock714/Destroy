@@ -25,7 +25,8 @@ public class DestroyAttachmentTypes {
         ::build
     );
 
-    // CHORUS_WINE_BOTTLE 的 teleport-back-in-time 位置队列。copyOnDeath 让玩家
+    // PLAYER_PREVIOUS_POSITIONS: rolling queue of recent positions, wound back by
+    // CHORUS_WINE_BOTTLE to teleport the drinker to where they were; kept across death.
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<PlayerPreviousPositions>> PLAYER_PREVIOUS_POSITIONS =
         ATTACHMENT_TYPES.register("player_previous_positions", () -> AttachmentType
             .builder(PlayerPreviousPositions::new)

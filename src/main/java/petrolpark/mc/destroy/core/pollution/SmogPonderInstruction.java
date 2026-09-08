@@ -23,9 +23,10 @@ import petrolpark.mc.destroy.DestroyPollutionTypes;
  * CHUNK_POLLUTION_TYPES} DeferredRegister. SMOG is registered as
  * {@code DestroyPollutionTypes.SMOG = REGISTRATE.chunkPollutionType("smog", ...)} —
  * returns {@code RegistryEntry<PollutionType<ChunkAccess>, PollutionType<ChunkAccess>>},
- * i.e. **SMOG 不再是 Level-scoped**.</li>
+ * i.e. **SMOG is chunk-scoped**, which is why the tick below writes it to a grid of chunks
+ * rather than to the Level.</li>
  * </ul>
-*/
+ */
 public class SmogPonderInstruction extends PonderInstruction {
 
     public final int value;
@@ -50,9 +51,9 @@ public class SmogPonderInstruction extends PonderInstruction {
     public void tick(PonderScene scene) {
         Level world = scene.getWorld();
         // 3×3 chunk grid centered at origin — covers typical Ponder scene bounds (~48 blocks wide).
-        // 1.21 chunk-scoped SMOG needs per-chunk
-        // propagation. Small scenes (~11×11 blocks) mostly fit in chunk (0,0); larger ones span up
-        // to 9 neighbor chunks.
+        // SMOG is chunk-scoped, so the value has to be written to every chunk the scene touches:
+        // small scenes (~11×11 blocks) mostly fit in chunk (0,0), larger ones spill into the
+        // eight neighbours.
         for (int cx = -1; cx <= 1; cx++) {
             for (int cz = -1; cz <= 1; cz++) {
                 ChunkAccess chunk = world.getChunk(cx, cz);

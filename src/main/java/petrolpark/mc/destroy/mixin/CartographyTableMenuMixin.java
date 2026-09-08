@@ -29,11 +29,10 @@ import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import petrolpark.mc.destroy.DestroyItems;
 
 /**
- *
- * <p>Without this mixin, "震波图无法在制图站中制作" — vanilla cartography table only accepts
- * paper / glass pane / map in the second slot, so Seismometer is rejected and no Seismograph
- * is produced.</p>
-*/
+ * Lets the Cartography Table turn a Map and a Seismometer into a Seismograph. The vanilla Menu
+ * accepts only paper, a glass pane or a map in the second slot, so without this the Seismometer is
+ * rejected and no Seismograph can be made.
+ */
 @Mixin(CartographyTableMenu.class)
 public abstract class CartographyTableMenuMixin extends AbstractContainerMenu {
 
@@ -122,10 +121,8 @@ public abstract class CartographyTableMenuMixin extends AbstractContainerMenu {
                                   Level level, BlockPos pos, CallbackInfo ci, MapItemSavedData mapData) {
         if (DestroyItems.SEISMOMETER.isIn(firstSlotStack)) {
             ItemStack stack = DestroyItems.SEISMOGRAPH.asStack();
-            // 1.21 — `MapItem.getMapId(ItemStack)` was removed in vanilla; read the MAP_ID
-            // DataComponent directly off the source map stack and copy it onto the seismograph.
-            // Vanilla map rendering picks this up automatically so seismograph background
-            // renders the same map the player started with.
+            // Copy the source Map's MAP_ID onto the Seismograph so vanilla map rendering draws the
+            // right map underneath it.
             MapId mapId = map.get(DataComponents.MAP_ID);
             if (mapId != null) {
                 stack.set(DataComponents.MAP_ID, mapId);

@@ -30,12 +30,11 @@ public class ReactionEmiCategory extends EmiRecipeCategory {
     }
 
     /**
-     * Reuse the JEI-side translation key {@code destroy.recipe.reaction} so the
-     * category display name ("化学反应" / "Chemical Reactions") is consistent across
-     * JEI and EMI without maintaining duplicate lang entries. EMI's default of
-     * {@code emi.category.<namespace>.<id>} would otherwise surface as the raw
-     * untranslated key ({@code emi.category.destroy.reaction}) in viewers that
-     * haven't shipped that specific key.
+     * Reuse the JEI-side translation key {@code destroy.recipe.reaction} so the category
+     * display name is consistent across JEI and EMI without maintaining duplicate lang
+     * entries. EMI's default of {@code emi.category.<namespace>.<id>} would otherwise
+     * surface as the raw untranslated key ({@code emi.category.destroy.reaction}) in
+     * viewers that haven't shipped that specific key.
      */
     @Override
     public Component getName() {
