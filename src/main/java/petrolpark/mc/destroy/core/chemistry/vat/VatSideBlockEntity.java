@@ -695,6 +695,14 @@ public class VatSideBlockEntity extends CopycatBlockEntity
         // No-op.
     }
 
+    /**
+     * Shared by each gauge and its blocked variant: {@link #setDisplayType} compares these by
+     * identity to decide whether the observed quantity changed, and so whether the redstone
+     * thresholds need resetting.
+     */
+    public static final Optional<Function<VatControllerBlockEntity, Float>> pressureObserved = Optional.of(VatControllerBlockEntity::getPressure);
+    public static final Optional<Function<VatControllerBlockEntity, Float>> temperatureObserved = Optional.of(VatControllerBlockEntity::getTemperature);
+
     /** Each variant encodes validity for placement on
  * top/side/bottom, whether it's a vent (open/closed), whether it displays pressure/temperature,
  * and the {@link Function} to observe the gauged quantity from the
@@ -703,10 +711,10 @@ public class VatSideBlockEntity extends CopycatBlockEntity
     public static enum DisplayType {
 
         NORMAL(true, true, false, false, false, Optional.empty(), VatSideBlockEntity::noQuantityLabel),
-        BAROMETER(false, true, false, true, false, Optional.of(VatControllerBlockEntity::getPressure), VatSideBlockEntity::pressureQuantityLabel),
-        BAROMETER_BLOCKED(false, true, false, true, false, Optional.of(VatControllerBlockEntity::getPressure), VatSideBlockEntity::pressureQuantityLabel),
-        THERMOMETER(false, true, false, false, true, Optional.of(VatControllerBlockEntity::getTemperature), VatSideBlockEntity::temperatureQuantityLabel),
-        THERMOMETER_BLOCKED(false, true, false, false, true, Optional.of(VatControllerBlockEntity::getTemperature), VatSideBlockEntity::temperatureQuantityLabel),
+        BAROMETER(false, true, false, true, false, pressureObserved, VatSideBlockEntity::pressureQuantityLabel),
+        BAROMETER_BLOCKED(false, true, false, true, false, pressureObserved, VatSideBlockEntity::pressureQuantityLabel),
+        THERMOMETER(false, true, false, false, true, temperatureObserved, VatSideBlockEntity::temperatureQuantityLabel),
+        THERMOMETER_BLOCKED(false, true, false, false, true, temperatureObserved, VatSideBlockEntity::temperatureQuantityLabel),
         PIPE(true, true, false, false, false, Optional.empty(), VatSideBlockEntity::noQuantityLabel),
         CLOSED_VENT(true, false, true, false, false, Optional.empty(), VatSideBlockEntity::noQuantityLabel),
         OPEN_VENT(true, false, true, false, false, Optional.empty(), VatSideBlockEntity::noQuantityLabel);
