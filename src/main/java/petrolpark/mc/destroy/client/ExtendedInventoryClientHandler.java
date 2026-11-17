@@ -113,7 +113,7 @@ public class ExtendedInventoryClientHandler {
         // is still null. The first-time refresh would replace the just-built
         // PlayerInventoryMixin menu with a different instance, breaking server-client menu sync.
         ExtraInventoryClientSettings currentSettings = DestroyConfigs.client().getExtraInventorySettings();
-        if (!currentSettings.equals(settings)) {
+        if (!currentSettings.equals(settings) && (settings == null || mc.screen == null)) {
             boolean firstInit = (settings == null);
             settings = currentSettings;
             if (!firstInit) refreshClientInventoryMenu(inv);
@@ -431,9 +431,11 @@ public class ExtendedInventoryClientHandler {
         try {
             inv = ExtendedInventory.get(mc.player);
         } catch (ClassCastException ex) { return; }
+        int previousHotbarSlots = inv.getExtraHotbarSlots();
         inv.setExtraInventorySize(packet.extraInventorySize());
         inv.setExtraHotbarSlots(packet.extraHotbarSlots());
-        refreshClientInventoryMenu(inv);
+        if (previousHotbarSlots != inv.getExtraHotbarSlots()
+            || !inv.hasExtraInventorySlots(mc.player.inventoryMenu)) refreshClientInventoryMenu(inv);
         if (packet.requestFullState()) {
             CatnipServices.NETWORK.sendToServer(RequestInventoryFullStateC2SPacket.INSTANCE);
         }
@@ -490,7 +492,7 @@ public class ExtendedInventoryClientHandler {
         } catch (ClassCastException ex) { return; }
         AbstractContainerMenu menu = screen.getMenu();
 
-        if (menu == player.inventoryMenu) {
+        if (menu == player.inventoryMenu && !player.isCreative()) {
             // Just-opened survival inventory — request a full state broadcast in case the
             // local menu is stale (e.g. re-built after a size change).
             CatnipServices.NETWORK.sendToServer(RequestInventoryFullStateC2SPacket.INSTANCE);

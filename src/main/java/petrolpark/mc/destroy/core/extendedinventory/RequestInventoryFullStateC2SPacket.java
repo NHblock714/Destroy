@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.net.base.BasePacketPayload;
 import net.createmod.catnip.net.base.ServerboundPacketPayload;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
 
 import petrolpark.mc.destroy.DestroyPackets;
@@ -28,6 +29,16 @@ public final class RequestInventoryFullStateC2SPacket implements ServerboundPack
 
     @Override
     public void handle(ServerPlayer player) {
+        // Creative cursor stacks are created locally; the server only owns the inventory slots.
+        if (player.isCreative()) {
+            for (var slot : player.inventoryMenu.slots) {
+                if (slot.container == player.getInventory()) {
+                    player.connection.send(new ClientboundContainerSetSlotPacket(-2,
+                        player.inventoryMenu.getStateId(), slot.getSlotIndex(), slot.getItem()));
+                }
+            }
+            return;
+        }
         player.inventoryMenu.broadcastFullState();
         player.inventoryMenu.sendAllDataToRemote();
     }

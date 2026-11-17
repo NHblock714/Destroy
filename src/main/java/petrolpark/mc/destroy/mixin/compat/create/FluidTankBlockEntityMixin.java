@@ -1,11 +1,11 @@
 package petrolpark.mc.destroy.mixin.compat.create;
 
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.simibubi.create.content.fluids.FluidPropagator;
 import com.simibubi.create.content.fluids.FluidTransportBehaviour;
@@ -66,9 +66,13 @@ import petrolpark.mc.destroy.core.fluid.GeniusFluidTankBehaviour.GeniusFluidTank
 @Mixin(FluidTankBlockEntity.class)
 public abstract class FluidTankBlockEntityMixin {
 
-    @Overwrite(remap = false)
-    protected SmartFluidTank createInventory() {
-        return new GeniusFluidTank(FluidTankBlockEntity.getCapacityMultiplier(), this::invokeOnFluidStackChanged);
+    @Inject(method = "createInventory", at = @At("RETURN"), cancellable = true, remap = false)
+    private void destroy$createMixtureInventory(CallbackInfoReturnable<SmartFluidTank> cir) {
+        // Keep specialized tanks supplied by other addons, including their fill restrictions.
+        if (cir.getReturnValue().getClass() == SmartFluidTank.class) {
+            cir.setReturnValue(new GeniusFluidTank(FluidTankBlockEntity.getCapacityMultiplier(),
+                this::invokeOnFluidStackChanged));
+        }
     }
 
     @Invoker(value = "onFluidStackChanged", remap = false)

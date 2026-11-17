@@ -31,6 +31,7 @@
         "compat.farmersdelight.CuttingBoardBlockEntityMixin"
     ],
     "client": [
+        "client.CreativeItemPickerMenuMixin",
         "client.CreativeModeInventoryScreenMixin",
         "client.LevelRendererMixin",
         "compat.jei.JeiProcessingRecipeMixin",

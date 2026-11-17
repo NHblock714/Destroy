@@ -795,14 +795,25 @@ public class LegacyMixture extends ReadOnlyMixture {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private boolean internalAddMolecule(LegacySpecies molecule, float concentration, boolean shouldRefreshReactions) {
 
-        boolean newMoleculeAdded = true;
-
         if (contents.containsKey(molecule)) {
             changeConcentrationOf(molecule, concentration, shouldRefreshReactions);
             return false;
         }
 
-        if (!molecule.isNovel()) super.addMolecule(molecule, concentration);
+        // Generated products are distinct objects even when they describe the same structure.
+        // Resolve them before indexing functional groups so each group belongs to a stored species.
+        if (molecule.isNovel()) {
+            for (LegacySpecies novelMolecule : novelMolecules) {
+                if (novelMolecule.getFullID().equals(molecule.getFullID())) {
+                    changeConcentrationOf(novelMolecule, concentration, shouldRefreshReactions);
+                    equilibrium = false;
+                    return false;
+                }
+            }
+        }
+
+        super.addMolecule(molecule, concentration);
+        if (!contents.containsKey(molecule)) return false;
 
         List<LegacyFunctionalGroup<?>> functionalGroups = molecule.getFunctionalGroups();
         if (functionalGroups.size() != 0) {
@@ -812,31 +823,17 @@ public class LegacyMixture extends ReadOnlyMixture {
         }
 
         if (molecule.isNovel()) {
-            boolean found = false;
-            for (LegacySpecies novelMolecule : novelMolecules) {
-                if (novelMolecule.getFullID().equals(molecule.getFullID())) {
-                    found = true;
-                    newMoleculeAdded = false;
-                    changeConcentrationOf(novelMolecule, concentration, true);
-                    equilibrium = false;
-                }
-            }
-            if (!found) {
-                super.addMolecule(molecule, concentration);
-                novelMolecules.add(molecule);
-            }
-            if (newMoleculeAdded) {
-                reactionResults.put(new NovelCompoundSynthesizedReactionResult(0f, null, molecule), 1f);
-            }
+            novelMolecules.add(molecule);
+            reactionResults.put(new NovelCompoundSynthesizedReactionResult(0f, null, molecule), 1f);
         }
 
-        if (shouldRefreshReactions && newMoleculeAdded) {
+        if (shouldRefreshReactions) {
             refreshPossibleReactions();
         }
 
         equilibrium = false;
 
-        return newMoleculeAdded;
+        return true;
     }
 
     private <G extends LegacyFunctionalGroup<G>> void addGroupToMixture(LegacySpecies molecule, G group) {
@@ -920,14 +917,8 @@ public class LegacyMixture extends ReadOnlyMixture {
                     LegacyFunctionalGroupType<?> secondGroupType = dggr.getSecondGroupType();
                     if (!groupIDsAndMolecules.keySet().contains(secondGroupType)) continue checkEachGenericReaction;
 
-                    List<Pair<GenericReactant<?>, GenericReactant<?>>> reactantPairs = new ArrayList<>();
-                    for (GenericReactant<?> firstGenericReactant : groupIDsAndMolecules.get(groupType)) {
-                        for (GenericReactant<?> secondGenericReactant : groupIDsAndMolecules.get(secondGroupType)) {
-                            reactantPairs.add(Pair.of(firstGenericReactant, secondGenericReactant));
-                        }
-                    }
-
-                    newPossibleReactions.addAll(specifyDoubleGroupGenericReactions(dggr, reactantPairs));
+                    newPossibleReactions.addAll(specifyDoubleGroupGenericReactions(dggr,
+                        groupIDsAndMolecules.get(groupType), groupIDsAndMolecules.get(secondGroupType)));
                 }
             }
         }
@@ -976,18 +967,21 @@ public class LegacyMixture extends ReadOnlyMixture {
     @SuppressWarnings("unchecked")
     private <G1 extends LegacyFunctionalGroup<G1>, G2 extends LegacyFunctionalGroup<G2>> List<LegacyReaction>
     specifyDoubleGroupGenericReactions(GenericReaction genericReaction,
-                                        List<Pair<GenericReactant<?>, GenericReactant<?>>> reactantPairs) {
+                                        List<GenericReactant<?>> firstReactants,
+                                        List<GenericReactant<?>> secondReactants) {
         DoubleGroupGenericReaction<G1, G2> doubleGroupGenericReaction = (DoubleGroupGenericReaction<G1, G2>) genericReaction;
         List<LegacyReaction> reactions = new ArrayList<>();
-        for (Pair<GenericReactant<?>, GenericReactant<?>> reactantPair : reactantPairs) {
-            if (reactantPair.getFirst().getMolecule() == reactantPair.getSecond().getMolecule()) continue;
-            try {
-                LegacyReaction reaction = doubleGroupGenericReaction.generateReaction(
-                    (GenericReactant<G1>) reactantPair.getFirst(),
-                    (GenericReactant<G2>) reactantPair.getSecond());
-                if (reaction != null) reactions.add(reaction);
-            } catch (ChemistryException e) {
-                // swallow chemistry exceptions
+        for (GenericReactant<?> first : firstReactants) {
+            for (GenericReactant<?> second : secondReactants) {
+                if (first.getMolecule() == second.getMolecule()) continue;
+                try {
+                    LegacyReaction reaction = doubleGroupGenericReaction.generateReaction(
+                        (GenericReactant<G1>) first,
+                        (GenericReactant<G2>) second);
+                    if (reaction != null) reactions.add(reaction);
+                } catch (ChemistryException e) {
+                    // Skip combinations that cannot form a valid reaction.
+                }
             }
         }
         return reactions;

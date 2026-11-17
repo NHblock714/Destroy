@@ -248,12 +248,15 @@ public class ExtendedInventory extends Inventory {
     public static void refreshPlayerInventoryMenu(Player player, int columns, int invX, int invY,
                                                   int leftHotbarSlots, int leftHotbarX, int leftHotbarY,
                                                   int rightHotbarX, int rightHotbarY) {
-        // Direct field assignment — works because the AT strips `final` from inventoryMenu.
+        AbstractContainerMenu previousInventory = player.inventoryMenu;
+        AbstractContainerMenu activeMenu = player.containerMenu;
+        ItemStack carried = previousInventory == null ? ItemStack.EMPTY : previousInventory.getCarried();
         player.inventoryMenu = new net.minecraft.world.inventory.InventoryMenu(player.getInventory(),
             !player.level().isClientSide(), player);
+        player.inventoryMenu.setCarried(carried);
         get(player).addExtraInventorySlotsToMenu(player.inventoryMenu, columns, invX, invY,
             leftHotbarSlots, leftHotbarX, leftHotbarY, rightHotbarX, rightHotbarY);
-        player.containerMenu = player.inventoryMenu;
+        if (activeMenu == null || activeMenu == previousInventory) player.containerMenu = player.inventoryMenu;
         if (player instanceof net.minecraft.server.level.ServerPlayer sp
             && sp.containerSynchronizer != null && sp.containerListener != null) {
             sp.initInventoryMenu();
